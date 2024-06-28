@@ -105,7 +105,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                         stagings |= Staging.create(vals)
 
                     else:
-                        staging = self._get_staging(operation)
+                        staging = self._get_staging(vals)
                         if not staging:
                             is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']
                             if is_simplify_record:
