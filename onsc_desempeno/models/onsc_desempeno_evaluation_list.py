@@ -707,7 +707,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     new_data.append(Command.create({
                        'job_id': jobs_toadd_inlist_id
                     }))
-            self.sudo().write({
+            parent_list.sudo().write({
                 'line_ids': new_data
             })
 
