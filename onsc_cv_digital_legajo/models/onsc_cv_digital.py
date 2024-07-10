@@ -817,10 +817,12 @@ class ONSCCVDigital(models.Model):
     def _get_abstract_ue_security(self):
         return self.user_has_groups('onsc_cv_digital_legajo.group_legajo_validador_doc_ue')
 
-    def cron_legajo_update_documentary_validation_sections_tovalidate(self, cv_ids = []):
+    # pylint: disable=W0102
+    def cron_legajo_update_documentary_validation_sections_tovalidate(self, cv_ids=[]):
         """
         RECUPERACIÓN DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION
         """
+
         _logger.info("PROCESO DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION: INICIO")
         CVDigital = self.sudo().with_context(ignore_restrict=True)
         offset = self.env['ir.config_parameter'].sudo().get_param('parameter_cv_digital_sections2validate_offset')
