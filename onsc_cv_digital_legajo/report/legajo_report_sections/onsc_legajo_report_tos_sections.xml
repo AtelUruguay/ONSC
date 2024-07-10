@@ -13,7 +13,7 @@
                     <t t-else=""><span>Actualidad</span></t>:
                     <span t-field="object.work_title"/>
                 </li>
-                <li style="list-style:none;" t-if="object.institution_id">Institución / Subinstitucion: <span t-field="object.institution_id.name_country"/>
+                <li style="list-style:none;" t-if="object.institution_id">Institución / Subinstitución: <span t-field="object.institution_id.name_country"/>
                     <t t-if="object.institution_id.id!=object.subinstitution_id.id"> / <span t-field="object.subinstitution_id.name"/></t>
                 </li>
                 <li style="list-style:none;" t-if="object.description">Descripción: <span t-field="object.description"/></li>

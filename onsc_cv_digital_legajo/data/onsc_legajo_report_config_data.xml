@@ -5,12 +5,6 @@
             <field name="seccion">Datos Personales</field>
             <field name="internal_field">personal_data</field>
         </record>
-
-        <record id="onsc_legajo_report_config_funcional_info" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Información Funcional</field>
-            <field name="internal_field">funcional_info</field>
-        </record>
-
         <record id="onsc_legajo_report_config_formation" model="onsc.legajo.report.config.seccion">
             <field name="seccion">Formación</field>
             <field name="internal_field">formation</field>
@@ -54,6 +48,23 @@
         <record id="onsc_legajo_report_config_other_info" model="onsc.legajo.report.config.seccion">
             <field name="seccion">Otra información relevante</field>
             <field name="internal_field">other_info</field>
+        </record>
+
+         <record id="onsc_legajo_report_config_funcional_info_contracts" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Información Funcional-Vínculos</field>
+            <field name="internal_field">funcional_info_contracts</field>
+        </record>
+         <record id="onsc_legajo_report_config_funcional_info_personal" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Información Funcional-Información personal en la función pública</field>
+            <field name="internal_field">funcional_info_personal</field>
+        </record>
+        <record id="onsc_legajo_report_config_funcional_info_merit" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Información Funcional-Méritos</field>
+            <field name="internal_field">funcional_info_merit</field>
+        </record>
+        <record id="onsc_legajo_report_config_funcional_info_demerit" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Información Funcional-Deméritos</field>
+            <field name="internal_field">funcional_info_demerit</field>
         </record>
 
 
