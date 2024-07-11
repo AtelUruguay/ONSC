@@ -10,6 +10,7 @@ from zeep.exceptions import Fault
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
+from dateutil.relativedelta import relativedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -723,21 +724,26 @@ class ONSCCVDigital(models.Model):
         model_id = self.env['ir.model']._get_id(self._name)
         email_template_id.model_id = model_id
         today = fields.Date.today()
-        onsc_cv_digitals = self.env['onsc.cv.digital'].search(
-            [('last_modification_date', '!=', False),
-             ('type', '=', 'cv'),
-             ('last_modification_date', '!=', today)])
+
+        date_to_find = fields.Date.today() - relativedelta(days=int(parameter_inactivity))
+        onsc_cv_digitals = self.env['onsc.cv.digital'].search([
+            ('last_modification_date', '!=', False),
+            ('last_modification_date', '=', date_to_find),
+            ('type', '=', 'cv'),
+        ])
         for onsc_cv_digital in onsc_cv_digitals:
-            rest_value = today - onsc_cv_digital.last_modification_date
-            date_value = int(rest_value.days) % int(parameter_inactivity)
-            if not date_value:
-                months = diff_month(today, onsc_cv_digital.last_modification_date)
-                view_context = dict(self._context)
-                view_context.update({
-                    'months': months,
-                })
-                email_template_id.with_context(view_context).send_mail(onsc_cv_digital.id, force_send=True,
-                                                                       notif_layout='mail.mail_notification_light')
+            # rest_value = today - onsc_cv_digital.last_modification_date
+            # date_value = int(rest_value.days) % int(parameter_inactivity)
+            # if not date_value:
+            months = diff_month(today, onsc_cv_digital.last_modification_date)
+            view_context = dict(self._context)
+            view_context.update({
+                'months': months,
+            })
+            email_template_id.with_context(view_context).send_mail(
+                onsc_cv_digital.id,
+                notif_layout='mail.mail_notification_light'
+            )
 
     def _check_todisable(self):
         for record in self:
