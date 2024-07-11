@@ -108,7 +108,6 @@ class ONSCLegajoAbstractOpAddModifySecurity(models.AbstractModel):
         _is_admin = self._is_group_admin_security()
         _is_inciso = self._is_group_inciso_security()
         _is_ue = self._is_group_ue_security()
-        _is_consulta = self._is_group_consulta_security()
         user_contract = self.env.user.employee_id.job_id.contract_id
         for rec in self:
             is_iam_inciso = rec.inciso_id and rec.inciso_id == user_contract.inciso_id

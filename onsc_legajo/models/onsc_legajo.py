@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from lxml import etree
 import json
+
+from lxml import etree
 
 from odoo import api, models, fields, tools, _
 from odoo.exceptions import ValidationError
@@ -59,11 +60,13 @@ class ONSCLegajo(models.Model):
     contracts_count = fields.Integer(string='Cantidad de contratos', compute='_compute_contract_info')
 
     is_mi_legajo = fields.Boolean(string="¿Es mi legajo?", compute='_compute_is_mi_legajo')
-    is_any_regime_legajo = fields.Boolean(string=u'¿Algún Régimen de los Contratos tiene la marca Legajo?', compute='_compute_is_any_regime_legajo')
+    is_any_regime_legajo = fields.Boolean(string=u'¿Algún Régimen de los Contratos tiene la marca Legajo?',
+                                          compute='_compute_is_any_regime_legajo')
+    show_legajo_info = fields.Boolean(string=u'¿Ver información de legajo?', compute='_compute_show_legajo_info')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_is_mi_legajo')
     should_hidde_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
-                                              compute='_compute_is_mi_legajo')
+                                            compute='_compute_is_mi_legajo')
 
     juramento_bandera_date = fields.Date(
         string='Fecha de Juramento de fidelidad a la Bandera nacional', history=True)
@@ -87,7 +90,7 @@ class ONSCLegajo(models.Model):
     declaration_law_ids = fields.One2many(
         comodel_name='onsc.legajo.declaration.law',
         inverse_name='legajo_id',
-        string="Declaraciones de Ley" )
+        string="Declaraciones de Ley")
     judicial_antecedents_ids = fields.One2many(
         comodel_name='onsc.legajo.judicial.antecedents',
         inverse_name='legajo_id',
@@ -163,7 +166,8 @@ class ONSCLegajo(models.Model):
                     _("La Fecha de presentación de documento digitalizado debe ser mayor a la Fecha de juramento"))
 
     def write(self, vals):
-        any_juramento_in_vals = ('juramento_bandera_date' in vals or 'juramento_bandera_presentacion_date' in vals or 'juramento_bandera_file' in vals)
+        keys_to_check = {'juramento_bandera_date', 'juramento_bandera_presentacion_date', 'juramento_bandera_file'}
+        any_juramento_in_vals = any(key in vals for key in keys_to_check)
         if any_juramento_in_vals and 'eff_date' not in vals:
             vals['eff_date'] = fields.Date.today()
             return super(ONSCLegajo, self.suspend_security()).write(vals)
@@ -206,6 +210,11 @@ class ONSCLegajo(models.Model):
     def _compute_is_any_regime_legajo(self):
         for rec in self:
             rec.is_any_regime_legajo = len(rec.sudo().contract_ids.filtered(lambda x: x.regime_id.is_legajo)) > 0
+
+    def _compute_show_legajo_info(self):
+        is_user_valid = self.user_has_groups('onsc_legajo.group_legajo_show_legajo_info')
+        for rec in self:
+            rec.show_legajo_info = is_user_valid or rec.employee_id.user_id.id == self.env.user.id
 
     def button_open_employee(self):
         self.ensure_one()
@@ -339,6 +348,7 @@ class ONSCLegajo(models.Model):
                 vals2update['juramento_bandera_filename'] = juramento_bandera_filename
             legajo.write(vals2update)
         return legajo
+
 
 class ONSCLegajoHistory(models.Model):
     _inherit = ['model.history.data']

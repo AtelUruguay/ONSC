@@ -15,9 +15,14 @@ class ONSCLegajoDepartmentOld(models.Model):
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu'):
             args = self._get_domain(args)
-        return super(ONSCLegajoDepartmentOld, self)._search(args, offset=offset, limit=limit, order=order,
-                                                         count=count,
-                                                         access_rights_uid=access_rights_uid)
+        return super(ONSCLegajoDepartmentOld, self)._search(
+            args,
+            offset=offset,
+            limit=limit,
+            order=order,
+            count=count,
+            access_rights_uid=access_rights_uid
+        )
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):

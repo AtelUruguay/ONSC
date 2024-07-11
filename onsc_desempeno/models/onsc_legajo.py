@@ -40,7 +40,7 @@ class ONSCLegajoScore(models.Model):
         for rec in self:
             try:
                 args = []
-                is_full_groups =  self._is_group_legajo_consulta_legajos() or self._is_group_legajo_admin_legajos()
+                is_full_groups = self._is_group_legajo_consulta_legajos() or self._is_group_legajo_admin_legajos()
                 if self._context.get('mi_legajo') or is_full_groups:
                     args = [('employee_id', '=', rec.employee_id.id),
                             ('is_employee_notified', '=', True),

@@ -632,6 +632,13 @@ class ONSCLegajoAltaCS(models.Model):
             if record.date_end_commission and record.date_start_commission and record.date_end_commission < record.date_start_commission:
                 raise ValidationError(_("La fecha hasta debe ser mayor o igual que la fecha desde"))
 
+    @api.constrains("reason_description", "resolution_description")
+    def _check_len_description(self):
+        for record in self:
+            if record.reason_description and len(record.reason_description) > 50:
+                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+            if record.resolution_description and len(record.resolution_description) > 100:
+                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
         contracts = self.env['hr.contract'].sudo().search([
@@ -787,7 +794,9 @@ class ONSCLegajoAltaCS(models.Model):
         self.contract_id.with_context(no_check_write=True).deactivate_legajo_contract(
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission',
-            eff_date=fields.Date.today()
+            eff_date=fields.Date.today(),
+            inciso_dest_id=self.inciso_destination_id.id,
+            operating_unit_dest_id=self.operating_unit_destination_id.id,
         )
         if self.type_cs != 'ac2out':
             self._get_legajo_job(new_contract)
@@ -847,7 +856,12 @@ class ONSCLegajoAltaCS(models.Model):
             'operating_unit_origin_id': self.operating_unit_origin_id.id,
             'eff_date': fields.Date.today(),
             'legajo_state_id': self.legajo_state_id.id,
+            'descriptor1_origin_id': origin_contract_id.descriptor1_id.id,
+            'descriptor2_origin_id': origin_contract_id.descriptor2_id.id,
+            'descriptor3_origin_id': origin_contract_id.descriptor3_id.id,
+            'descriptor4_origin_id': origin_contract_id.descriptor4_id.id,
         }
+
         if self.type_cs == 'out2ac':
             _regime_id = self.env['onsc.legajo.regime'].sudo().search([('is_fac2ac', '=', True)], limit=1).id
         else:

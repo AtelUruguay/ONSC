@@ -721,7 +721,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'project': str(record.proyecto),
             'state_square_id': contract.state_square_id.id,
             'cs_contract_id': contract.id,
-            'state_id': contract.state_id.id,
+            'legajo_state_id': contract.legajo_state_id.id,
             #
             'wage': contract.wage
         })

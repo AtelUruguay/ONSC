@@ -342,7 +342,9 @@ class ONSCLegajoAltaVL(models.Model):
                             ('program', '=', alta_vl.program_project_id.programa),
                             ('project','=', alta_vl.program_project_id.proyecto),
                             ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
-                            ('employee_id', '=', alta_vl.employee_id.id),
+                            ('legajo_id.emissor_country_id', '=', alta_vl.cv_emissor_country_id.id),
+                            ('legajo_id.document_type_id', '=', alta_vl.cv_document_type_id.id),
+                            ('legajo_id.nro_doc', '=', alta_vl.partner_id.cv_nro_doc),
                             ('legajo_state', '=', 'active')])):
                          show_exist_altaVL_warning = True
             rec.show_exist_altaVL_warning = show_exist_altaVL_warning
@@ -473,9 +475,9 @@ class ONSCLegajoAltaVL(models.Model):
                     message.append("La UO ya tiene un responsable")
 
             if record.reason_description and len(record.reason_description) > 50:
-                raise ValidationError("El campo Descripción del motivo no puede tener más de 50 caracteres.")
+                raise ValidationError(_("El campo Descripción del motivo no puede tener más de 50 caracteres."))
             if record.resolution_description and len(record.resolution_description) > 100:
-                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+                raise ValidationError(_("El campo Descripción de la resolución no puede tener más de 100 caracteres."))
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str

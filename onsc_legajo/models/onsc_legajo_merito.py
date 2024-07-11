@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 
 class ONSCLegajoMerito(models.Model):
@@ -33,7 +34,8 @@ class ONSCLegajoMerito(models.Model):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
 
     def _is_group_consulta_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_consulta_milegajos')
+        return self.user_has_groups(
+            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_consulta_milegajos')
 
     title = fields.Char(string="Título", required=True, history=True)
     document_date = fields.Date(string="Fecha del documento", required=True, history=True)
@@ -47,13 +49,13 @@ class ONSCLegajoMerito(models.Model):
     def _check_document_date(self):
         for record in self:
             if record.document_date > fields.Date.today():
-                raise ValidationError("La fecha del documento debe ser menor o igual al día de hoy")
+                raise ValidationError(_("La fecha del documento debe ser menor o igual al día de hoy"))
 
     @api.constrains("notification_date")
     def _check_notification_date(self):
         for record in self:
             if record.notification_date > fields.Date.today():
-                raise ValidationError("La fecha de notificación debe ser menor o igual al día de hoy")
+                raise ValidationError(_("La fecha de notificación debe ser menor o igual al día de hoy"))
 
     @api.onchange('document_date')
     def onchange_document_date(self):
@@ -69,10 +71,12 @@ class ONSCLegajoMerito(models.Model):
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_legajo.onsc_legajo_merito_form').id
-        return self.with_context(model_view_form_id=model_view_form_id, as_of_date=fields.Date.today()).get_history_record_action(
+        return self.with_context(model_view_form_id=model_view_form_id,
+                                 as_of_date=fields.Date.today()).get_history_record_action(
             history_id=False,
             res_id=self.id,
         )
+
 
 class ONSCLegajoHistory(models.Model):
     _inherit = ['model.history.data']
