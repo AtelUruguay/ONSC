@@ -2,6 +2,9 @@
 from odoo import fields, models, tools, api
 from odoo.osv import expression
 
+import logging
+_logger = logging.getLogger(__name__)
+
 EVALUATION_TYPE = [
     ('self_evaluation', 'Autoevaluación'),
     ('leader_evaluation', 'Evaluación de líder'),
@@ -169,7 +172,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
     def button_open_evaluation(self):
         ctx = self.env.context.copy()
-        ctx.update({'show_evaluation_type': True})
+        ctx.update({'show_evaluation_type': True, 'ignore_security_rules': True, 'ignore_base_restrict': True})
         if self.evaluation_type == 'gap_deal':
             ctx.update({'gap_deal': True})
         else:
@@ -183,6 +186,8 @@ class ONSCLegajoSummaryEvaluation(models.Model):
             action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
         else:
             action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
+        _logger.info('********************* SUMMARY EVALUATION LINK ****************************')
+        _logger.info('**** evaluation_id: %s, summary_evaluation_type: %s, evaluation_evaluation_type: %s ***********' % (self.evaluation_id.id, self.evaluation_type,self.evaluation_id.evaluation_type))
         action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
         return action
 
