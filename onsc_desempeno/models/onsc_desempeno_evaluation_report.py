@@ -83,6 +83,7 @@ class ONSCDesempenoEvaluationReport(models.Model):
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación', ondelete='cascade')
     consolidated_id = fields.Many2one('onsc.desempeno.consolidated', string='Consolidado', ondelete='cascade')
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True, ondelete='cascade')
+    show_button_evaluation = fields.Boolean('Ver botón Ver evaluaciones', compute='_compute_show_button_evaluation')
 
     @api.depends('evaluation_type')
     def _compute_evaluation_type_display_name(self):
@@ -149,3 +150,14 @@ class ONSCDesempenoEvaluationReport(models.Model):
             ]},
             'views': [[self.env.ref('onsc_desempeno.report_onsc_desempeno_evaluation_report').id, 'form']]
         }
+
+    @api.depends('evaluation_type')
+    def _compute_show_button_evaluation(self):
+        group_admin = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
+        for record in self:
+            if record.evaluation_type in ('environment_evaluation', 'collaborator',
+                                          'leader_evaluation') and group_admin and record.evaluated_id.id == self.env.user.employee_id.id:
+                condition = False
+            else:
+                condition = True
+            record.show_button_evaluation = condition
