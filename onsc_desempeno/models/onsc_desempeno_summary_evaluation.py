@@ -2,6 +2,9 @@
 from odoo import fields, models, tools, api
 from odoo.osv import expression
 
+import logging
+_logger = logging.getLogger(__name__)
+
 EVALUATION_TYPE = [
     ('self_evaluation', 'Autoevaluación'),
     ('leader_evaluation', 'Evaluación de líder'),
@@ -174,8 +177,9 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     show_button_evaluation = fields.Boolean('Ver botón Ver evaluaciones', compute='_compute_show_button_evaluation')
 
     def button_open_evaluation(self):
+        _logger.info('********************* SUMMARY EVALUATION LINK ****************************')
         ctx = self.env.context.copy()
-        ctx.update({'show_evaluation_type': True})
+        ctx.update({'show_evaluation_type': True, 'ignore_security_rules': True, 'ignore_base_restrict': True})
         if self.evaluation_type == 'gap_deal':
             ctx.update({'gap_deal': True})
         else:
@@ -183,19 +187,33 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
         if self.evaluation_type == 'development_plan':
             ctx.update({'develop_plan': True})
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         elif self.evaluation_type == 'tracing_plan':
             ctx.update({'tracing_plan': True})
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         else:
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
-        action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
+            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
+            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_readonly_action")
+        _logger.info(
+            '**** evaluation_id: %s, summary_evaluation_type: %s, evaluation_evaluation_type: %s ***********' % (
+                self.evaluation_id.id, self.evaluation_type, self.evaluation_id.evaluation_type))
+        # action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
+
+        # TEST SECOND WAY
+        # COPY ACTION AND UPDATE OTHERWISE USE SAME ACTION
+        # action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
+        action["res_id"] = self.evaluation_id.id
+        action["context"] = ctx
+        _logger.info(action)
+        _logger.info('********************* END OF SUMMARY EVALUATION LINK ****************************')
         return action
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, 'onsc_desempeno_summary_evaluation')
         self.env.cr.execute('''CREATE OR REPLACE VIEW onsc_desempeno_summary_evaluation AS ( SELECT
-            row_number() OVER(ORDER BY order_type,order_state) AS id, *
+            row_number() OVER(ORDER BY type,order_type,order_state,evaluation_id) AS id, *
         FROM(
         SELECT evaluation_type,
                 general_cycle_id,
