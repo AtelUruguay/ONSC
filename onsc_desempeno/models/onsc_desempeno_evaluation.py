@@ -301,6 +301,7 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
+            _logger.info('*********** EVALUATION SEARCH DOMAIN IN ******************')
             args = self._get_domain(args)
         return super(ONSCDesempenoEvaluation, self)._search(args, offset=offset, limit=limit, order=order,
                                                             count=count,
