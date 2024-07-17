@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Base',
-    'version': '15.0.28.0.0',
+    'version': '15.0.28.1.0',
     'summary': 'ONSC - Base',
     'sequence': 11,
     'description': """
@@ -24,6 +24,7 @@ ONSC - Base
         'base_restrict_access',
         'url_access_restriction',
         'disable_userprofile_menuitems',
+        'disable_mail_message_options',
         'field_binary_show_filename'
     ],
     'data': [

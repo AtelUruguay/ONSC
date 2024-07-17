@@ -2,6 +2,9 @@
 from odoo import fields, models, tools, api
 from odoo.osv import expression
 
+import logging
+_logger = logging.getLogger(__name__)
+
 EVALUATION_TYPE = [
     ('self_evaluation', 'Autoevaluación'),
     ('leader_evaluation', 'Evaluación de líder'),
@@ -38,6 +41,11 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     _description = "Resumen de evaluaciones"
     _auto = False
 
+    def _is_group_admin_gh_inciso(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')
+
+    def _is_group_admin_gh_ue(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue')
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoSummaryEvaluation, self).fields_get(allfields, attributes)
@@ -166,10 +174,12 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                                               compute='_compute_show_evaluation_finished',
                                               search='_search_show_evaluation_finished')
     write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
+    show_button_evaluation = fields.Boolean('Ver botón Ver evaluaciones', compute='_compute_show_button_evaluation')
 
     def button_open_evaluation(self):
+        _logger.info('********************* SUMMARY EVALUATION LINK ****************************')
         ctx = self.env.context.copy()
-        ctx.update({'show_evaluation_type': True})
+        ctx.update({'show_evaluation_type': True, 'ignore_security_rules': True, 'ignore_base_restrict': True})
         if self.evaluation_type == 'gap_deal':
             ctx.update({'gap_deal': True})
         else:
@@ -177,19 +187,33 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
         if self.evaluation_type == 'development_plan':
             ctx.update({'develop_plan': True})
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         elif self.evaluation_type == 'tracing_plan':
             ctx.update({'tracing_plan': True})
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         else:
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
-        action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
+            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
+            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_readonly_action")
+        _logger.info(
+            '**** evaluation_id: %s, summary_evaluation_type: %s, evaluation_evaluation_type: %s ***********' % (
+                self.evaluation_id.id, self.evaluation_type, self.evaluation_id.evaluation_type))
+        # action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
+
+        # TEST SECOND WAY
+        # COPY ACTION AND UPDATE OTHERWISE USE SAME ACTION
+        # action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
+        action["res_id"] = self.evaluation_id.id
+        action["context"] = ctx
+        _logger.info(action)
+        _logger.info('********************* END OF SUMMARY EVALUATION LINK ****************************')
         return action
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, 'onsc_desempeno_summary_evaluation')
         self.env.cr.execute('''CREATE OR REPLACE VIEW onsc_desempeno_summary_evaluation AS ( SELECT
-            row_number() OVER(ORDER BY order_type,order_state) AS id, *
+            row_number() OVER(ORDER BY type,order_type,order_state,evaluation_id) AS id, *
         FROM(
         SELECT evaluation_type,
                 general_cycle_id,
@@ -379,3 +403,14 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     def _compute_show_evaluation_finished(self):
         for record in self:
             record.show_evaluation_finished = True
+
+    @api.depends('evaluation_type')
+    def _compute_show_button_evaluation(self):
+        group_admin = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
+        for record in self:
+            if record.evaluation_type in ('environment_evaluation', 'collaborator',
+                                          'leader_evaluation') and group_admin and record.evaluated_id.id == self.env.user.employee_id.id:
+                condition = False
+            else:
+                condition = True
+            record.show_button_evaluation = condition
