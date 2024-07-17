@@ -742,10 +742,7 @@ class ONSCCVDigital(models.Model):
             view_context.update({
                 'days': int(rest_value.days),
             })
-            email_template_id.with_context(view_context).send_mail(
-                onsc_cv_digital.id,
-                notif_layout='mail.mail_notification_light'
-            )
+            email_template_id.with_context(view_context).send_mail(onsc_cv_digital.id)
 
     def _check_todisable(self):
         for record in self:
