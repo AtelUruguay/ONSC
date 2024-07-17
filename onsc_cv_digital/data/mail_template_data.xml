@@ -66,30 +66,29 @@
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
             <field name="body_html" type="html">
-                <html>
-                    <body>
+
                         <div style="margin: 0px; padding: 0px;">
-                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                             <img t-attf-src="/onsc_cv_digital/static/img/cabezal-correo-ghe.png"/>
+                            <p style="margin: 0px; padding: 0px; font-size: 13px;text-align: center;">
                                 Estimado Usuario,
                                 <br/>
                                 Han pasado
-                                <t t-out="ctx.get('months')" contenteditable="false" data-oe-t-inline="true"></t>
-                                meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
+                                <t t-out="ctx.get('days')" contenteditable="false" data-oe-t-inline="true"></t>
+                                días desde su ultima modificación a su CV digital . Recuerde mantenerlo
                                 actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado
                                 Uruguayo.
                                 <br/>
-                                Si es funcionario publico de la Administración Central, recuerde que mantener su CV
+                                Si es funcionario público de la Administración Central, recuerde que mantener su CV
                                 digital al
                                 día es la única forma de actualizar la información personal y la formación de su legajo
                                 laboral.
                                 <br/>
-                                Puede chequear su CV digital a través del siguiente link a la plataforma GHE.uy
+                                Puede chequear su CV digital a través del siguiente link a la <a t-attf-href="https://gestionhumana.onsc.gub.uy/" target="new">plataforma GHE.uy</a>
                                 <br/>
-                                Cualquier consulta puede dirigirse a mesa.servicios@onsc.gub.uy.
+                               <img t-attf-src="/onsc_cv_digital/static/img/pie-correo-ghe.png"/>
                             </p>
                         </div>
-                    </body>
-                </html>
+
             </field>
         </record>
 
