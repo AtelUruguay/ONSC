@@ -197,8 +197,8 @@ class ONSCLegajoSummaryEvaluation(models.Model):
             # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
             action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_readonly_action")
         _logger.info(
-            '**** evaluation_id: %s, summary_evaluation_type: %s, evaluation_evaluation_type: %s ***********' % (
-                self.evaluation_id.id, self.evaluation_type, self.evaluation_id.evaluation_type))
+            '**** evaluation_id: %s, summary_evaluation_type: %s, evaluation_evaluation_type: %s, user_id: %s ***********,' %
+            (self.evaluation_id.id, self.evaluation_type, self.evaluation_id.evaluation_type, self.env.user.id))
         # action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
 
         # TEST SECOND WAY
