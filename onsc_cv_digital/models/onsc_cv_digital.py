@@ -22,6 +22,10 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
 def diff_month(d1, d2):
     return (d1.year - d2.year) * 12 + d1.month - d2.month
 
+def diff_days(d1, d2):
+    delta = d1 - d2
+    return abs(delta.days)
+
 
 class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
@@ -732,13 +736,11 @@ class ONSCCVDigital(models.Model):
             ('type', '=', 'cv'),
         ])
         for onsc_cv_digital in onsc_cv_digitals:
-            # rest_value = today - onsc_cv_digital.last_modification_date
-            # date_value = int(rest_value.days) % int(parameter_inactivity)
-            # if not date_value:
-            months = diff_month(today, onsc_cv_digital.last_modification_date)
+            rest_value = today - onsc_cv_digital.last_modification_date
+
             view_context = dict(self._context)
             view_context.update({
-                'months': months,
+                'days': int(rest_value.days),
             })
             email_template_id.with_context(view_context).send_mail(
                 onsc_cv_digital.id,
