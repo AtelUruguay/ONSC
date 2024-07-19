@@ -23,7 +23,7 @@ ONSC - Base
         'fields_many2one_restrict',
         'base_restrict_access',
         'url_access_restriction',
-        'field_binary_show_filename'
+        'field_binary_show_filename',
         'disable_userprofile_menuitems',
         'disable_mail_message_options',
         'web_dialog_confirm_disable_button'
