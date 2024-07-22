@@ -66,6 +66,11 @@ class ONSCCVCourseCertificate(models.Model):
             self.start_date = False
             return cv_warning(_(u"La fecha de inicio debe ser menor que la fecha actual"))
 
+    @api.onchange('course_type')
+    def onchange_course_type(self):
+        if self.record_type == 'certificate':
+            self.record_type = 'course'
+
     @api.depends('course_title', 'certificate_id', 'record_type')
     def _compute_name(self):
         for rec in self:
