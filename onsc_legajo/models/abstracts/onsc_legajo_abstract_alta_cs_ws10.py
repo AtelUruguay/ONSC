@@ -136,7 +136,7 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
 
     def _process_error_alta_cs(self, long_description):
         altas_cs = self._context.get('altas_cs')
-        _error = long_description or "No se puedo conectar con el servicio web"
+        _error = long_description or "No se pudo conectar con el servicio web"
         altas_cs.write({
             'is_error_synchronization': True,
             'state': 'error_sgh',
