@@ -675,9 +675,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         ]).ids
         new_data = []
         for jobs_toadd_inlist_id in jobs_toadd_inlist_ids:
-            new_data.append(Command.create({
-               'job_id': jobs_toadd_inlist_id
-            }))
+            new_data.append(Command.create({'job_id': jobs_toadd_inlist_id}))
         self.sudo().write({
             'line_ids': new_data
         })
@@ -704,12 +702,11 @@ class ONSCDesempenoEvaluationList(models.Model):
             new_data = []
             for jobs_toadd_inlist_id in jobs_toadd_inlist_ids:
                 if jobs_toadd_inlist_id not in parent_list.line_ids.mapped('job_id').ids:
-                    new_data.append(Command.create({
-                       'job_id': jobs_toadd_inlist_id
-                    }))
+                    new_data.append(Command.create({'job_id': jobs_toadd_inlist_id}))
             parent_list.sudo().write({
                 'line_ids': new_data
             })
+
 
 class ONSCDesempenoEvaluationListLine(models.Model):
     _name = 'onsc.desempeno.evaluation.list.line'
