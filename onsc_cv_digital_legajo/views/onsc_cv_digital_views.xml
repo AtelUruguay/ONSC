@@ -78,8 +78,11 @@
                        attrs="{'invisible': [('is_docket', '=', False)]}"/>
             </field>
             <xpath expr="//page[@name='reference']" position="after">
-                <page name="datos_legajo" string="Datos del legajo"
+                <page name="datos_legajo" string="Contactos"
                       attrs="{'invisible': [('is_docket_active', '=', False)]}">
+                    <div class="float-right">
+                        <field name="cv_help_contacts"/>
+                    </div>
                     <group>
                         <group string="Información personal:">
                             <field name="institutional_email"/>

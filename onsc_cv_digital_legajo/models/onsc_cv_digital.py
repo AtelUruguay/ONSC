@@ -277,6 +277,10 @@ class ONSCCVDigital(models.Model):
 
     is_driver_license_readonly = fields.Boolean(compute='_compute_is_driver_license_readonly')
 
+    cv_help_contacts = fields.Html(
+        compute=lambda s: s._get_help('cv_help_contacts'),
+        default=lambda s: s._get_help('cv_help_contacts', True))
+
     @api.depends('drivers_license_ids', 'is_driver_license')
     def _compute_is_driver_license_readonly(self):
         for rec in self:
