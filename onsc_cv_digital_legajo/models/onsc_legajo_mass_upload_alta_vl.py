@@ -292,6 +292,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     self.get_position(column_names, 'descriptor2_id')])
                 descriptor3_id = MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[
                     self.get_position(column_names, 'descriptor3_id')])
+                if not descriptor3_id:
+                    message_error.append(
+                        "El campo Descriptor 3  no está definido o no ha sido encontrado")
                 descriptor4_id = MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[
                     self.get_position(column_names, 'descriptor4_id')])
                 budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
