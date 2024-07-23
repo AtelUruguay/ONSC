@@ -180,7 +180,7 @@
                   name=" Etapa de evaluaciones 360° por UE"
                   action="onsc_desempeno_onsc_desempeno_evaluation_stage_action"
                   parent="onsc_desempeno_config_menu"
-                  groups="onsc_desempeno.group_desempeno_configurador_gh_ue,onsc_desempeno.group_desempeno_configurador_gh_inciso"
+                  groups="onsc_desempeno.group_desempeno_administrador,onsc_desempeno.group_desempeno_configurador_gh_ue,onsc_desempeno.group_desempeno_configurador_gh_inciso"
                   sequence="5"/>
         <menuitem id="onsc_desempeno_config_config_menu"
                   name="Configuración"
