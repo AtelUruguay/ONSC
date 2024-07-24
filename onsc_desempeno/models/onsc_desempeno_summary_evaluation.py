@@ -41,6 +41,11 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     _description = "Resumen de evaluaciones"
     _auto = False
 
+    def _is_group_admin_gh_inciso(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')
+
+    def _is_group_admin_gh_ue(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue')
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoSummaryEvaluation, self).fields_get(allfields, attributes)
@@ -169,6 +174,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                                               compute='_compute_show_evaluation_finished',
                                               search='_search_show_evaluation_finished')
     write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
+    show_button_evaluation = fields.Boolean('Ver botón Ver evaluaciones', compute='_compute_show_button_evaluation')
 
     def button_open_evaluation(self):
         _logger.info('********************* SUMMARY EVALUATION LINK ****************************')
@@ -397,3 +403,14 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     def _compute_show_evaluation_finished(self):
         for record in self:
             record.show_evaluation_finished = True
+
+    @api.depends('evaluation_type')
+    def _compute_show_button_evaluation(self):
+        group_admin = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
+        for record in self:
+            if record.evaluation_type in ('environment_evaluation', 'collaborator',
+                                          'leader_evaluation') and group_admin and record.evaluated_id.id == self.env.user.employee_id.id:
+                condition = False
+            else:
+                condition = True
+            record.show_button_evaluation = condition

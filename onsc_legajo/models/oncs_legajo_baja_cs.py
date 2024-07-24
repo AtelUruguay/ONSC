@@ -304,14 +304,17 @@ class ONSCLegajoBajaCS(models.Model):
     def action_actualizar_puesto(self):
         contrato_origen = self.contract_origen_id
         if self.inciso_id.is_central_administration and contrato_origen.inciso_id.is_central_administration:
-            contrato_origen.suspend_security().activate_legajo_contract(eff_date=fields.Date.today())
-            # el deactivate ya se encarga de escribir la fecha de fin en el puesto
-            # self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
-            #     {'end_date': self.end_date})
+            contrato_origen.suspend_security().activate_legajo_contract(
+                eff_date=fields.Date.today(),
+                clean_destination_info=True
+            )
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date, eff_date=fields.Date.today())
         elif not self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission':
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date, eff_date=fields.Date.today())
-            self.contract_id.cs_contract_id.suspend_security().activate_legajo_contract(eff_date=fields.Date.today())
+            self.contract_id.cs_contract_id.suspend_security().activate_legajo_contract(
+                eff_date=fields.Date.today(),
+                clean_destination_info=True
+            )
         elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission' \
                 and not contrato_origen:
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(

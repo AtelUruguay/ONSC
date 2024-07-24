@@ -34,6 +34,7 @@ ONSC - Legajo
         'wizard/mail_wizard_invite_views.xml',
 
         'views/onsc_legajo_department_views.xml',
+        'views/onsc_legajo_vote_registry_pending.xml',
         'views/onsc_legajo_settings_view.xml',
         'views/catalogs/onsc_catalog_descriptors.xml',
         'views/catalogs/onsc_legajo_emergency_views.xml',
@@ -61,6 +62,8 @@ ONSC - Legajo
         'views/hr_job_views.xml',
         'views/hr_contract_views.xml',
         'views/onsc_legajo_views.xml',
+        'views/onsc_legajo_other_views.xml',
+        'views/onsc_legajo_vote_control_views.xml',
         'views/ir_attachment_view.xml',
         'views/onsc_legajo_alta_cs_view.xml',
         'views/onsc_legajo_cambio_uo_views.xml',

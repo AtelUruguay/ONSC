@@ -154,6 +154,9 @@ class ONSCDesempenoEvaluation(models.Model):
             if not self._is_group_admin_gh_inciso() and not self._is_group_usuario_gh_inciso():
                 args_extended = expression.AND(
                     [[('operating_unit_id', '=', operating_unit_id)], args_extended])
+            if self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue():
+                args_extended = expression.AND(
+                    [[('evaluated_id', '!=', self.env.user.employee_id.id)], args_extended])
         else:
             # BREAKPOINT - Todos los usuarios deben ver las evaluaciones en las que es evaluador
             args_extended = [
@@ -206,12 +209,21 @@ class ONSCDesempenoEvaluation(models.Model):
                     [[('evaluated_id', '=', self.env.user.employee_id.id)], args_extended])
 
             if self._is_group_admin_gh_inciso():
-                args_extended = expression.OR(
-                    [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+                if evaluation_type == 'environment_evaluation':
+                    args_extended = expression.OR(
+                        [[('evaluated_id', '!=', self.env.user.employee_id.id),('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+                else:
+                    args_extended = expression.OR(
+                        [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
             elif self._is_group_admin_gh_ue():
-                args_extended = expression.OR(
-                    [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
-                     args_extended])
+                if evaluation_type == 'environment_evaluation':
+                    args_extended = expression.OR(
+                        [[('evaluated_id', '!=', self.env.user.employee_id.id),('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
+                         args_extended])
+                else:
+                    args_extended = expression.OR(
+                        [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
+                         args_extended])
         if evaluation_type == 'environment_evaluation':
             args_extended = expression.OR([[
                 ('evaluator_id', '=', self.env.user.employee_id.id),

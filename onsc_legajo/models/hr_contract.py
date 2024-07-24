@@ -6,6 +6,12 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+from odoo.addons.onsc_base.onsc_useful_tools import to_timestamp as to_timestamp
+
+_CUSTOM_ORDER = {
+    'confirm': 1,
+    'end': 2
+}
 
 
 class HrContract(models.Model):
@@ -181,6 +187,23 @@ class HrContract(models.Model):
         copy=False, history=True)
 
     legajo_id = fields.Many2one('onsc.legajo', string='Legajo', compute='_compute_legajo_id', store=True)
+    show_law_legajo_legend = fields.Boolean(
+        string='¿Mostrar leyenda de legajo?',
+        compute='_compute_show_law_legajo_legend'
+    )
+    law_legajo_legend = fields.Char(
+        string='Leyenda de legajo',
+        compute='_compute_show_law_legajo_legend'
+    )
+    descriptor1_origin_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1 origen')
+    descriptor2_origin_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2 origen')
+    descriptor3_origin_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3 origen')
+    descriptor4_origin_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4 origen')
+    inciso_dest_id = fields.Many2one('onsc.catalog.inciso', string='Inciso destino', history=True)
+    operating_unit_dest_id = fields.Many2one("operating.unit",
+                                             string="Unidad ejecutora Destino",
+                                             domain="[('inciso_id','=', inciso_dest_id)]",
+                                             history=True)
 
     def name_get(self):
         res = []
@@ -255,6 +278,18 @@ class HrContract(models.Model):
             is_valid_state = rec.legajo_state != 'baja'
             rec.show_button_update_occupation = is_valid_group and is_valid_state and rec.is_occupation_visible
 
+    @api.depends('regime_id', 'descriptor1_id')
+    def _compute_show_law_legajo_legend(self):
+        Legend = self.env['onsc.legajo.legend']
+        for rec in self:
+            legend = Legend._get_legajo_legend(rec.regime_id.id, rec.descriptor1_id.id)
+            if legend:
+                rec.show_law_legajo_legend = True
+                rec.law_legajo_legend = legend.name
+            else:
+                rec.show_law_legajo_legend = False
+                rec.law_legajo_legend = False
+
     def _compute_is_mi_legajo(self):
         for rec in self:
             rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
@@ -264,15 +299,15 @@ class HrContract(models.Model):
     def _check_len_description(self):
         for record in self:
             if record.reason_description and len(record.reason_description) > 50:
-                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+                raise ValidationError(_("El campo Descripción del Motivo no puede tener más de 50 caracteres."))
             if record.reason_discharge and len(record.reason_discharge) > 50:
-                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+                raise ValidationError(_("El campo Descripción del Motivo no puede tener más de 50 caracteres."))
             if record.reason_deregistration and len(record.reason_deregistration) > 50:
-                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+                raise ValidationError(_("El campo Descripción del Motivo no puede tener más de 50 caracteres."))
             if record.resolution_description and len(record.resolution_description) > 100:
-                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+                raise ValidationError(_("El campo Descripción de la resolución no puede tener más de 100 caracteres."))
             if record.resolution_description_deregistration and len(record.resolution_description_deregistration) > 100:
-                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+                raise ValidationError(_("El campo Descripción de la resolución no puede tener más de 100 caracteres."))
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
@@ -312,7 +347,7 @@ class HrContract(models.Model):
         return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
 
-    def activate_legajo_contract(self, legajo_state='active', eff_date=False):
+    def activate_legajo_contract(self, legajo_state='active', eff_date=False, clean_destination_info=False):
         if self.eff_date and eff_date and self.eff_date > eff_date:
             raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
         vals = {'legajo_state': legajo_state}
@@ -320,9 +355,12 @@ class HrContract(models.Model):
             vals.update({'eff_date': str(eff_date)})
         else:
             vals.update({'eff_date': fields.Date.today()})
+        if clean_destination_info:
+            vals.update({'inciso_dest_id': False, 'operating_unit_dest_id': False})
         self.write(vals)
 
-    def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False):
+    def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False, inciso_dest_id=False,
+                                   operating_unit_dest_id=False):
         if self.eff_date and eff_date and self.eff_date > eff_date:
             raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
         vals = {'legajo_state': legajo_state}
@@ -332,6 +370,9 @@ class HrContract(models.Model):
             vals.update({'eff_date': str(eff_date)})
         else:
             vals.update({'eff_date': fields.Date.today()})
+
+        vals.update({'inciso_dest_id': inciso_dest_id})
+        vals.update({'operating_unit_dest_id': operating_unit_dest_id})
         self.suspend_security().write(vals)
         self.job_ids.deactivate(date_end)
 
@@ -355,11 +396,21 @@ class HrContract(models.Model):
         else:
             return self.env['onsc.legajo.state.square']
 
+            # LEGAJO REPORT UTILITIES
+
+    def _get_role_assignments_sorted(self, only_most_recent=False):
+        current_jobs = self.job_ids.filtered(lambda x: not x.end_date or x.end_date > fields.Date.today())
+
+        role_assignments_sorted = current_jobs.mapped('role_assignment_ids').sorted(key=lambda role_assignment_id: (
+            -to_timestamp(role_assignment_id.date_start)
+        ))
+        if only_most_recent and len(role_assignments_sorted):
+            return role_assignments_sorted[0].role_assignment_id
+        else:
+            return role_assignments_sorted.role_assignment_id
+
 
 class HrContractHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.contract.model.history'
     _parent_model = 'hr.contract'
-
-    def create(self, vals_list):
-        return super(HrContractHistory, self).create(vals_list)

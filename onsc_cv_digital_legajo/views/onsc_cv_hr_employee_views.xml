@@ -39,8 +39,8 @@
                                 <field name="civical_credential_filename" invisible="1" readonly="1"/>
                             </group>
                             <group>
-                                <label for="personal_phone" readonly="1"/>
-                                <div class="content-group row" style="margin-left:5px">
+                                <label for="personal_phone"/>
+                                <div class="content-group row" style="margin-left:5px" attrs="{'invisible': [('personal_phone', '=', False)]}">
                                     <field name="prefix_phone_id" options="{'no_open': True, 'no_create': True}"
                                            style='max-width:75px !important; padding:1px !important;'
                                            class="oe_inline" readonly="1"/>
@@ -48,7 +48,7 @@
                                            readonly="1"/>
                                 </div>
                                 <label for="mobile_phone"/>
-                                <div class="content-group row" style="margin-left:5px">
+                                <div class="content-group row" style="margin-left:5px" attrs="{'invisible': [('mobile_phone', '=', False)]}">
                                     <field name="prefix_mobile_phone_id"
                                            options="{'no_open': True, 'no_create': True}"
                                            style='max-width:75px !important; padding:1px !important;'

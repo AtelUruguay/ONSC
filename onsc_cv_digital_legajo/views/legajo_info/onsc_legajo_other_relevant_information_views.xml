@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_relevant_information_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.relevant.information.form</field>
+        <field name="model">onsc.legajo.relevant.information</field>
+        <field name="arch" type="xml">
+            <form string="Otra información relevante">
+                <sheet>
+                    <group>
+                        <field name="theme"/>
+                        <field name="description"/>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_relevant_information_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.relevant.information.tree</field>
+        <field name="model">onsc.legajo.relevant.information</field>
+        <field name="arch" type="xml">
+            <tree string="Otra información relevante">
+                <field name="theme"/>
+                <field name="description"/>
+                 <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

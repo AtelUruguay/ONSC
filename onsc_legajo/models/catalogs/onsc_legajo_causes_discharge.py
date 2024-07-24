@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -35,9 +35,9 @@ class ONSCLegajoCausesDischarge(models.Model):
     def _check_len_description(self):
         for record in self:
             if record.reason_description and len(record.reason_description) > 50:
-                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+                raise ValidationError(_("El campo Descripción del Motivo no puede tener más de 50 caracteres."))
             if record.resolution_description and len(record.resolution_description) > 100:
-                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+                raise ValidationError(_("El campo Descripción de la resolución no puede tener más de 100 caracteres."))
 
     @api.onchange('is_require_extended')
     def onchange_require_extended(self):
