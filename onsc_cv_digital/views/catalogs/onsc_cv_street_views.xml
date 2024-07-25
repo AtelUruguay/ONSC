@@ -22,7 +22,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="code"/>
+                            <field name="code" readonly="1" force_save="1"/>
                             <field name="state_id" readonly="context.get('is_readonly')" force_save="1"/>
                         </group>
                         <group>
