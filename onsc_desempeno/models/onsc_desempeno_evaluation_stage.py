@@ -16,7 +16,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
     _description = u'Etapa de evaluaciones 360° por UE'
 
     def _get_domain(self, args):
-
         user_contract_id = self.env.user.employee_id.job_id.contract_id
         if self.user_has_groups('onsc_desempeno.group_desempeno_administrador'):
             return args
