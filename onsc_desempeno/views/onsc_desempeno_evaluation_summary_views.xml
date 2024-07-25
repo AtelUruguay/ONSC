@@ -14,7 +14,8 @@
                 <field name="evaluation_start_date"/>
                 <field name="evaluation_end_date"/>
                 <field name="state_summary"/>
-                <button name="button_open_evaluation"  attrs="{'invisible':[('show_button_evaluation', '=',False)]}"
+                <field name="evaluation_id" optional="hide"/>
+                <button name="button_open_evaluation" context="{'evaluation_id': evaluation_id}"  attrs="{'invisible':[('show_button_evaluation', '=',False)]}"
                         type="object" string="Ver Evaluación" icon="fa-edit"/>
              </tree>
         </field>
