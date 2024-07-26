@@ -24,7 +24,7 @@ class ONSCLegajoOtherInformation(models.Model):
     def _check_date(self):
         for record in self:
             if record.entry_date > fields.Date.today():
-                raise ValidationError("La Fecha de ingreso de información debe ser menor o igual al día de hoy")
+                raise ValidationError(_("La Fecha de ingreso de información debe ser menor o igual al día de hoy"))
 
     @api.onchange('entry_date')
     def onchange_date(self):
