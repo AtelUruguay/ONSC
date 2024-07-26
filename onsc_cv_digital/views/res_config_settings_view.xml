@@ -104,6 +104,11 @@
                                             <field name="cv_help_reference"
                                                    class="col-12 col-lg-12"/>
                                         </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Contactos</span>
+                                            <field name="cv_help_contacts"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
