@@ -2,6 +2,7 @@
 
 import logging
 
+from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from zeep import Client
@@ -10,7 +11,6 @@ from zeep.exceptions import Fault
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
-from dateutil.relativedelta import relativedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -21,6 +21,7 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
 
 def diff_month(d1, d2):
     return (d1.year - d2.year) * 12 + d1.month - d2.month
+
 
 def diff_days(d1, d2):
     delta = d1 - d2

@@ -46,6 +46,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
     def _is_group_admin_gh_ue(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue')
+
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoSummaryEvaluation, self).fields_get(allfields, attributes)
