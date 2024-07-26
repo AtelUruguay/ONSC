@@ -17,6 +17,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def _get_domain(self, args):
         user_contract_id = self.env.user.employee_id.job_id.contract_id
+        if self.user_has_groups('onsc_desempeno.group_desempeno_administrador'):
+            return args
         if self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_inciso'):
             args = expression.AND([[('inciso_id', '=', user_contract_id.inciso_id.id), ], args])
         else:
