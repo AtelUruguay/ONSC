@@ -10,7 +10,7 @@ TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
 INDUCTION_TYPES = [('yes', 'Sí'), ('no', 'No')]
 APPROBATION_MODES = [('by_assistance', 'Por asistencia'), ('by_evaluation', 'Por evaluación')]
-COURSE_FIELDS = ['course_title', 'induction_type', 'hours_total', 'end_date']
+COURSE_FIELDS = ['induction_type', 'hours_total', 'end_date']
 CERTIFICATE_FIELDS = ['institution_cert_id', 'subinstitution_cert_id']
 COURSE_TYPES = [('course', 'Curso'), ('workshop', 'Taller'), ('other', 'Otra capacitación')]
 
