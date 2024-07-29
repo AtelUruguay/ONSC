@@ -150,11 +150,11 @@
                 <li style="list-style:none;" t-if="object.internal_course_name">Nombre de la empresa/organismo/institución: <span t-field="object.internal_course_name"/></li>
                 <li style="list-style:none;" t-if="object.state">Estado: <span t-field="object.state"/></li>
                 <li style="list-style:none;" t-if="object.approbation_mode">Modalidad de aprobación: <span t-field="object.approbation_mode"/></li>
-                <li style="list-style:none;" t-if="object.evaluation_str">Nota obtenida: <span t-field="object.evaluation_str"/></li>
-                <li style="list-style:none;" t-if="object.evaluation_number">Representación numérica de nota obtenida: <span t-field="object.evaluation_number"/></li>
+                <li style="list-style:none;" t-if="object.evaluation_str and object.approbation_mode == 'by_evaluation'">Nota obtenida: <span t-field="object.evaluation_str"/></li>
+                <li style="list-style:none;" t-if="object.evaluation_number and object.approbation_mode == 'by_evaluation'">Representación numérica de nota obtenida: <span t-field="object.evaluation_number"/></li>
                 <li style="list-style:none;" t-if="object.evaluation_max_str">Nota máxima posible: <span t-field="object.evaluation_max_str"/></li>
                 <li style="list-style:none;" t-if="object.evaluation_max_number">Representación numérica de nota máxima posible: <span t-field="object.evaluation_max_number"/></li>
-                <li style="list-style:none;" t-if="object.induction_type">Programa de inducción al Organismo: <span t-field="object.induction_type"/></li>
+                <li style="list-style:none;" t-if="object.induction_type and object.course_type ">Programa de inducción al Organismo: <span t-field="object.induction_type"/></li>
                 <li style="list-style:none;" t-if="object.dictation_mode">Modalidad de dictado: <span t-field="object.dictation_mode"/></li>
                 <li style="list-style:none;" t-if="object.hours_total">Carga horaria total (en horas): <span t-field="object.hours_total"/></li>
                 <li style="list-style:none;" t-if="object.knowledge_acquired_ids">Conocimientos adquiridos:
