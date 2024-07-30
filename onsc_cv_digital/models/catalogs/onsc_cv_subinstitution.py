@@ -44,3 +44,8 @@ class ONSCCVSubintitution(models.Model):
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s, Institución: %s" % (self.name,
                                                                               self.institution_id.display_name))
+
+    @api.constrains('name_upper')
+    def _check_name_upper(self):
+        if not self.is_default:
+            super(ONSCCVSubintitution, self)._check_name_upper()

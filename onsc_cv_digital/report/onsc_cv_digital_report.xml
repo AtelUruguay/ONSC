@@ -885,7 +885,7 @@
                         <span t-field="object.subinstitution_cert_id.name"/>
                     </t>
                 </h4>
-                <h4 t-if="object.internal_course">Nombre de la empresa/organismo/institución:
+                <h4 t-if="object.internal_course_name">Nombre de la empresa/organismo/institución:
                     <span t-field="object.internal_course_name"/>
                 </h4>
                 <h4 t-if="object.state">Estado:
