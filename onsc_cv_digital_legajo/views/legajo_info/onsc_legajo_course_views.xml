@@ -5,28 +5,40 @@
         <field name="model">onsc.legajo.course.certificate</field>
         <field name="arch" type="xml">
             <form string="Cursos">
-                <sheet>
+                 <sheet>
                     <group>
                         <group>
-                            <field name="course_type"/>
-                            <field name="course_title"/>
+                            <field name="course_type" required="context.get('is_call_documentary_validation', False) is False"/>
+                            <field name="internal_course"  attrs="{'invisible': [('record_type', '!=', 'course')]}" />
+                            <field name="course_title"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
                             <field name="country_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')]}"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="internal_course" />
-                            <field name="internal_course_name" attrs="{'invisible': [('internal_course', '=', False)]}"/>
-                         <field name="institution_id"
+                            <field name="institution_id" force_save="1"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')]}"
                                    domain="institution_id_domain"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
                                    context="{'default_is_unformal_education': True,'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="subinstitution_id"
-                                   attrs="{'readonly': [('institution_id', '=', False)]}"
+                            <field name="subinstitution_id" force_save="1"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')]}"
                                    domain="[('institution_id', '=', institution_id)]"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
                                    context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
+                            <field name="internal_course_name" attrs="{'invisible': [('internal_course', '=', 'no')]}"/>
+                            <field name="institution_cert_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')]}"/>
+                            <field name="subinstitution_cert_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')]}"
+                                   context="{'default_institution_cert_id': institution_cert_id, 'is_readonly': True}"
+                                   domain="[('institution_cert_id', '=', institution_cert_id)]"/>
+                            <field name="certificate_id"
+                                   domain="certificate_id_domain"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')]}"
+                                   context="{'default_institution_cert_id': institution_cert_id, 'default_subinstitution_cert_id': subinstitution_cert_id, 'is_readonly': True}"/>
+
 
                             <field name="approbation_mode" states='completed'
-                                   attrs="{'readonly': [('record_type', '=', 'certificate')]}"/>
+                                   attrs="{'invisible': ['|',('record_type', '!=', 'course')]}"/>
                             <field name="evaluation_str" states="completed"
                                    attrs="{'invisible': ['|','&amp;',('approbation_mode', '!=', 'by_evaluation'),('record_type', '!=', 'certificate')]}"/>
                             <field name="evaluation_number"
@@ -42,18 +54,24 @@
                             <field name="record_type" invisible="1"/>
                             <field name="institution_id_domain" invisible="1"/>
                             <field name="country_id_domain" invisible="1"/>
-                        </group>
+                       </group>
                         <group>
-                            <field name="state"
-                                   force_save="1"/>
-                            <field name="start_date"/>
-                            <field name="end_date" states="completed"/>
-                            <field name="induction_type"/>
-                            <field name="dictation_mode"/>
-                            <field name="hours_total"/>
-                            <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"/>
+                            <field name="state"/>
+                            <field name="start_date"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
+                            <field name="certificate_start_date"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')]}"/>
+                            <field name="end_date" states="completed"
+                                   attrs="{'invisible': ['|',('record_type', '!=', 'course')]}"/>
+                            <field name="induction_type"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
+                            <field name="dictation_mode"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
+                            <field name="hours_total"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
+                            <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"
+                                required="context.get('is_call_documentary_validation', False) is False"/>
                             <field name="digital_doc_file" filename="digital_doc_filename" states='completed'
-                                   widget="binary"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="digital_doc_filename" invisible="1"/>
                         </group>
@@ -67,7 +85,7 @@
                         </page>
                     </notebook>
                 </sheet>
-            </form>
+             </form>
         </field>
     </record>
 
