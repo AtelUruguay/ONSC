@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -15,7 +15,7 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
     def _check_end_date(self):
         for record in self:
             if record.end_date < fields.Date.today():
-                raise ValidationError("La fecha fin debe ser mayor o igual a la fecha actual")
+                raise ValidationError(_("La fecha fin debe ser mayor o igual a la fecha actual"))
 
     def action_confirm(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
