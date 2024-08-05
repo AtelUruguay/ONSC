@@ -261,6 +261,13 @@
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="35"/>
 
+        <menuitem id="onsc_cv_generic_academic_program_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_generic_academic_program_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="36"/>
+
+
     <menuitem id="onsc_cv_partner_menu"
               name="Contactos"
               action="onsc_cv_action_res_partner"

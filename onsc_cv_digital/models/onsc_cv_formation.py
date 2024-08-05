@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
-
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+
+from odoo import fields, models, api, _
 
 
 class ONSCCVFormationBasic(models.Model):
@@ -54,7 +54,7 @@ class ONSCCVFormationAdvanced(models.Model):
     _order = 'start_date desc'
 
     advanced_study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio avanzado', required=True)
-    academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)
+    academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico')
     homologated_title = fields.Selection(string=u'¿Su título está revalidado/homologado en Uruguay?',
                                          selection=[('yes', u'Si'), ('no', u'No')])
     homologated_title_date = fields.Date(string="Fecha de revalidación", )
@@ -101,6 +101,19 @@ class ONSCCVFormationAdvanced(models.Model):
                                               required=True,
                                               ondelete='restrict',
                                               store=True)
+    show_generic_academic_program = fields.Boolean('Ver programa academico genrico',
+                                                   compute='_compute_show_generic_academic_program')
+    name_generic_academic_program = fields.Char('Nombre específico del programa académico')
+    generic_academic_program_id = fields.Many2one('onsc.cv.generic.academic.program',
+                                                  string=u'Programa académico genérico')
+
+    @api.depends('institution_id')
+    def _compute_show_generic_academic_program(self):
+        for record in self:
+            if record.institution_id.without_academic_program:
+                record.show_generic_academic_program = True
+            else:
+                record.show_generic_academic_program = False
 
     @api.onchange('homologated_title_date')
     def onchange_homologated_title_date(self):
