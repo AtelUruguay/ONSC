@@ -35,14 +35,13 @@
                     <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
-                            <field name="year" required="1"/>
+                            <field name="year" required="1" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
                             <field name="start_date" required="1"  attrs="{'readonly': [('is_edit_start_date', '=', False)]}"/>
                             <field name="start_date_max" required="1" attrs="{'readonly': [('is_edit_start_date_max', '=', False)]}"/>
                             <field name="end_date_max" required="1" attrs="{'readonly': [('is_edit_end_date_max', '=', False)]}"/>
                             <field name="end_date" required="1" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
-                            <field name="is_pilot"/>
+                            <field name="is_pilot" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
                             <field name="active" invisible="1" />
-<!--                            <field name="should_disable_form_edit" invisible="1"/>-->
                             <field name="is_edit_start_date" invisible="1"/>
                             <field name="is_edit_start_date_max" invisible="1"/>
                             <field name="is_edit_end_date_max" invisible="1"/>
