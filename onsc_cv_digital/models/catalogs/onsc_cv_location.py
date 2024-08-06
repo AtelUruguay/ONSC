@@ -18,8 +18,10 @@ class ONSCCVLocation(models.Model):
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
                                tracking=True,
                                domain="[('country_id','=',country_id)]")
-    other_code = fields.Integer(string=u'Otro código', tracking=True)
-    code = fields.Char(string=u'Código', size=10)
+    other_code = fields.Integer(string=u'Otro código', tracking=True,
+                                default=lambda self: self.env['ir.sequence'].next_by_code('onsc.cv.location.other_code'))
+    code = fields.Char(string=u'Código', size=10,
+                       default=lambda self: self.env['ir.sequence'].next_by_code('onsc.cv.location.code'))
 
     @api.constrains('code')
     def _check_code_location(self):
