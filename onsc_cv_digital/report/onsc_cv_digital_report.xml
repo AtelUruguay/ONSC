@@ -648,8 +648,8 @@
                             <span t-field="object.egress_date" t-options='{"format": "dd/MM/yyyy"}'/>
                         </t>
                         :
-                        <t t-if="not object.institution_id.without_academic_program"><span t-field="object.academic_program_id.name"/></t>
-                        <t t-if="object.institution_id.without_academic_program"><span t-field="object.generic_academic_program_id.name"/></t>
+                        <t t-if="not object.institution_id.is_without_academic_program"><span t-field="object.academic_program_id.name"/></t>
+                        <t t-if="object.institution_id.is_without_academic_program"><span t-field="object.generic_academic_program_id.name"/></t>
                     </h4>
                 </li>
                 <h4 t-if="object.institution_id">
@@ -1493,10 +1493,10 @@
                 <h4 t-if="object.description">Descripción:
                     <span t-field="object.description"/>
                 </h4>
-                <h4 t-if="not object.institution_id.without_academic_program">Programa académico:
+                <h4 t-if="not object.institution_id.is_without_academic_program">Programa académico:
                      <span t-field="object.academic_program_id.name"/>
                  </h4>
-                <h4 t-if="object.institution_id.without_academic_program">Programa académico genérico:
+                <h4 t-if="object.institution_id.is_without_academic_program">Programa académico genérico:
                     <span t-field="object.generic_academic_program_id.name"/>
                 </h4>
                 <h4 t-if="object.tutor_type_id">Tipo/clase:

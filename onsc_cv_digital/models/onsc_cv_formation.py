@@ -110,10 +110,7 @@ class ONSCCVFormationAdvanced(models.Model):
     @api.depends('institution_id')
     def _compute_show_generic_academic_program(self):
         for record in self:
-            if record.institution_id.without_academic_program:
-                record.show_generic_academic_program = True
-            else:
-                record.show_generic_academic_program = False
+            record.show_generic_academic_program = record.institution_id.is_without_academic_program
 
     @api.onchange('homologated_title_date')
     def onchange_homologated_title_date(self):
