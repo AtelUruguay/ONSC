@@ -15,6 +15,7 @@ class ONSCCVStreet(models.Model):
     cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', ondelete='restrict',
                                      domain="[('state_id','=',state_id)]", required=True)
     street = fields.Char(string="Calle", required=True)
+    active = fields.Boolean(string='Activo', default=True, tracking=True)
 
     @api.onchange('state_id')
     def _onchange_state_id(self):

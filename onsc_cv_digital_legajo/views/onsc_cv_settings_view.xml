@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_cv_settings_view_form_inherit" model="ir.ui.view">
+            <field name="name">onsc.cv.settings.view.form.inherit.onsc.cv.digital.legajo</field>
+            <field name="model">onsc.cv.settings</field>
+            <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_settings_view_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                 <xpath expr="//div[@id='cv_help_settings']/div[@class='o_setting_right_pane']/div[last()]" position="after">
+                     <div class="text-muted content-group mt16">
+                        <span>Contactos</span>
+                        <field name="cv_help_contacts"
+                                   class="col-12 col-lg-12"/>
+                     </div>
+                </xpath>
+            </field>
+    </record>
+
+
+</odoo>

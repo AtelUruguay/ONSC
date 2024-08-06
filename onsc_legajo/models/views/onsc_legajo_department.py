@@ -146,7 +146,7 @@ FROM
     NULL AS department_id,
     NULL AS start_date,
     NULL AS end_date,
-	NULL AS is_uo_manager
+    NULL AS is_uo_manager
 FROM
 (SELECT
     contract.legajo_id AS legajo_id,
@@ -157,12 +157,12 @@ FROM
     contract.employee_id,
     'active' AS type,
     (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
-	contract.inciso_origin_id AS inciso_origin_id,
+    contract.inciso_origin_id AS inciso_origin_id,
     contract.operating_unit_origin_id AS operating_unit_origin_id,
-	contract.inciso_dest_id AS inciso_dest_id,
+    contract.inciso_dest_id AS inciso_dest_id,
     contract.operating_unit_dest_id AS operating_unit_dest_id,
     contract.regime_id AS regime_id,
-	contract.commission_regime_id AS commission_regime_id,
+    contract.commission_regime_id AS commission_regime_id,
     contract.descriptor1_id AS descriptor1_id,
     contract.descriptor2_id AS descriptor2_id,
     contract.descriptor3_id AS descriptor3_id,
@@ -192,12 +192,12 @@ FROM
     contract.employee_id,
     'active' AS type,
     (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
-	contract.inciso_origin_id AS inciso_origin_id,
+    contract.inciso_origin_id AS inciso_origin_id,
     contract.operating_unit_origin_id AS operating_unit_origin_id,
-	contract.inciso_dest_id AS inciso_dest_id,
+    contract.inciso_dest_id AS inciso_dest_id,
     contract.operating_unit_dest_id AS operating_unit_dest_id,
     contract.regime_id AS regime_id,
-	contract.commission_regime_id AS commission_regime_id,
+    contract.commission_regime_id AS commission_regime_id,
     contract.descriptor1_id AS descriptor1_id,
     contract.descriptor2_id AS descriptor2_id,
     contract.descriptor3_id AS descriptor3_id,
@@ -217,9 +217,9 @@ SELECT
     (SELECT department_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS department_id,
     (SELECT start_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS start_date,
     (SELECT end_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS end_date,
-	(SELECT is_uo_manager FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS is_uo_manager
+    (SELECT is_uo_manager FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS is_uo_manager
 FROM
- (SELECT
+(SELECT
     contract.legajo_id AS legajo_id,
     contract.id AS contract_id,
     contract.legajo_state AS contract_legajo_state,
@@ -228,12 +228,12 @@ FROM
     contract.employee_id,
     'active' AS type,
     (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
-	contract.inciso_origin_id AS inciso_origin_id,
+    contract.inciso_origin_id AS inciso_origin_id,
     contract.operating_unit_origin_id AS operating_unit_origin_id,
-	contract.inciso_dest_id AS inciso_dest_id,
+    contract.inciso_dest_id AS inciso_dest_id,
     contract.operating_unit_dest_id AS operating_unit_dest_id,
     contract.regime_id AS regime_id,
-	contract.commission_regime_id AS commission_regime_id,
+    contract.commission_regime_id AS commission_regime_id,
     contract.descriptor1_id AS descriptor1_id,
     contract.descriptor2_id AS descriptor2_id,
     contract.descriptor3_id AS descriptor3_id,

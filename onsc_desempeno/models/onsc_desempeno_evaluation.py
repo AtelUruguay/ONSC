@@ -210,20 +210,28 @@ class ONSCDesempenoEvaluation(models.Model):
 
             if self._is_group_admin_gh_inciso():
                 if evaluation_type == 'environment_evaluation':
-                    args_extended = expression.OR(
-                        [[('evaluated_id', '!=', self.env.user.employee_id.id),('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+                    args_extended = expression.OR([[
+                        ('evaluated_id', '!=', self.env.user.employee_id.id),
+                        ('inciso_id', '=', inciso_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
                 else:
-                    args_extended = expression.OR(
-                        [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+                    args_extended = expression.OR([[
+                        ('inciso_id', '=', inciso_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
             elif self._is_group_admin_gh_ue():
                 if evaluation_type == 'environment_evaluation':
-                    args_extended = expression.OR(
-                        [[('evaluated_id', '!=', self.env.user.employee_id.id),('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
-                         args_extended])
+                    args_extended = expression.OR([[
+                        ('evaluated_id', '!=', self.env.user.employee_id.id),
+                        ('operating_unit_id', '=', operating_unit_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
                 else:
-                    args_extended = expression.OR(
-                        [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
-                         args_extended])
+                    args_extended = expression.OR([[
+                        ('operating_unit_id', '=', operating_unit_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
         if evaluation_type == 'environment_evaluation':
             args_extended = expression.OR([[
                 ('evaluator_id', '=', self.env.user.employee_id.id),
@@ -484,7 +492,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 raise ValidationError(_('La cantidad de evaluadores de entorno debe ser menor a 10!'))
             environment_employee = {}
             for environment_id in rec.full_environment_ids:
-                environment_employee[environment_id.employee_id.id] = environment_employee.get(environment_id.employee_id.id, 0) + 1
+                environment_employee[environment_id.employee_id.id] = environment_employee.get(
+                    environment_id.employee_id.id, 0) + 1
                 if environment_employee[environment_id.employee_id.id] > 1:
                     raise ValidationError(_('El funcionario %s no puede ser seleccionado en más de una ocasión, '
                                             'favor seleccionar otra persona') % (environment_id.employee_id.full_name))
