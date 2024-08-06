@@ -568,7 +568,7 @@ class ONSCCVDigitalCall(models.Model):
             call_number = result.get('call_number')
             calls = self.search([('call_number', '=', call_number)])
             if len(calls):
-                calls._generate_json(calls)
+                calls._generate_json(call_number)
 
     # WS Postulacion
     @api.model
