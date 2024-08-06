@@ -54,17 +54,6 @@
         </field>
     </record>
 
-    <record id="onsc_catalog_occupation_form" model="ir.ui.view">
-        <field name="name">onsc.catalog.occupation.form.desempeno.inherit</field>
-        <field name="model">onsc.catalog.occupation</field>
-        <field name="inherit_id" ref="onsc_catalog.onsc_catalog_occupation_form"/>
-        <field name="arch" type="xml">
-            <field name="approve_cgn_date" position="after">
-                <field name="level_id" invisible="1"/>
-            </field>
-        </field>
-    </record>
-
     <record id='onsc_desempeno_level_action' model='ir.actions.act_window'>
         <field name="name">Niveles</field>
         <field name="res_model">onsc.desempeno.level</field>

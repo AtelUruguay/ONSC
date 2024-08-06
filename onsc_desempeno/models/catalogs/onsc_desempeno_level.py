@@ -48,8 +48,3 @@ class ONSCDesempenoLevelLine(models.Model):
          u'La combinación de nivel jerárquico y responsable UO solo puede estar asociada a un nivel'),
     ]
 
-
-class ONSCCatalogOccupation(models.Model):
-    _inherit = 'onsc.catalog.occupation'
-
-    level_id = fields.Many2one('onsc.desempeno.level', string="Nivel de requerimiento")

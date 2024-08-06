@@ -96,7 +96,6 @@ class ONSCDesempenoConsolidated(models.Model):
         string='Puesto actual',
         help=u'Usado para en caso de cambio de puesto saber el Puesto actual '
              'en el que se encuentra el Funcionario')
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)

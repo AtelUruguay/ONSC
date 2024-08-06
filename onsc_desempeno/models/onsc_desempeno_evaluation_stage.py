@@ -274,7 +274,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
                         'inciso_id': res.inciso_id.id,
                         'operating_unit_id': res.operating_unit_id.id,
                         'uo_id': res.uo_id.id,
-                        'occupation_id': res.occupation_id.id,
                         'level_id': res.level_id.id,
                         'evaluation_stage_id': res.evaluation_stage_id.id,
                         'evaluation_type': evaluation_type,
