@@ -7,7 +7,8 @@ class ONSCLegajoEmergency(models.Model):
     _name = 'onsc.legajo.emergency'
     _description = 'Emergencia'
 
-    code = fields.Char(u"Código", required=True)
+    code = fields.Char(u"Código", required=True,
+                       default=lambda self: self.env['ir.sequence'].next_by_code('onsc.legajo.emergency.code'))
     name = fields.Char("Nombre de la emergencia", required=True)
     phone = fields.Char(u"Teléfono")
     active = fields.Boolean('Activo', default=True)

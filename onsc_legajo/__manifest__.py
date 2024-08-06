@@ -30,6 +30,7 @@ ONSC - Legajo
         'data/onsc_legajo_integration_error_data.xml',
         'data/mail_template_data.xml',
         'data/onsc_legajo_role_electoral_act_data.xml',
+        'data/onsc_legajo_data.xml',
 
         'wizard/mail_wizard_invite_views.xml',
 
