@@ -5,7 +5,6 @@
             <field name="name">Calle: Código</field>
             <field name="code">onsc.cv.street.code</field>
             <field name="prefix"></field>
-            <field name="padding">5</field>
             <field name="number_next">1</field>
             <field name="number_increment">1</field>
             <field name="company_id" eval="False"/>
@@ -15,7 +14,6 @@
             <field name="name">Ciudad/Localidad:Código</field>
             <field name="code">onsc.cv.location.code</field>
             <field name="prefix"></field>
-            <field name="padding">5</field>
             <field name="number_next">1</field>
             <field name="number_increment">1</field>
             <field name="company_id" eval="False"/>
@@ -25,7 +23,6 @@
             <field name="name">Ciudad/Localidad:Otro código</field>
             <field name="code">onsc.cv.location.other_code</field>
             <field name="prefix"></field>
-            <field name="padding">5</field>
             <field name="number_next">1</field>
             <field name="number_increment">1</field>
             <field name="company_id" eval="False"/>
