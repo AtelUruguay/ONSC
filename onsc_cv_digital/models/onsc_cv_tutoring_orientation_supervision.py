@@ -55,6 +55,11 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     name_generic_academic_program = fields.Char('Nombre específico del programa académico')
     generic_academic_program_id = fields.Many2one('onsc.cv.generic.academic.program',
                                                   string=u'Programa académico genérico')
+    # UTILITARIO PARA USAR EN VISTA TREE
+    displayed_academic_program = fields.Char(
+        string='Programa académico',
+        store=True,
+        compute='_compute_displayed_academic_program')
 
     @api.depends('orientation_type_id')
     def _compute_is_orientation_type_pie(self):
@@ -72,6 +77,14 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     def _compute_show_generic_academic_program(self):
         for record in self:
             record.show_generic_academic_program = record.institution_id.is_without_academic_program
+
+    @api.depends('generic_academic_program_id', 'academic_program_id')
+    def _compute_displayed_academic_program(self):
+        for rec in self:
+            if rec.show_generic_academic_program and rec.generic_academic_program_id:
+                rec.displayed_academic_program = rec.generic_academic_program_id.display_name
+            else:
+                rec.displayed_academic_program = rec.academic_program_id.display_name
 
     @api.onchange('is_tutoring_finished')
     def onchange_is_tutoring_finished(self):

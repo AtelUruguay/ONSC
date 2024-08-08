@@ -177,7 +177,7 @@
                 <field name="country_id" string="País" optional="hide"/>
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
-                <field name="academic_program_id" optional="show"/>
+                <field name="displayed_academic_program" optional="show"/>
                 <field name="state" optional="show"/>
                 <field name="scholarship" optional="hide"/>
                 <field name="max_scholarship" optional="hide"/>

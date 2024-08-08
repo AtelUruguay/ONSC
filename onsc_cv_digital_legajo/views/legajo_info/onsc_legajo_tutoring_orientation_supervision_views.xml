@@ -96,7 +96,7 @@
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
                 <field name="dependence" optional="hide"/>
-                <field name="academic_program_id" optional="show"/>
+                <field name="displayed_academic_program" optional="show"/>
                 <field name="postgraduate_type" optional="hide"/>
                 <field name="student_name" optional="hide"/>
                 <field name="language_id" optional="hide"/>
