@@ -8,7 +8,7 @@ class ONSCCVStreet(models.Model):
     _description = 'Calles para Uruguay'
     _rec_name = 'street'
 
-    code = fields.Char(string=u"Código", required=False)
+    code = fields.Char(string=u"Código", required=True)
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
                                domain="[('country_id.code','=','UY')]")
     cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', ondelete='restrict',
@@ -23,7 +23,7 @@ class ONSCCVStreet(models.Model):
 
     @api.model
     def create(self, values):
-        if 'code' not in values:
+        if 'code' not in values or ('code' in values and values.get('code') is False):
             values['code'] = self.env['ir.sequence'].next_by_code('onsc.cv.street.code')
         return super(ONSCCVStreet, self).create(values)
 
