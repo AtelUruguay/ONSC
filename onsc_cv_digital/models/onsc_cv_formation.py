@@ -101,16 +101,30 @@ class ONSCCVFormationAdvanced(models.Model):
                                               required=True,
                                               ondelete='restrict',
                                               store=True)
-    show_generic_academic_program = fields.Boolean('Ver programa academico genrico',
+    show_generic_academic_program = fields.Boolean('Ver programa academico genreico',
                                                    compute='_compute_show_generic_academic_program')
     name_generic_academic_program = fields.Char('Nombre específico del programa académico')
     generic_academic_program_id = fields.Many2one('onsc.cv.generic.academic.program',
                                                   string=u'Programa académico genérico')
+    # UTILITARIO PARA USAR EN VISTA TREE
+    displayed_academic_program = fields.Char(
+        string='Programa académico',
+        store=True,
+        compute='_compute_displayed_academic_program')
 
     @api.depends('institution_id')
     def _compute_show_generic_academic_program(self):
         for record in self:
             record.show_generic_academic_program = record.institution_id.is_without_academic_program
+
+
+    @api.depends('generic_academic_program_id', 'academic_program_id')
+    def _compute_displayed_academic_program(self):
+        for rec in self:
+            if rec.show_generic_academic_program and rec.generic_academic_program_id:
+                rec.displayed_academic_program = rec.generic_academic_program_id.display_name
+            else:
+                rec.displayed_academic_program = rec.academic_program_id.display_name
 
     @api.onchange('homologated_title_date')
     def onchange_homologated_title_date(self):
