@@ -8,7 +8,7 @@ class ONSCCVStreet(models.Model):
     _description = 'Calles para Uruguay'
     _rec_name = 'street'
 
-    code = fields.Char(string=u"Código", required=True)
+    code = fields.Char(string=u"Código", required=False)
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
                                domain="[('country_id.code','=','UY')]")
     cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', ondelete='restrict',
