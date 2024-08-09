@@ -324,14 +324,23 @@ class ONSCDesempenoEvaluationList(models.Model):
                 ('evaluation_stage_id', '=', evaluation_stage.id),
                 ('state', '=', 'in_progress')
             ]):
-                managment_job = Jobs.get_management_job_from_department(evaluation_list.manager_uo_id)
-                if managment_job:
+                ('contract_id.legajo_state', 'in', ['active', 'incoming_commission']),
+                ('contract_id.descriptor1_id', 'not in', exluded_descriptor1_ids)
+                manage_job = Jobs.get_manage_job_from_department(evaluation_list.manager_uo_id)
+
+                contract_state_valid = manage_job and manage_job.contract_id.legajo_state in [
+                    'active',
+                    'incoming_commission'
+                ]
+                contract_not_excluded = manage_job and manage_job.contract_id.descriptor1_id not in exluded_descriptor1_ids
+                
+                if manage_job and manage_job.id not in evaluation_current_job_ids and contract_state_valid and contract_not_excluded:
                     evaluation_vals = {
                         'evaluation_stage_id': evaluation_stage.id,
                         'department_id': parent_manager_department.id,
-                        'line_ids': [(0, 0, {'job_id': managment_job.id})]
+                        'line_ids': [(0, 0, {'job_id': manage_job.id})]
                     }
-                evaluation_lists |= EvaluationList.create(evaluation_vals)
+                    evaluation_lists |= EvaluationList.create(evaluation_vals)
         return evaluation_lists
 
     def _get_evaluation_list_departments(self, evaluation_stages):
