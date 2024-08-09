@@ -117,7 +117,6 @@ class ONSCCVFormationAdvanced(models.Model):
         for record in self:
             record.show_generic_academic_program = record.institution_id.is_without_academic_program
 
-
     @api.depends('generic_academic_program_id', 'academic_program_id')
     def _compute_displayed_academic_program(self):
         for rec in self:
@@ -192,6 +191,13 @@ class ONSCCVFormationAdvanced(models.Model):
             self.knowledge_thesis_ids = self.knowledge_thesis_ids[:5]
             return cv_warning(_(u"Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
+    @api.onchange('institution_id')
+    def onchange_institution_id(self):
+        if self.institution_id and not self.institution_id.is_without_academic_program:
+            self.generic_academic_program_id = False
+            self.name_generic_academic_program = False
+        super(ONSCCVFormationAdvanced, self).onchange_institution_id()
+
     def _get_json_dict(self):
         json_dict = super(ONSCCVFormationAdvanced, self)._get_json_dict()
         json_dict.extend([
@@ -226,6 +232,8 @@ class ONSCCVFormationAdvanced(models.Model):
             ("knowledge_thesis_ids", ['id', 'name']),
             ("area_related_education_ids", self.env['onsc.cv.area.related.education']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
+            ("generic_academic_program_id", ['id', 'name']),
+            "name_generic_academic_program",
         ])
         return json_dict
 

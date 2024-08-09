@@ -104,6 +104,13 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         self.other_tutor_type = False
         self.orientation_type_id = False
 
+    @api.onchange('institution_id')
+    def onchange_institution_id(self):
+        if self.institution_id and not self.institution_id.is_without_academic_program:
+            self.generic_academic_program_id = False
+            self.name_generic_academic_program = False
+        super(ONSCCVTutorialOrientationSupervision, self).onchange_institution_id()
+
     @api.onchange('divulgation_media_id')
     def onchange_divulgation_media_id(self):
         self.other_divulgation_media = False
@@ -145,7 +152,8 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
             ("area_ids", self.env['onsc.cv.education.area.tutoring']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
             ("knowledge_acquired_ids", ['id', 'name']),
-            ("generic_academic_program_id", ['id', 'name'])
+            ("generic_academic_program_id", ['id', 'name']),
+            "name_generic_academic_program",
         ])
         return json_dict
 
