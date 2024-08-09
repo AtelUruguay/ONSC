@@ -326,7 +326,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             ]):
                 ('contract_id.legajo_state', 'in', ['active', 'incoming_commission']),
                 ('contract_id.descriptor1_id', 'not in', exluded_descriptor1_ids)
-                manage_job = Jobs.get_manage_job_from_department(evaluation_list.manager_uo_id)
+                manage_job = Jobs.get_management_job_from_department(evaluation_list.manager_uo_id)
 
                 contract_state_valid = manage_job and manage_job.contract_id.legajo_state in [
                     'active',
