@@ -14,4 +14,4 @@ class ONSCCVGenericAcademicProgram(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del programas académicos ser único'), ]
+         u'El nombre del programa académico debe ser único'), ]

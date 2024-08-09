@@ -660,6 +660,9 @@
                         </t>
                     </t>
                 </h4>
+                <h4 t-if="object.institution_id.is_without_academic_program and object.name_generic_academic_program">Nombre específico del programa académico:
+                    <span t-field="object.name_generic_academic_program"/>
+                </h4>
                 <h4 t-if="object.advanced_study_level_id">Nivel de estudio:
                     <span t-field="object.advanced_study_level_id.name"/>
                 </h4>
@@ -1489,6 +1492,9 @@
                     <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
                         <span t-field="object.subinstitution_id.name"/>
                     </t>
+                </h4>
+                <h4 t-if="object.institution_id.is_without_academic_program and object.name_generic_academic_program">Nombre específico del programa académico:
+                    <span t-field="object.name_generic_academic_program"/>
                 </h4>
                 <h4 t-if="object.description">Descripción:
                     <span t-field="object.description"/>
