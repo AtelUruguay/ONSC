@@ -9,7 +9,7 @@ class ONSCCVGenericAcademicProgram(models.Model):
     _order = 'name'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string='Nombre del programas académicos', required=True)
+    name = fields.Char(string='Nombre del programa académico', required=True)
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
