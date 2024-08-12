@@ -312,6 +312,35 @@ class ONSCDesempenoEvaluationList(models.Model):
                 }])
             evaluation_vals['line_ids'] = line_vals
             evaluation_lists |= EvaluationList.create(evaluation_vals)
+
+        for evaluation_list in EvaluationList.search([
+            ('operating_unit_id', '=', evaluation_stage.operating_unit_id.id),
+            ('state', '=', 'in_progress'),
+        ]):
+            parent_manager_department = evaluation_list.manager_uo_id.parent_id
+            if parent_manager_department and not EvaluationList.search_count([
+                ('operating_unit_id', '=', evaluation_list.operating_unit_id.id),
+                ('department_id', '=', parent_manager_department.id),
+                ('evaluation_stage_id', '=', evaluation_stage.id),
+                ('state', '=', 'in_progress')
+            ]):
+                ('contract_id.legajo_state', 'in', ['active', 'incoming_commission']),
+                ('contract_id.descriptor1_id', 'not in', exluded_descriptor1_ids)
+                manage_job = Jobs.get_management_job_from_department(evaluation_list.manager_uo_id)
+
+                contract_state_valid = manage_job and manage_job.contract_id.legajo_state in [
+                    'active',
+                    'incoming_commission'
+                ]
+                contract_not_excluded = manage_job and manage_job.contract_id.descriptor1_id not in exluded_descriptor1_ids
+                
+                if manage_job and manage_job.id not in evaluation_current_job_ids and contract_state_valid and contract_not_excluded:
+                    evaluation_vals = {
+                        'evaluation_stage_id': evaluation_stage.id,
+                        'department_id': parent_manager_department.id,
+                        'line_ids': [(0, 0, {'job_id': manage_job.id})]
+                    }
+                    evaluation_lists |= EvaluationList.create(evaluation_vals)
         return evaluation_lists
 
     def _get_evaluation_list_departments(self, evaluation_stages):
