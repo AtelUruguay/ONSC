@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
-from odoo import fields, models, api, _
+from odoo import fields, models, api, _, Command
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
@@ -109,10 +109,9 @@ class ONSCLegajoCambioUO(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
-    state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False)
+    legajo_state_id = fields.Many2one(
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones', copy=False)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
 
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'cambio_uo_id',
@@ -184,7 +183,7 @@ class ONSCLegajoCambioUO(models.Model):
 
     @api.depends('contract_id')
     def _compute_security_job_id_domain(self):
-        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
+        user_level = self.env.user.employee_id.job_id.sequence
         for rec in self:
             domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
@@ -204,10 +203,10 @@ class ONSCLegajoCambioUO(models.Model):
             if record.job_id and record.date_start < record.job_id.start_date:
                 raise ValidationError(_("La fecha desde debe ser mayor o igual a la fecha del puesto actual"))
 
-    @api.constrains("department_id", "job_id", "security_job_id", "state_id", "is_responsable_uo")
+    @api.constrains("department_id", "job_id", "security_job_id", "legajo_state_id", "is_responsable_uo")
     def _check_department_id(self):
         for record in self:
-            is_same_state_id = record.contract_id.state_id == record.state_id
+            is_same_state_id = record.contract_id.legajo_state_id == record.legajo_state_id
             is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
             is_same_security = record.job_id.security_job_id == record.security_job_id and is_same_manager
@@ -218,16 +217,22 @@ class ONSCLegajoCambioUO(models.Model):
     def _check_security_job_id(self):
         Job = self.env['hr.job'].sudo()
         for record in self:
+            # SI ESTOY QUERIENDO MARCAR COMO RESPONSABLE Y YA EXISTE OTRO PUESTO CUMPLIENDO ESA FUNCION EN ESE DEPARTAMENTO TRANCAR
+            # CHEQUEAR SOLAMENTE SI ESTOY HACIENDO MOVIMIENTO DE UO O SEGURIDAD()
             is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
-            is_same_security = record.job_id.security_job_id == record.security_job_id and is_same_manager
-            cond1 = not is_same_department or not is_same_security
-            if cond1 and record.is_responsable_uo and not Job.is_job_available_for_manager(
+            is_same_managersecurity = record.job_id.security_job_id == record.security_job_id and is_same_manager
+            if (not is_same_department or not is_same_managersecurity) and record.is_responsable_uo and not Job.is_this_job_available_for_manager(
+                    record.job_id,
                     record.department_id,
-                    record.date_start,
-                    record.contract_id.nro_doc
-            ):
+                    record.date_start):
                 raise ValidationError(_("No se puede tener más un responsable para la misma UO"))
+
+            # cond1 = not is_same_department or not is_same_security
+            # if cond1 and record.is_responsable_uo and not Job.is_job_available_for_manager(
+            #         record.department_id,
+            #         record.date_start):
+            #     raise ValidationError(_("No se puede tener más un responsable para la misma UO"))
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -277,7 +282,7 @@ class ONSCLegajoCambioUO(models.Model):
     def onchange_contract_id(self):
         self.occupation_id = False
         self.security_job_id = False
-        self.state_id = self.contract_id.state_id.id
+        self.legajo_state_id = self.contract_id.legajo_state_id.id
         if not self.contract_id.regime_id.is_manager:
             self.is_responsable_uo = False
 
@@ -381,23 +386,24 @@ class ONSCLegajoCambioUO(models.Model):
         if (self.department_id.id and not self.security_job_id.id) or (self.security_job_id.id and not self.department_id.id):
             raise ValidationError(_("Los valores de UO y Seguridad de puesto deben estar ambos vacíos o definidos. "
                                     "No se permite esa combinación con uno de los dos sin definir."))
-        if not self.department_id and not self.security_job_id and not self.state_id:
+        if not self.department_id and not self.security_job_id and not self.legajo_state_id:
             raise ValidationError(_("Si los valores de UO y Seguridad de puesto no están definidos "
                                     "al menos el Departamento donde desempeña funciones debe estar establecido."))
         self._check_security_job_id()
         self._check_role_assignment()
 
     def _check_role_assignment(self):
-        RoleAssignment = self.env['onsc.legajo.job.role.assignment'].with_context(is_from_menu=False)
+        JobRoleAssignment = self.env['onsc.legajo.job.role.assignment'].with_context(is_from_menu=False)
+        # TODO solo debo chequear si estoy cambiando de UO o estoy cambiando el flag de Responsable
         for record in self:
-            #is_same_department = record.job_id.department_id == record.department_id
+            is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
-            is_same_security = record.job_id.security_job_id == record.security_job_id and is_same_manager
-            if not is_same_security and RoleAssignment.search_count([
+            if (not is_same_manager or not is_same_department) and JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
-                '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
+                '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())
+            ]):
                 raise ValidationError(
-                    _("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio. "
+                    _("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
                       "Debe actualizar la situación de la asignación de función previo a esta acción."))
 
     def _action_confirm(self):
@@ -408,9 +414,12 @@ class ONSCLegajoCambioUO(models.Model):
         is_change_department_id = self.job_id.department_id != self.department_id
         is_same_manager = self.job_id.is_uo_manager == self.is_responsable_uo
         is_change_security_job_id = self.job_id.security_job_id != self.security_job_id or not is_same_manager
-        is_change_state_id = self.contract_id.state_id != self.state_id
+        is_change_state_id = self.contract_id.legajo_state_id != self.legajo_state_id
 
         if is_change_department_id or is_change_security_job_id:
+            job_role_assignment_values = self._get_job_role_assignment_values(
+                self.job_id,
+                self.date_start)
             if self.job_id.start_date == self.date_start:
                 self.suspend_security().job_id.with_context(is_copy_job=True).deactivate(self.date_start)
                 self.suspend_security().job_id.write({'active': False})
@@ -420,21 +429,39 @@ class ONSCLegajoCambioUO(models.Model):
             else:
                 self.suspend_security().job_id.with_context(is_copy_job=True).deactivate(
                     self.date_start - relativedelta(days=1))
+
             new_job = Job.suspend_security().with_context(is_copy_job=True).create_job(
                 self.contract_id,
                 self.department_id,
                 self.date_start,
                 self.security_job_id,
                 is_uo_manager=self.is_responsable_uo,
-                source_job=self.job_id
+                source_job=self.job_id,
             )
+            if len(job_role_assignment_values):
+                new_job.write({'role_assignment_ids': job_role_assignment_values})
         else:
             new_job = Job
         if is_change_state_id:
             self.contract_id.write({
-                'state_id': self.state_id.id,
+                'legajo_state_id': self.legajo_state_id.id,
                 'eff_date': fields.Date.today()
             })
         self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
                     'error_message_synchronization': warning_message})
         return new_job
+
+    def _get_job_role_assignment_values(self, job, date_start):
+        job_role_assignment_values = []
+        for role_assignment_id in job.role_assignment_ids:
+            if role_assignment_id.date_end is False or role_assignment_id.date_end > date_start:
+                job_role_assignment_values.append(
+                    Command.create({
+                        'role_assignment_id': role_assignment_id.role_assignment_id.id,
+                        'date_start': date_start,
+                        'date_end': role_assignment_id.date_end,
+                        'role_assignment_file': role_assignment_id.role_assignment_file,
+                        'role_assignment_filename': role_assignment_id.role_assignment_filename
+                    })
+                )
+        return job_role_assignment_values

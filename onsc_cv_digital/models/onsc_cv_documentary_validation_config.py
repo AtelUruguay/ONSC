@@ -19,7 +19,6 @@ class ONSCCVFileValidationConfig(models.Model):
             ('model_id.model', '!=', 'onsc.cv.information.contact'),
             ('model_id.model', '!=', 'onsc.cv.academic.program.subject'),
             ('model_id.model', '!=', 'onsc.cv.digital.call'),
-            ('model_id.model', '!=', 'onsc.cv.other.relevant.information'),
             ('name', '=', 'cv_digital_id')])
         return json.dumps([('id', 'in', fields.mapped('model_id').ids)])
 

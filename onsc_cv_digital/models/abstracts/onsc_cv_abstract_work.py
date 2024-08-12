@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+
+from odoo import fields, models, api, _
 
 WORKING_STATE = [('yes', 'Sí'), ('no', 'No')]
 PAID_ACTIVITY_TYPES = WORKING_STATE
@@ -56,6 +57,10 @@ class ONSCCVAbstractWork(models.AbstractModel):
             return cv_warning(_("La Cantidad de horas trabajadas mensualmente no puede contener letras"))
         if self.hours_worked_monthly and int(self.hours_worked_monthly) < 45:
             return cv_warning(_("Advertencia: la carga horaria mensual es menor que 45 horas"))
+
+    @api.onchange('currently_working')
+    def onchange_currently_working(self):
+        self.end_date = False
 
 
 class ONSCCVWorkInvestigationReceiptFile(models.AbstractModel):

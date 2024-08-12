@@ -154,6 +154,9 @@ class ONSCDesempenoEvaluation(models.Model):
             if not self._is_group_admin_gh_inciso() and not self._is_group_usuario_gh_inciso():
                 args_extended = expression.AND(
                     [[('operating_unit_id', '=', operating_unit_id)], args_extended])
+            if self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue():
+                args_extended = expression.AND(
+                    [[('evaluated_id', '!=', self.env.user.employee_id.id)], args_extended])
         else:
             # BREAKPOINT - Todos los usuarios deben ver las evaluaciones en las que es evaluador
             args_extended = [
@@ -206,12 +209,29 @@ class ONSCDesempenoEvaluation(models.Model):
                     [[('evaluated_id', '=', self.env.user.employee_id.id)], args_extended])
 
             if self._is_group_admin_gh_inciso():
-                args_extended = expression.OR(
-                    [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+                if evaluation_type == 'environment_evaluation':
+                    args_extended = expression.OR([[
+                        ('evaluated_id', '!=', self.env.user.employee_id.id),
+                        ('inciso_id', '=', inciso_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
+                else:
+                    args_extended = expression.OR([[
+                        ('inciso_id', '=', inciso_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
             elif self._is_group_admin_gh_ue():
-                args_extended = expression.OR(
-                    [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
-                     args_extended])
+                if evaluation_type == 'environment_evaluation':
+                    args_extended = expression.OR([[
+                        ('evaluated_id', '!=', self.env.user.employee_id.id),
+                        ('operating_unit_id', '=', operating_unit_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
+                else:
+                    args_extended = expression.OR([[
+                        ('operating_unit_id', '=', operating_unit_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
         if evaluation_type == 'environment_evaluation':
             args_extended = expression.OR([[
                 ('evaluator_id', '=', self.env.user.employee_id.id),
@@ -301,6 +321,7 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
+            _logger.info('*********** EVALUATION SEARCH DOMAIN IN ******************')
             args = self._get_domain(args)
         return super(ONSCDesempenoEvaluation, self)._search(args, offset=offset, limit=limit, order=order,
                                                             count=count,
@@ -446,6 +467,7 @@ class ONSCDesempenoEvaluation(models.Model):
     show_button_go_back = fields.Boolean('Ver botón volver atras', compute='_compute_show_button_go_back')
     show_button_cancel = fields.Boolean('Ver botón cancelar atras', compute='_compute_show_button_cancel')
     evaluations = fields.Boolean(string="Mis evaluaciones", default=False)
+    is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, related="general_cycle_id.is_pilot", store=True)
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -470,7 +492,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 raise ValidationError(_('La cantidad de evaluadores de entorno debe ser menor a 10!'))
             environment_employee = {}
             for environment_id in rec.full_environment_ids:
-                environment_employee[environment_id.employee_id.id] = environment_employee.get(environment_id.employee_id.id,0) + 1
+                environment_employee[environment_id.employee_id.id] = environment_employee.get(
+                    environment_id.employee_id.id, 0) + 1
                 if environment_employee[environment_id.employee_id.id] > 1:
                     raise ValidationError(_('El funcionario %s no puede ser seleccionado en más de una ocasión, '
                                             'favor seleccionar otra persona') % (environment_id.employee_id.full_name))
@@ -950,20 +973,18 @@ class ONSCDesempenoEvaluation(models.Model):
         GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
         general_ids = GeneralCycle.search([('end_date_max', '<=', fields.Date.today())]).ids
 
-        for record in self.search([
-            ('general_cycle_id', 'in', general_ids),
-            ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
-            ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation'])]):
+        for record in self.search([('general_cycle_id', 'in', general_ids),
+                                   ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                                   ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation'])]):
             if record.state == 'completed':
                 record.write({'state': 'finished'})
             else:
                 record.write({'state': 'uncompleted'})
 
-        for record in self.search([
-            ('evaluation_stage_id.active', '=', True),
-            ('environment_definition_end_date', '<=', fields.Date.today()),
-            ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
-            ('evaluation_type', 'in', ['environment_definition'])]):
+        for record in self.search([('evaluation_stage_id.active', '=', True),
+                                   ('environment_definition_end_date', '<=', fields.Date.today()),
+                                   ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                                   ('evaluation_type', 'in', ['environment_definition'])]):
             if record.state == 'completed':
                 record.write({'state': 'finished'})
             else:

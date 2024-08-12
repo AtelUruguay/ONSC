@@ -120,6 +120,8 @@
                 <field name="resolution_dis_description"/>
                 <field name="resolution_dis_date"/>
                 <field name="resolution_dis_type"/>
+                <field name="is_uo_manager"/>
+                <field name="legajo_state_id"/>
             </tree>
         </field>
     </record>
@@ -297,6 +299,8 @@
                                     <field name="resolution_dis_description"/>
                                     <field name="resolution_dis_date"/>
                                     <field name="resolution_dis_type"/>
+                                    <field name="is_uo_manager"/>
+                                    <field name="legajo_state_id"/>
                                 </tree>
                             </field>
                         </page>
@@ -405,6 +409,8 @@
                                     <field name="resolution_dis_description"/>
                                     <field name="resolution_dis_date"/>
                                     <field name="resolution_dis_type"/>
+                                    <field name="is_uo_manager"/>
+                                    <field name="legajo_state_id"/>
                                 </tree>
                             </field>
                         </page>

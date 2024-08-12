@@ -118,6 +118,7 @@ class ONSCDesempenoConsolidated(models.Model):
     is_gap_deal_not_generated = fields.Boolean(string='Acuerdo de brecha no generado')
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
     evaluations = fields.Boolean(string="Mis evaluaciones", default=False)
+    is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, related="general_cycle_id.is_pilot", store=True)
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):

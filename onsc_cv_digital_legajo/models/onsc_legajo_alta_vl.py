@@ -195,9 +195,22 @@ class ONSCLegajoAltaVL(models.Model):
                     record.cv_sex = cv_digital_id.cv_sex
 
                 legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
-                if legajo:
+                record.juramento_bandera_file = legajo.with_context(bin_size=True).juramento_bandera_file
+                record.juramento_bandera_filename = legajo.juramento_bandera_filename
+                if legajo and record.regime_is_legajo:
                     record.date_income_public_administration = legajo.public_admin_entry_date
                     record.inactivity_years = legajo.public_admin_inactivity_years_qty
+                    record.juramento_bandera_date = legajo.juramento_bandera_date
+                    record.juramento_bandera_presentacion_date = legajo.juramento_bandera_presentacion_date
+                    # record.juramento_bandera_file = legajo.with_context(bin_size=False).juramento_bandera_file
+                    # record.juramento_bandera_filename = legajo.juramento_bandera_filename
+                elif not self._context.get('no_update_extra'):
+                    record.date_income_public_administration = False
+                    record.inactivity_years = False
+                    record.juramento_bandera_date = False
+                    record.juramento_bandera_presentacion_date = False
+                    record.juramento_bandera_file = False
+                    record.juramento_bandera_filename = False
 
                 record.cv_digital_id = cv_digital_id
                 record.country_code = cv_digital_id.country_id.code
@@ -240,8 +253,9 @@ class ONSCLegajoAltaVL(models.Model):
                 record.cv_last_name_2 = record.partner_id.cv_last_name_2
                 record.full_name = record.partner_id.cv_full_name
 
-    @api.onchange('regime_id')
+    @api.onchange('regime_id', 'employee_id')
     def onchange_regimen(self):
+        Legajo = self.env['onsc.legajo'].sudo()
         for rec in self:
             rec.descriptor1_id = False
             rec.descriptor2_id = False
@@ -249,6 +263,17 @@ class ONSCLegajoAltaVL(models.Model):
             rec.descriptor4_id = False
             rec.contract_expiration_date = False
             rec.vacante_ids = False
+            legajo = Legajo.search([('employee_id', '=', rec.employee_id.id)], limit=1)
+            if rec.employee_id and legajo and rec.regime_is_legajo:
+                rec.juramento_bandera_date = legajo.juramento_bandera_date
+                rec.juramento_bandera_presentacion_date = legajo.juramento_bandera_presentacion_date
+                rec.juramento_bandera_file = legajo.juramento_bandera_file
+                rec.juramento_bandera_filename = legajo.juramento_bandera_filename
+            else:
+                rec.juramento_bandera_date = False
+                rec.juramento_bandera_presentacion_date = False
+                rec.juramento_bandera_file = False
+                rec.juramento_bandera_filename = False
 
     @api.onchange('descriptor1_id',
                   'descriptor2_id',
@@ -292,35 +317,36 @@ class ONSCLegajoAltaVL(models.Model):
     def _compute_show_exist_altaVL_warning(self):
         Contract = self.env['hr.contract'].suspend_security()
         for rec in self:
-            if rec.state not in ['borrador','error_sgh']:
-                rec.show_exist_altaVL_warning = False
             show_exist_altaVL_warning = False
-            domain = [
-                ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
-                ('descriptor1_id', '=', rec.descriptor1_id.id),
-                ('descriptor2_id', '=', rec.descriptor2_id.id),
-                ('descriptor3_id', '=', rec.descriptor3_id.id),
-                ('descriptor4_id', '=', rec.descriptor4_id.id),
-                ('regime_id', '=', rec.regime_id.id),
-                ('inciso_id', '=', rec.inciso_id.id),
-                ('program_project_id', '=', rec.program_project_id.id),
-                ('operating_unit_id', '=', rec.operating_unit_id.id),
-                ('partner_id', '=', rec.partner_id.id),
-            ]
-            for alta_vl in self.sudo().search(domain):
-                if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
-                        ('descriptor1_id', '=', alta_vl.descriptor1_id.id),
-                        ('descriptor2_id', '=', alta_vl.descriptor2_id.id),
-                        ('descriptor3_id', '=', alta_vl.descriptor3_id.id),
-                        ('descriptor4_id', '=', alta_vl.descriptor4_id.id),
-                        ('regime_id', '=', alta_vl.regime_id.id),
-                        ('inciso_id', '=', alta_vl.inciso_id.id),
-                        ('program', '=', alta_vl.program_project_id.programa),
-                        ('project','=', alta_vl.program_project_id.proyecto),
-                        ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
-                        ('employee_id', '=', alta_vl.employee_id.id),
-                        ('legajo_state', '=', 'active')])):
-                     show_exist_altaVL_warning = True
+            if rec.state in ['borrador', 'error_sgh']:
+                domain = [
+                    ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
+                    ('descriptor1_id', '=', rec.descriptor1_id.id),
+                    ('descriptor2_id', '=', rec.descriptor2_id.id),
+                    ('descriptor3_id', '=', rec.descriptor3_id.id),
+                    ('descriptor4_id', '=', rec.descriptor4_id.id),
+                    ('regime_id', '=', rec.regime_id.id),
+                    ('inciso_id', '=', rec.inciso_id.id),
+                    ('program_project_id', '=', rec.program_project_id.id),
+                    ('operating_unit_id', '=', rec.operating_unit_id.id),
+                    ('partner_id', '=', rec.partner_id.id),
+                ]
+                for alta_vl in self.sudo().search(domain):
+                    if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
+                            ('descriptor1_id', '=', alta_vl.descriptor1_id.id),
+                            ('descriptor2_id', '=', alta_vl.descriptor2_id.id),
+                            ('descriptor3_id', '=', alta_vl.descriptor3_id.id),
+                            ('descriptor4_id', '=', alta_vl.descriptor4_id.id),
+                            ('regime_id', '=', alta_vl.regime_id.id),
+                            ('inciso_id', '=', alta_vl.inciso_id.id),
+                            ('program', '=', alta_vl.program_project_id.programa),
+                            ('project','=', alta_vl.program_project_id.proyecto),
+                            ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
+                            ('legajo_id.emissor_country_id', '=', alta_vl.cv_emissor_country_id.id),
+                            ('legajo_id.document_type_id', '=', alta_vl.cv_document_type_id.id),
+                            ('legajo_id.nro_doc', '=', alta_vl.partner_id.cv_nro_doc),
+                            ('legajo_state', '=', 'active')])):
+                         show_exist_altaVL_warning = True
             rec.show_exist_altaVL_warning = show_exist_altaVL_warning
 
     @api.model
@@ -424,8 +450,8 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append(record._fields['nroPlaza'].string)
             if record.income_mechanism_id.is_call_number_required and not record.call_number:
                 message.append(record._fields['call_number'].string)
-            if not record.state_id:
-                message.append(record._fields['state_id'].string)
+            if not record.legajo_state_id:
+                message.append(record._fields['legajo_state_id'].string)
             if not self.env.context.get('not_check_attached_document', False) and not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
             if record.health_provider_id and record.health_provider_id.code:
@@ -448,10 +474,10 @@ class ONSCLegajoAltaVL(models.Model):
                 if not count and record.department_id.manager_id:
                     message.append("La UO ya tiene un responsable")
 
-            if len(record.reason_description) > 50:
-                raise ValidationError("El campo Descripción del motivo no puede tener más de 50 caracteres.")
-            if len(record.resolution_description) > 100:
-                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+            if record.reason_description and len(record.reason_description) > 50:
+                raise ValidationError(_("El campo Descripción del motivo no puede tener más de 50 caracteres."))
+            if record.resolution_description and len(record.resolution_description) > 100:
+                raise ValidationError(_("El campo Descripción de la resolución no puede tener más de 100 caracteres."))
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str

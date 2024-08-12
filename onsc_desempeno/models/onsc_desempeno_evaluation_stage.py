@@ -17,6 +17,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def _get_domain(self, args):
         user_contract_id = self.env.user.employee_id.job_id.contract_id
+        if self.user_has_groups('onsc_desempeno.group_desempeno_administrador'):
+            return args
         if self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_inciso'):
             args = expression.AND([[('inciso_id', '=', user_contract_id.inciso_id.id), ], args])
         else:
@@ -193,6 +195,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
             if int(record.start_date.strftime('%Y')) != record.general_cycle_id.year:
                 raise ValidationError(
                     _("La fecha inicio debe estar dentro del año %s") % record.general_cycle_id.year)
+            if record.start_date > record.end_date_environment:
+                raise ValidationError(_(u"La Fecha fin def. entorno debe ser mayor o igual a la  Fecha inicio"))
 
     @api.onchange('general_cycle_id')
     def onchange_general_cycle_id(self):
@@ -307,7 +311,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     competency.write({'consolidate_id': consolidate.id,
                                       'order': number})
 
-
     def _process_end_stage(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
 
@@ -332,11 +335,15 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
         if self.env.user.company_id.days_gap_deal_eval_creation < valid_days:
             partners_to_notify = self.env["res.partner"]
-            for record in Evaluation.with_context(ignore_security_rules=True).search(
-                    [('evaluation_stage_id', '=', self.id), ('evaluation_type', 'in', ['leader_evaluation'])]):
+            for record in Evaluation.with_context(ignore_security_rules=True).search([
+                ('evaluation_stage_id', '=', self.id),
+                ('evaluation_type', 'in', ['leader_evaluation']),
+                ('is_canceled_by_employee_out', '=', False)
+            ]):
                 evaluations_360 = Evaluation.search([
                     ('evaluation_stage_id', '=', self.id),
                     ('evaluated_id', '=', record.evaluated_id.id),
+                    ('current_job_id', '=', record.current_job_id.id),
                     ('evaluation_type', 'in', _valid_360_types)])
                 evaluations_360_states = evaluations_360.mapped('state')
                 if any(evaluations_360_state != 'canceled' for evaluations_360_state in evaluations_360_states):

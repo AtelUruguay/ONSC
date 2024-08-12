@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_participation_event_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.participation.event.form</field>
+        <field name="model">onsc.legajo.participation.event</field>
+        <field name="arch" type="xml">
+            <form string="Participación en eventos">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name_event"/>
+                            <field name="type_event_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="mode"/>
+                            <field name="country_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="city_id"
+                                   attrs="{'invisible': [('mode', '!=', 'face_to_face')]}"
+                                   options="{'no_open': True, 'no_quick_create': True}"/>
+                            <field name="name_institution"/>
+                            <field name="start_date" required="1"/>
+                            <field name="end_date" string="Fecha fin" required="1"/>
+                        </group>
+                        <group>
+                            <field name="roll_event_id"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="description_event"/>
+                            <field name="is_roll_event" invisible="1"/>
+                            <field name="description_topic"
+                                   attrs="{'invisible': [('is_roll_event', '!=', True)]}"/>
+                            <field name="hourly_load"
+                                   attrs="{'invisible': [('is_roll_event', '!=', True)]}"/>
+                            <field name="hours_total"/>
+                            <field name="knowledge_acquired_ids" string="Conocimientos claves abordados"
+                                   options="{'limit':5}" widget="many2many_tags"/>
+                            <field name="documentation_file"
+                                   widget="binary"
+                                   filename="documentation_filename"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="documentation_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <br/>
+                    <notebook>
+                        <page string="Área de Actividad">
+                            <field name="activity_area_ids">
+                                <tree string="Áreas de Actividad">
+                                    <field name="educational_area_id"
+                                           string="Área de actividad"/>
+                                    <field name="educational_subarea_id"
+                                           domain="[('area_id', '=', educational_area_id)]"
+                                           string="Sub área de actividad"
+                                           context="{'default_area_id': educational_area_id}"/>
+                                    <field name="discipline_educational_id" domain="[('subarea_id', '=', educational_subarea_id)]"
+                                           string="Disciplina"
+                                           context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                                    <field name="speciality"
+                                           attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', '')]}"/>
+                                </tree>
+                                <form string="Área de Actividad">
+                                    <sheet>
+                                        <group>
+                                            <field name="educational_area_id"
+                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                                   string="Área de actividad"/>
+                                            <field name="educational_subarea_id"
+                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                                   string="Sub área de actividad"/>
+                                            <field name="discipline_educational_id"
+                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                                   string="Disciplina"/>
+                                            <field name="speciality"
+                                                   attrs="{'invisible': [('educational_area_id', '=', False)]}"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Información adicional">
+                            <field name="other_relevant_information"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_participation_event_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.participation.event.tree</field>
+        <field name="model">onsc.legajo.participation.event</field>
+        <field name="arch" type="xml">
+            <tree string="Participación en eventos" decoration-danger="conditional_validation_state == 'rejected'">
+                <field name="start_date" string="Fecha" optional="show" width="0.5"/>
+                <field name="type_event_id" string="Tipo" optional="show"/>
+                <field name="name_event" string="Nombre" optional="show"/>
+                <field name="roll_event_id" string="Rol" optional="show"/>
+                <field name="country_id" string="País" optional="hide"/>
+                <field name="city_id" string="Ciudad" optional="show"/>
+                <field name="name_institution" string="Institución organizadora" optional="show"/>
+                <field name="hourly_load" string="Horas en rol" optional="hide" width="0.5"/>
+                <field name="hours_total" string="Horas totales del evento" width="0.5" optional="hide"/>
+                <field name="mode" optional="hide"/>
+                <field name="conditional_validation_state" invisible="1"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

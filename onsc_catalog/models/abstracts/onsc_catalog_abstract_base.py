@@ -62,7 +62,7 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
             modelo_name = self._name
             fields = self.env['ir.model.fields'].search([('relation', '=', modelo_name)])
             for field in fields:
-                Models = self.env[field.model_id.model].search([(field.name, 'in', self.ids)])
+                Models = self.env[field.model_id.model].sudo().search([(field.name, 'in', self.ids)])
                 if Models:
                     raise ValidationError(_(u"No se puede desactivar el registro porque esta siendo usado"))
 

@@ -115,7 +115,7 @@
                                        attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="is_responsable_uo" attrs="{'readonly': ['|',('should_disable_form_edit', '=', True),('is_regime_manager', '=', False)]}"/>
-                                <field name="state_id"
+                                <field name="legajo_state_id"
                                        attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="security_job_id_domain" invisible="1"/>
@@ -128,7 +128,7 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id" required="1"
-                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                     <field name="document_file" required="1" widget="binary"
                                            filename="document_file_name"
                                            options="{'accepted_file_extensions': '.pdf'}"/>

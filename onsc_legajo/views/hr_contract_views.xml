@@ -24,6 +24,16 @@
                             <field name="show_button_update_occupation" invisible="1"/>
                         </h2>
                     </div>
+                    <div class="alert alert-info"
+                         role="alert"
+                         attrs="{'invisible': [('show_law_legajo_legend', '=', False)]}"
+                         style="margin-bottom:0px;">
+                        <p>
+                            <i class="fa fa-info-circle" role="alert" aria-label="Info" title="Info"/>
+                            <field name="law_legajo_legend"/>
+                            <field name="show_law_legajo_legend" invisible="1"/>
+                        </p>
+                    </div>
                     <group name="top_info">
                         <group name="top_info_left">
                             <field name="name" invisible="1"/>
@@ -41,7 +51,7 @@
                             <field name="operating_unit_id" domain="operating_unit_id_domain"
                                    required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="state_id"
+                            <field name="legajo_state_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="operating_unit_id_domain" invisible="1"/>
                             <field name="currency_id" invisible="1"/>
@@ -63,6 +73,18 @@
                             <field name="operating_unit_origin_id"
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                             <field name="descriptor1_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor2_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                              <field name="descriptor3_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor4_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="extinction_commission_id"
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
@@ -79,6 +101,12 @@
                             <field name="descriptor3_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="descriptor4_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                             <field name="inciso_dest_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_dest_id"
+                                   readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="graduation_date" />
                             <field name="is_occupation_visible" invisible="1"/>

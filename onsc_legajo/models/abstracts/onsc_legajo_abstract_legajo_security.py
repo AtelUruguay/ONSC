@@ -10,9 +10,16 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     _description = 'Modelo abstracto para la seguridad'
 
     @api.model
-    def _get_expression_domain(self, args):
-        if self._context.get('is_legajo'):
-            available_contracts = self._get_user_available_contract()
+    def _get_expression_domain(self, args, is_employee_model=False, config_use_only_active=False):
+        """
+
+        :param args:
+        :param is_employee_model: Si True Retorna argumentos usando directamente id y no employee_id
+        :param config_use_only_active:
+        :return:
+        """
+        if self._context.get('is_legajo') and not self._context.get('ignore_restrict'):
+            available_contracts = self._get_user_available_contract(only_legajo_active=config_use_only_active)
             if not available_contracts:
                 employee_ids = []
             else:
@@ -20,13 +27,16 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
                 self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
                 results = self.env.cr.fetchall()
                 employee_ids = [item[0] for item in results]
-            return expression.AND([[('employee_id', 'in', employee_ids)], args])
+            if is_employee_model:
+                return expression.AND([[('id', 'in', employee_ids)], args])
+            else:
+                return expression.AND([[('employee_id', 'in', employee_ids)], args])
         else:
             return args
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_legajo'):
+        if self._context.get('is_legajo') and not self._context.get('ignore_restrict'):
             args = self._get_expression_domain(args)
         return super(ONSCLegajoAbstractLegajoSecurity, self)._search(args, offset=offset, limit=limit, order=order,
                                                                      count=count,
@@ -34,7 +44,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_legajo'):
+        if self._context.get('is_legajo') and not self._context.get('ignore_restrict'):
             domain = self._get_expression_domain(domain)
         return super(ONSCLegajoAbstractLegajoSecurity, self).read_group(domain, fields, groupby, offset=offset,
                                                                         limit=limit, orderby=orderby,
@@ -49,7 +59,10 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     def _get_abstract_ue_security(self):
         return False
 
-    def _get_user_available_contract(self, employee_id=False):
+    def _get_abstract_responsable_uo(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
+
+    def _get_user_available_contract(self, employee_id=False, only_legajo_active=False):
         available_contracts = self.env['hr.contract']
         if self._context.get('mi_legajo'):
             base_employee_domain = [('id', '=', self.env.user.employee_id.id)]
@@ -63,6 +76,8 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         if self._context.get('mi_legajo'):
             available_contracts = self.env['hr.contract'].sudo().search(employee_domain)
         elif self._get_abstract_config_security():
+            if only_legajo_active:
+                employee_domain = expression.AND([[('legajo_state', '=', 'active')], employee_domain])
             available_contracts = self.env['hr.contract'].sudo().search(employee_domain)
         elif self._get_abstract_inciso_security():
             contract = self.env.user.employee_id.job_id.contract_id
@@ -83,7 +98,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
                     operating_unit_id,
                     'operating_unit_id'
                 )
-        elif self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo'):
+        elif self._get_abstract_responsable_uo():
             employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
             department_ids = self.env['onsc.legajo.department'].get_uo_tree()
             available_contracts = employees.mapped('contract_ids').mapped('job_ids').filtered(
@@ -103,6 +118,11 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
             base_args = expression.AND([[
                 (security_hierarchy_level, '=', security_hierarchy_value),
                 ('legajo_state', 'in', ['active'])],
+                base_args])
+        elif self._context.get('only_active_legajos'):
+            base_args = expression.AND([[
+                (security_hierarchy_level, '=', security_hierarchy_value),
+                ('legajo_id.legajo_state', '=', 'active')],
                 base_args])
         else:
             base_args = expression.AND([[

@@ -174,6 +174,67 @@ class HrEmployee(models.Model):
                                               string=u'Información de Contacto', history=True,
                                               history_fields="name_contact,contact_person_telephone,remark_contact_person")
 
+    # LED SPRINT3
+    # EXPERIENCIA LABORAL
+    work_experience_ids = fields.One2many(
+        "onsc.legajo.work.experience",
+        inverse_name="employee_id",
+        string="Experiencia laboral"
+    )
+    # TUTORIAS, ORIENTACIONES, SUPERVISIONES
+    tutoring_orientation_supervision_ids = fields.One2many(
+        'onsc.legajo.tutoring.orientation.supervision',
+        inverse_name="employee_id",
+        string="Tutorías, Orientaciones, Supervisiones"
+    )
+    # VOLUNTARIADO
+    volunteering_ids = fields.One2many(
+        "onsc.legajo.volunteering",
+        inverse_name="employee_id",
+        string="Voluntariado"
+    )
+    # DOCENCIA
+    work_teaching_ids = fields.One2many(
+        "onsc.legajo.work.teaching",
+        inverse_name="employee_id",
+        string="Docencia"
+    )
+    # PARTICIPACION EN EVENTOS
+    participation_event_ids = fields.One2many(
+        "onsc.legajo.participation.event",
+        inverse_name="employee_id",
+        string="Participación en eventos"
+    )
+    # Investigacion
+    work_investigation_ids = fields.One2many(
+        "onsc.legajo.work.investigation",
+        inverse_name="legajo_id",
+        string="Investigación"
+    )
+
+    # Tutorías, Orientaciones, Supervisiones
+    publication_production_evaluation_ids = fields.One2many(
+        "onsc.legajo.publication.production.evaluation",
+        inverse_name="legajo_id",
+        string="Publicación, Producción y Evaluación"
+    )
+    # Otra Informacion
+    other_relevant_information_ids = fields.One2many(
+        "onsc.legajo.relevant.information",
+        inverse_name="legajo_id",
+        string="Otra información relevante"
+    )
+    # FORMACION
+
+    basic_formation_ids = fields.One2many(
+        'onsc.legajo.basic.formation', string=u'Formación básica', inverse_name="legajo_id", )
+    advanced_formation_ids = fields.One2many(
+        'onsc.legajo.advanced.formation', string=u'Formación avanzada', inverse_name="legajo_id")
+    # CURSOS
+    course_ids = fields.One2many(
+        'onsc.legajo.course.certificate',
+        string="Cursos", inverse_name="legajo_id")
+
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
         CVDigital = self.env['onsc.cv.digital']

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_work_teaching_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.work.teaching.form</field>
+        <field name="model">onsc.legajo.work.teaching</field>
+        <field name="arch" type="xml">
+            <form string="Docencia">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="country_id" string="País de la institución"
+                                   domain="country_id_domain"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="institution_id"
+                                   domain="institution_id_domain"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                   context="{'default_country_id': country_id, 'is_readonly': True}"/>
+                            <field name="subinstitution_id"
+                                   attrs="{'readonly': [('institution_id', '=', False)]}"
+                                   domain="[('institution_id', '=', institution_id)]"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                   context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
+                            <field name="currently_working"/>
+                            <field name="start_date" string="Período desde en institución"/>
+                            <field name="end_date" string="Período hasta en institución"
+                                   attrs="{'invisible': [('currently_working', '!=', 'no')]}"/>
+                            <field name="position"/>
+                            <field name="position_type"/>
+                            <field name="is_full_time"/>
+                            <field name="is_paid_activity"/>
+                            <field name="cv_digital_id" invisible="1"/>
+                            <field name="country_id_domain" invisible="1"/>
+                            <field name="institution_id_domain" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="professional_link_id"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="responsible_type"/>
+                            <field name="hours_worked_monthly" string="Cantidad de horas mensuales en el instituto"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Materias">
+                            <field name="subject_ids"/>
+                        </page>
+                        <page string="Áreas relacionadas con esta educación">
+                            <field name="education_area_ids">
+                                <tree string="Formación básica" editable="top">
+                                    <field name="educational_area_id"/>
+                                    <field name="educational_subarea_id"
+                                           domain="[('area_id', '=', educational_area_id)]"
+                                           context="{'default_area_id': educational_area_id}"/>
+                                    <field name="discipline_educational_id"
+                                           domain="[('subarea_id', '=', educational_subarea_id)]"
+                                           context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Comprobantes">
+                            <field name="receipt_ids"/>
+                        </page>
+                        <page string="Otra información relevante">
+                            <field name="other_relevant_information"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="onsc_legajo_work_teaching_view_tree" model="ir.ui.view">
+        <field name="name">onsc_legajo_work_teaching_view_tree</field>
+        <field name="model">onsc.legajo.work.teaching</field>
+        <field name="arch" type="xml">
+            <tree string="Docencias" decoration-danger="conditional_validation_state == 'rejected'">
+                <field name="start_date" string="Inicio" optional="show"/>
+                <field name="end_date" string="Fin" optional="show"/>
+                <field name="professional_link_id" optional="show"/>
+                <field name="position" optional="hide"/>
+                <field name="country_id" optional="hide"/>
+                <field name="institution_id" optional="show"/>
+                <field name="subinstitution_id" optional="show"/>
+                <field name="hours_worked_monthly" optional="show" string="Horas trabajadas al mes" width="1.0"/>
+                <field name="position_type" optional="hide"/>
+                <field name="is_full_time" optional="hide"/>
+                <field name="is_paid_activity" optional="hide"/>
+                <field name="responsible_type" optional="hide"/>
+                <field name="conditional_validation_state" invisible="1"/>
+                <field name="conditional_validation_reject_reason" invisible="1"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--    Grilla de comprobantes-->
+    <record id="onsc_legajo_work_teaching_receipt_file_view_tree" model="ir.ui.view">
+        <field name="name">onsc_legajo_work_teaching_receipt_file_view_tree</field>
+        <field name="model">onsc.legajo.work.teaching.receipt.file</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="receipt_file" filename="receipt_filename" widget="binary"
+                       options="{'accepted_file_extensions': '.pdf'}"/>
+                <field name="receipt_filename" invisible="1"/>
+                <field name="receipt_description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_work_teaching_receipt_file_view_form" model="ir.ui.view">
+        <field name="name">onsc_legajo_work_teaching_receipt_file_view_form</field>
+        <field name="model">onsc.legajo.work.teaching.receipt.file</field>
+        <field name="arch" type="xml">
+            <form string="Comprobante">
+                <sheet>
+                    <group>
+                        <field name="receipt_file" filename="receipt_filename"
+                               widget="binary"
+                               options="{'accepted_file_extensions': '.pdf'}"/>
+                        <field name="receipt_filename" invisible="1"/>
+                        <field name="receipt_description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--    Grilla de Áreas relacionadas con esta educación-->
+    <record id="onsc_legajo_education_area_teaching_view_tree" model="ir.ui.view">
+        <field name="name">onsc_legajo_education_area_teaching_view_tree</field>
+        <field name="model">onsc.legajo.education.area.teaching</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas relacionadas con esta educación">
+                <field name="educational_area_id"/>
+                <field name="educational_subarea_id"
+                       domain="[('area_id', '=', educational_area_id)]"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id"
+                       domain="[('subarea_id', '=', educational_subarea_id)]"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_education_area_teaching_view_form" model="ir.ui.view">
+        <field name="name">onsc_legajo_education_area_teaching_view_form</field>
+        <field name="model">onsc.legajo.education.area.teaching</field>
+        <field name="arch" type="xml">
+            <form string="Área relacionada con esta educación">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id"/>
+                        <field name="educational_subarea_id"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!--Materias-->
+    <record id="onsc_legajo_academic_program_subject_view_form" model="ir.ui.view">
+        <field name="name">onsc_legajo_academic_program_subject_view_form</field>
+        <field name="model">onsc.legajo.academic.program.subject</field>
+        <field name="arch" type="xml">
+            <form string="Materias">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="work_teaching_id" invisible="1"/>
+                            <field name="subject"/>
+                            <field name="course_type"/>
+                            <field name="currently_working_state"/>
+                        </group>
+                        <group>
+                            <field name="start_date" string="Período desde dando esta materia"/>
+                            <field name="end_date" string="Período hasta dando esta materia"
+                                   attrs="{'invisible': [('currently_working_state', '!=', 'no')]}"/>
+                            <field name="level_teaching_type"/>
+                            <field name="knowledge_acquired_ids" string='Conocimientos enseñados' widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_academic_program_subject_view_tree" model="ir.ui.view">
+        <field name="name">onsc_legajo_academic_program_subject_view_tree</field>
+        <field name="model">onsc.legajo.academic.program.subject</field>
+        <field name="arch" type="xml">
+            <tree string="Materias">
+                <field name="start_date" string="Inicio" optional="show"/>
+                <field name="end_date" string="Fin" optional="show"/>
+                <field name="subject" optional="show"/>
+                <field name="course_type" optional="show"/>
+                <field name="currently_working_state" optional="show" width="0.5"/>
+                <field name="level_teaching_type" optional="show"/>
+                <field name="knowledge_acquired_ids" string='Conocimientos enseñados' widget="many2many_tags" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

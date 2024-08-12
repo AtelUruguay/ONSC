@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_publication_production_evaluation_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.publication.production.evaluation.form</field>
+        <field name="model">onsc.legajo.publication.production.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Publicaciones, producciones y evaluaciones">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="cv_digital_id" invisible="1"/>
+                            <field name="type"/>
+                            <field name="subtype_publication_id"
+                                   attrs="{'invisible': [('type', '!=', 'publication')]}"/>
+                            <field name="is_subtype_publication" invisible="1"/>
+                            <field name="other_subtype_publication"
+                                   attrs="{'invisible': [('is_subtype_publication', '!=', True)]}"/>
+                            <field name="subtype_production_id"
+                                   attrs="{'invisible': [('type', '!=', 'productions')]}"/>
+                            <field name="is_subtype_production" invisible="1"/>
+                            <field name="other_subtype_production"
+                                   attrs="{'invisible': [('is_subtype_production', '!=', True)]}"/>
+                            <field name="subtype_evaluation_id"
+                                   attrs="{'invisible': [('type', '!=', 'evaluation')]}"/>
+                            <field name="is_subtype_evaluation" invisible="1"/>
+                            <field name="other_subtype_evaluation"
+                                   attrs="{'invisible': [('is_subtype_evaluation', '!=', True)]}"/>
+                            <field name="subtype_other_id"
+                                   attrs="{'invisible': [('type', '!=', 'other')]}"/>
+                            <field name="is_subtype_other" invisible="1"/>
+                            <field name="other_subtype_other"
+                                   attrs="{'invisible': [('is_subtype_other', '!=', True)]}"/>
+                            <field name="date"/>
+                            <field name="tittle"/>
+                            <field name="description"/>
+                        </group>
+                        <group>
+                            <field name="location"/>
+                            <field name="is_arbitrated" invisible="1"/>
+                            <field name="arbitrated"
+                                   attrs="{'invisible': ['|',('type', '!=', 'publication'),('is_arbitrated', '=', False)]}"/>
+                            <field name="paid_activity"/>
+                            <field name="applied_knowledge_ids" options="{'limit':5}" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <br/>
+                    <notebook>
+                        <page string="Autores">
+                            <field name="authors_ids" context="{'authors_ids': authors_ids}"/>
+                        </page>
+                        <page string="Área de Actividad">
+                            <field name="activity_area_ids"/>
+                        </page>
+                        <page string="Información adicional">
+                            <field name="additional_information"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_publication_production_evaluation_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.publication.production.evaluation.tree</field>
+        <field name="model">onsc.legajo.publication.production.evaluation</field>
+        <field name="arch" type="xml">
+            <tree string="Publicaciones, producciones y evaluaciones">
+                <field name="date" width="0.5" optional="show" string="Fecha"/>
+                <field name="type" optional="show"/>
+                <field name="subtype" string="Sub tipo" optional="show"/>
+                <field name="tittle" optional="show"/>
+                <field name="location" optional="hide"/>
+                <field name="paid_activity" optional="hide"/>
+                <field name="arbitrated" optional="hide"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_authors_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.authors.form</field>
+        <field name="model">onsc.legajo.authors</field>
+        <field name="arch" type="xml">
+            <form string="Autores">
+                <sheet>
+                    <group>
+                        <field name="author"/>
+                        <field name="citation" attrs="{'invisible': [('author', '=', False)]}"/>
+                        <field name="is_primary_author"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record id="onsc_legajo_authors_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.authors.tree</field>
+        <field name="model">onsc.legajo.authors</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="author"/>
+                <field name="citation"/>
+                <field name="is_primary_author" width="0.5"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_activity_area_view_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.activity.area.view.tree</field>
+        <field name="model">onsc.legajo.activity.area</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas de actividad">
+                <field name="educational_area_id"/>
+                <field name="educational_subarea_id" domain="[('area_id', '=', educational_area_id)]"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id" domain="[('subarea_id', '=', educational_subarea_id)]"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                <field name="speciality"
+                       attrs="{'invisible': [('educational_area_id', '=', False)]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_activity_area_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.activity.area.form</field>
+        <field name="model">onsc.legajo.activity.area</field>
+        <field name="arch" type="xml">
+            <form string="Área de Actividad">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id"/>
+                        <field name="educational_subarea_id"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                        <field name="speciality"
+                               attrs="{'invisible': [('educational_area_id', '=', False)]}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--    EVENTOS-->
+    <record id="onsc_legajo_activity_area_event_view_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.activity.area.event.view.tree</field>
+        <field name="model">onsc.legajo.activity.area</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas de actividad">
+                <field name="educational_area_id"
+                       string="Área de actividad"/>
+                <field name="educational_subarea_id"
+                       domain="[('area_id', '=', educational_area_id)]"
+                       string="Sub área de actividad"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id" domain="[('subarea_id', '=', educational_subarea_id)]"
+                       string="Disciplina"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                <field name="speciality"
+                       attrs="{'invisible': [('educational_area_id', '=', False)]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_activity_area_event_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.activity.area.event.form</field>
+        <field name="model">onsc.legajo.activity.area</field>
+        <field name="arch" type="xml">
+            <form string="Áreas de actividad">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id"
+                               string="Área de actividad"/>
+                        <field name="educational_subarea_id"
+                               string="Sub área de actividad"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               string="Disciplina"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                        <field name="speciality"
+                               attrs="{'invisible': [('educational_area_id', '=', False)]}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

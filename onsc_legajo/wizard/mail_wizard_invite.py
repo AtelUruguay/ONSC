@@ -8,6 +8,8 @@ MODELS_TOCHECK = [
     'onsc.legajo.baja.vl',
     'onsc.legajo.role.assignment'
 ]
+
+
 class Invite(models.TransientModel):
     _inherit = 'mail.wizard.invite'
 

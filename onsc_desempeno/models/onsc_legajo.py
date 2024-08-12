@@ -19,6 +19,9 @@ class ONSCLegajoScore(models.Model):
     def _is_group_legajo_consulta_legajos(self):
         return self.user_has_groups('onsc_legajo.group_legajo_consulta_legajos')
 
+    def _is_group_legajo_admin_legajos(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_admin')
+
     score_ids = fields.One2many('onsc.desempeno.score', compute='_compute_onsc_desempeno_score', string="Puntaje")
     show_alert = fields.Boolean("Tiene notificaciones pendientes?", compute='_compute_show_alert')
     notification_pending_text = fields.Text(
@@ -37,16 +40,20 @@ class ONSCLegajoScore(models.Model):
         for rec in self:
             try:
                 args = []
-                if self._context.get('mi_legajo') or self._is_group_legajo_consulta_legajos():
+                is_full_groups = self._is_group_legajo_consulta_legajos() or self._is_group_legajo_admin_legajos()
+                if self._context.get('mi_legajo') or is_full_groups:
                     args = [('employee_id', '=', rec.employee_id.id),
-                            ('is_employee_notified', '=', True)]
+                            ('is_employee_notified', '=', True),
+                            ('is_pilot', '=', False)]
                 else:
                     if self._is_group_legajo_hr_inciso():
                         args = [('inciso_id', '=', inciso_id), ('employee_id', '=', rec.employee_id.id),
-                                ('is_employee_notified', '=', True)]
+                                ('is_employee_notified', '=', True),
+                                ('is_pilot', '=', False)]
                     elif self._is_group_legajo_hr_ue():
                         args = [('operating_unit_id', '=', operating_unit_id), ('employee_id', '=', rec.employee_id.id),
-                                ('is_employee_notified', '=', True)]
+                                ('is_employee_notified', '=', True),
+                                ('is_pilot', '=', False)]
                 if args:
                     rec.score_ids = Score.with_context(ignore_security_rules=True).search(args)
                 else:

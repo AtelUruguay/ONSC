@@ -38,7 +38,8 @@ REQUIRED_FIELDS = {
     'date_income_public_administration',
     'inciso_id',
     'retributive_day_formal',
-    'date_start'
+    'date_start',
+    'is_uo_manager'
 }
 
 REQUIRED_FIELDS_COMM = {
@@ -125,7 +126,8 @@ class ONSCMigration(models.Model):
             'resolution_date': self.convert_datetime(row[58]),
             'resolution_type': row[59],
             'retributive_day_formal': self.convert_int(row[83]),
-            'retributive_day_formal_desc': row[84], })
+            'retributive_day_formal_desc': row[84],
+            'is_uo_manager': row[98]})
 
     def _set_m2o_values(self, row_dict, row):
         country_id = row[0] and self.get_country(str(row[0])) or False
@@ -180,6 +182,8 @@ class ONSCMigration(models.Model):
                                                                       program_project_id and program_project_id[
                                                                           0]) or False
 
+        legajo_state_id = row[99] and self.get_legajo_state_id(str(row[99])) or False
+
         row_dict.update({
             'country_id': country_id and country_id[0],
             'doc_type_id': doc_type_id and doc_type_id[0],
@@ -208,6 +212,8 @@ class ONSCMigration(models.Model):
             'retributive_day_id': row[82] and retributive_day_id and retributive_day_id[0],
             # 'retributive_day_formal_id': retributive_day_formal_id,
             'security_job_id': security_job_id and security_job_id[0],
+            'legajo_state_id': legajo_state_id and legajo_state_id[0]
+
         })
         if not row[71]:
             department_id = row[69] and self.get_department(str(row[69]),
@@ -350,6 +356,8 @@ class ONSCMigration(models.Model):
             message_error.append("Sexo no es válido")
         if row[13] and row_dict['citizenship'] not in [tupla[0] for tupla in CITIZENSHIP]:
             message_error.append("El campo Ciudadanía no es válido")
+        if row[98] and row_dict['is_uo_manager'] not in ['S', 'N']:
+            message_error.append("El campo Responsable UO no es válido")
 
         if (not row[65] and not row[66] and not row[67]) and (not row[45] and not row[46] and not row[47]):
             message_error.append("Los campo Plaza, Sec. Plaza y Puesto no son válidos")
@@ -630,6 +638,11 @@ class ONSCMigration(models.Model):
         self._cr.execute("""SELECT id FROM onsc_legajo_commission_regime WHERE cgn_code = %s """, (code,))
         return self._cr.fetchone()
 
+    def get_legajo_state_id(self, code):
+        self._cr.execute("""SELECT id FROM onsc_legajo_res_country_department WHERE code = %s""",
+                         (code,))
+        return self._cr.fetchone()
+
 
 class ONSCMigrationLine(models.Model):
     _name = "onsc.migration.line"
@@ -760,6 +773,9 @@ class ONSCMigrationLine(models.Model):
     resolution_dis_type = fields.Char(string='Tipo de resolución de la baja')
 
     partner_id = fields.Many2one('res.partner', string='Contacto')
+    is_uo_manager = fields.Selection(string="Responsable UO", selection=[('S', 'SI'), ('N', 'NO')])
+    legajo_state_id = fields.Many2one('onsc.legajo.res.country.department',
+                                      string='Departamento donde desempeña funciones')
 
     def validate_line(self, message_error):
         for required_field in REQUIRED_FIELDS:
@@ -1066,9 +1082,9 @@ class ONSCMigrationLine(models.Model):
             # self.write({'partner_id': partner.id})
             # self.env.cr.commit()
         except Exception as e:
-            raise ValidationError(_("No se puedo crear el contacto: ") + tools.ustr(e))
+            raise ValidationError(_("No se pudo crear el contacto: ") + tools.ustr(e))
             # self.env.cr.rollback()
-            # self.write({'state': 'error', 'error': "No se puedo crear el contacto: " + tools.ustr(e)})
+            # self.write({'state': 'error', 'error': "No se pudo crear el contacto: " + tools.ustr(e)})
             # self.env.cr.commit()
 
     def _create_cv(self, CVDigital, partner_id):
@@ -1141,9 +1157,9 @@ class ONSCMigrationLine(models.Model):
                 cv_digital.with_context(no_update_header_documentary_validation=True).write(data)
                 return cv_digital
         except Exception as e:
-            raise ValidationError(_("No se puedo crear el CV: ") + tools.ustr(e))
+            raise ValidationError(_("No se pudo crear el CV: ") + tools.ustr(e))
             # self.env.cr.rollback()
-            # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
+            # self.write({'state': 'error', 'error': "No se pudo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
 
     def _create_alta_vl(self, AltaVL, Vacante, partner_id, employee_id, cv_digital_id):
@@ -1208,7 +1224,9 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_zip': self.address_zip,
                 'cv_address_block': self.address_block,
                 'cv_address_sandlot': self.address_sandlot,
-                'id_alta': self.id_movimiento
+                'id_alta': self.id_movimiento,
+                'is_responsable_uo': True if self.is_uo_manager == 'S' else False,
+                'legajo_state_id': self.legajo_state_id.id if self.legajo_state_id else False
 
             }
             altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
@@ -1232,9 +1250,9 @@ class ONSCMigrationLine(models.Model):
 
             return altavl
         except Exception as e:
-            raise ValidationError(_("No se puedo crear el AltaVL: ") + tools.ustr(e))
+            raise ValidationError(_("No se pudo crear el AltaVL: ") + tools.ustr(e))
             # self.env.cr.rollback()
-            # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
+            # self.write({'state': 'error', 'error': "No se pudo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
 
     def _create_employee(self, Employee, partner_id, cv_digital):
@@ -1251,7 +1269,7 @@ class ONSCMigrationLine(models.Model):
             return employee
 
         except Exception as e:
-            raise ValidationError(_("No se puedo crear el funcionario: ") + tools.ustr(e))
+            raise ValidationError(_("No se pudo crear el funcionario: ") + tools.ustr(e))
 
     def _create_legajo(self, employee):
         return self.env['onsc.legajo']._get_legajo(
@@ -1282,7 +1300,8 @@ class ONSCMigrationLine(models.Model):
             'regime_id': self.regime_id.id,
             'state_square_id': self.state_place_id.id,
             'call_number': self.call_number,
-            'wage': 1
+            'wage': 1,
+            'legajo_state_id': self.legajo_state_id.id,
         }
 
         if not self.type_commission:
@@ -1300,18 +1319,18 @@ class ONSCMigrationLine(models.Model):
                 'resolution_type': self.resolution_type,
                 'norm_code_id': self.norm_id.id,
                 'occupation_id': self.occupation_id.id,
-
             })
             contracts = Contract.suspend_security().create(vals_contract1)
-            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
-                                                                                           self.create_date):
+            if self.is_uo_manager == 'S' and not Job.is_job_available_for_manager(self.department_id,
+                                                                                  self.create_date):
                 raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.department_id and self.security_job_id:
                 Job.create_job(
                     contracts,
                     self.department_id,
                     self.date_start,
-                    self.security_job_id
+                    self.security_job_id,
+                    is_uo_manager=True if self.is_uo_manager == 'S' else False,
                 )
         else:
 
@@ -1385,15 +1404,16 @@ class ONSCMigrationLine(models.Model):
             if not self.inciso_des_id.is_central_administration:
                 contracts |= contract1
 
-            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
-                                                                                           self.date_start_commission):
+            if self.is_uo_manager == 'S' and not Job.is_job_available_for_manager(self.department_id,
+                                                                                  self.date_start_commission):
                 raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
                 Job.create_job(
                     contract2,
                     self.department_id,
                     self.date_start_commission,
-                    self.security_job_id
+                    self.security_job_id,
+                    is_uo_manager=True if self.is_uo_manager == 'S' else False,
                 )
 
         return contracts

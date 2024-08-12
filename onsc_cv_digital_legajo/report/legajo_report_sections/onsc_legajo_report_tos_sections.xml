@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+      <!--Tutorias-->
+    <template id="legajo_section_supervision">
+        <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+            <strong><t t-esc="name_section"/></strong>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="font-size: 1.5rem;">
+                <li style="font-weight:bold;">
+                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
+                    <t t-if="object.is_tutoring_finished"><span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
+                    <t t-else=""><span>Actualidad</span></t>:
+                    <span t-field="object.work_title"/>
+                </li>
+                <li style="list-style:none;" t-if="object.institution_id">Institución / Subinstitucion: <span t-field="object.institution_id.name_country"/>
+                    <t t-if="object.institution_id.id!=object.subinstitution_id.id"> / <span t-field="object.subinstitution_id.name"/></t>
+                </li>
+                <li style="list-style:none;" t-if="object.description">Descripción: <span t-field="object.description"/></li>
+                <li style="list-style:none;" t-if="object.academic_program_id and not object.institution_id.is_without_academic_program">Programa académico: <span t-field="object.academic_program_id.name"/></li>
+                <li style="list-style:none;" t-if="object.generic_academic_program_id and object.institution_id.is_without_academic_program">Programa académico genérico: <span t-field="object.generic_academic_program_id.name"/></li>
+                <li style="list-style:none;" t-if="object.name_generic_academic_program and object.institution_id.is_without_academic_program">Nombre específico del programa académico: <span t-field="object.name_generic_academic_program"/></li>
+                <li style="list-style:none;" t-if="object.tutor_type_id">Tipo/clase: <span t-field="object.tutor_type_id.name"/></li>
+                <li style="list-style:none;" t-if="object.other_tutor_type">Otro Tipo/clase: <span t-field="object.other_tutor_type"/></li>
+                <li style="list-style:none;" t-if="object.orientation_type_id">Tipo de orientación: <span t-field="object.orientation_type_id.name"/></li>
+                <li style="list-style:none;" t-if="object.postgraduate_type">Tipo posgrado: <span t-field="object.postgraduate_type"/></li>
+                <li style="list-style:none;" t-if="object.co_tutor_name">Nombre del co-tutor: <span t-field="object.co_tutor_name"/></li>
+                <li style="list-style:none;" t-if="object.student_name">Nombre del orientado/estudiante: <span t-field="object.student_name"/></li>
+                <li style="list-style:none;" t-if="object.language_id">Idioma: <span t-field="object.language_id.name"/></li>
+                <li style="list-style:none;" t-if="object.dependence">Dependencia: <span t-field="object.dependence"/></li>
+                <li style="list-style:none;" t-if="object.divulgation_media_id">Medio de divulgación: <span t-field="object.divulgation_media_id.name"/></li>
+                <li style="list-style:none;" t-if="object.website">Sitio web: <span t-field="object.website"/></li>
+                <li style="list-style:none;">Actividad remunerada: <span t-esc="object.is_paid_activity and 'SI' or 'NO'"/></li>
+                <li style="list-style:none;" t-if="object.knowledge_acquired_ids">Conocimientos aplicados:
+                    <t t-set="emp_count" t-value="0"/>
+                    <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
+                        <t t-set="emp_count" t-value="emp_count + 1"/>
+                        <t t-if="emp_count!=1"> / </t>
+                        <span t-field="knowledge.name"/>
+                    </t>
+                </li>
+                <li style="list-style:none;" t-if="object.is_relevant_work">Es uno de los cinco trabajos más relevantes de su producción:
+                    <span t-esc="object.is_relevant_work and 'SI' or 'NO'"/>
+                </li>
+                <li style="list-style:none;" t-if="object.area_ids">Áreas relacionadas</li>
+                <t t-foreach="object.area_ids" t-as="line">
+                    <ul>
+                        <li>
+                            <span t-field="line.educational_area_id.name"/> /
+                            <span t-field="line.educational_subarea_id.name"/> /
+                            <span t-field="line.discipline_educational_id.name"/>
+                        </li>
+                    </ul>
+                </t>
+                <li style="list-style:none;" t-if="object.other_relevant_information">Otra información relevante: <span t-field="object.other_relevant_information"/></li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+</odoo>

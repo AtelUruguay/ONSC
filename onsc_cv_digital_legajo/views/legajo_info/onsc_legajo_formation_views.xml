@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_basic_formation_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.basic.formation.form</field>
+        <field name="model">onsc.legajo.basic.formation</field>
+        <field name="arch" type="xml">
+            <form string="Formaciones básicas">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="cv_digital_id" invisible="1"/>
+                            <field name="basic_education_level"/>
+                            <field name="country_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="institution_id"
+                                   domain="[('country_id', '=?', country_id),('is_basic_formation', '=', True)]"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   context="{'default_country_id': country_id, 'is_readonly': True,'default_is_basic_formation': True, 'is_readonly': True}" />
+                            <field name="subinstitution_id"
+                                   attrs="{'readonly': [('institution_id', '=', False)]}"
+                                   domain="[('institution_id', '=', institution_id)]"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
+                        </group>
+                        <group>
+                            <field name="state"/>
+                            <field name="start_date"/>
+                            <field name="end_date"
+                                   attrs="{'invisible': [('state', '!=', 'completed')]}"/>
+                            <field name="coursed_years"
+                                   attrs="{'invisible': [('state', 'not in', ['in_progress','incomplete'])]}"/>
+                            <field name="other_relevant_information"/>
+                            <field name="study_certificate_file" filename="study_certificate_filename"
+                                   widget="binary"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="study_certificate_filename" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_basic_formation_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.basic.formation.tree</field>
+        <field name="model">onsc.legajo.basic.formation</field>
+        <field name="arch" type="xml">
+            <tree string="Formaciones básicas" >
+                <field name="start_date" string="Inicio" optional="show" width="0.5"/>
+                <field name="end_date" string="Fin" optional="show" width="0.5"/>
+                <field name="basic_education_level" string="Nivel" optional="show"/>
+                <field name="country_id" string="País" optional="hide"/>
+                <field name="institution_id" optional="show"/>
+                <field name="subinstitution_id" optional="show"/>
+                <field name="state" optional="hide"/>
+                <field name="coursed_years" optional="hide"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+             </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_advanced_formation_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.advanced.formation.form</field>
+        <field name="model">onsc.legajo.advanced.formation</field>
+        <field name="arch" type="xml">
+            <form string="Formaciones avanzadas">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="show_generic_academic_program" invisible="1"/>
+                            <field name="country_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
+                            <field name="institution_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
+                                   domain="[('country_id', '=?', country_id),('is_advanced_formation', '=', True)]"
+                                   context="{'default_country_id': country_id, 'is_readonly': True,'default_is_advanced_formation': True,'is_readonly': True}" />
+                            <field name="subinstitution_id"
+                                   attrs="{'readonly': [('institution_id', '=', False)]}"
+                                   domain="[('institution_id', '=', institution_id)]"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
+                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
+                            <field name="advanced_study_level_id"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
+                            <field name="academic_program_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
+                                   attrs="{'invisible': [('show_generic_academic_program', '=', True)],'readonly': ['|',('subinstitution_id', '=', False),('advanced_study_level_id', '=', False)]}"
+                                   domain="[('study_level_id', '=', advanced_study_level_id), ('subinstitution_id', '=', subinstitution_id)]"
+                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id,
+                                            'default_country_id': country_id, 'default_study_level_id': advanced_study_level_id, 'is_readonly': True}"/>
+                            <field name="generic_academic_program_id"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
+                                   attrs="{'invisible': [('show_generic_academic_program', '=', False)]}"/>
+                            <field name="name_generic_academic_program" attrs="{'invisible': [('show_generic_academic_program', '=', False)]}"/>
+                            <field name="homologated_title"
+                                   attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
+                            <field name="homologated_title_date"
+                                   attrs="{'invisible': [('homologated_title', '!=', 'yes')]}"/>
+                            <field name="apostilled_title"
+                                   attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
+                            <field name="apostilled_date"
+                                   attrs="{'invisible': [('apostilled_title', '!=', 'yes')]}"/>
+                            <field name="state" />
+                            <field name="start_date"/>
+                            <field name="egress_date"
+                                   attrs="{'invisible': [('state', '!=', 'completed')]}"/>
+                            <field name="issue_title_date"
+                                   attrs="{'invisible': [('state', '!=', 'completed')]}"/>
+                            <field name="is_require_thesis"/>
+                            <field name="state_thesis"
+                                   force_save="1"
+                                   attrs="{'invisible': [('is_require_thesis', '=', False)], 'readonly': [('state', '=', 'completed')]}"/>
+                            <field name="title_thesis"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
+                            <field name="description_thesis"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
+                            <field name="final_note_thesis"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
+                            <field name="max_note_thesis"
+                                   attrs="{'invisible': [('final_note_thesis', 'in', [0.00,''])]}"/>
+                        </group>
+                        <group>
+                            <field name="tutor"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
+                            <field name="knowledge_thesis_ids" options="{'limit':5}" widget="many2many_tags"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
+                            <field name="country_code" invisible="1"/>
+                            <field name="scholarship"/>
+                            <field name="max_scholarship"
+                                   attrs="{'invisible': [('scholarship', 'in', [0.00,''])],'required': [('scholarship', 'not in', [0.00,''])]}"/>
+                            <field name="credits_far"
+                                   attrs="{'invisible': [('state', '=', 'completed')]}"/>
+                            <field name="credits_training"
+                                   attrs="{'invisible': [('state', '=', 'completed')]}"/>
+                            <field name="knowledge_acquired_ids" string="Conocimientos adquiridos" options="{'limit':5}"
+                                   widget="many2many_tags"/>
+                            <field name="egress_certificate_file" filename="egress_certificate_filename"
+                                   widget="binary"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="revalidated_certificate_file" filename="revalidated_certificate_filename"
+                                   widget="binary"
+                                   attrs="{'invisible': [('homologated_title', '!=', 'yes')]}"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="homologated_certificate_file" filename="homologated_certificate_filename"
+                                   widget="binary"
+                                   attrs="{'invisible': [('homologated_title', '!=', 'yes')]}"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="apostille_file" filename="apostille_filename"
+                                   widget="binary"
+                                   attrs="{'invisible': [('apostilled_title', '!=', 'yes')]}"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="egress_certificate_filename" invisible="1"/>
+                            <field name="revalidated_certificate_filename" invisible="1"/>
+                            <field name="homologated_certificate_filename" invisible="1"/>
+                            <field name="apostille_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <br/>
+                    <notebook>
+                        <page string="Áreas relacionadas con esta educación">
+                            <field name="area_related_education_ids"/>
+                        </page>
+                        <page string="Otra información relevante">
+                            <field name="other_relevant_information"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_advanced_formation_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.advanced.formation.tree</field>
+        <field name="model">onsc.legajo.advanced.formation</field>
+        <field name="arch" type="xml">
+            <tree string="Formaciones avanzadas">
+                <field name="start_date" string="Inicio" optional="show" width="0.5"/>
+                <field name="egress_date" string="Fin" optional="show" width="0.5"/>
+                <field name="advanced_study_level_id" string="Nivel" optional="show"/>
+                <field name="country_id" string="País" optional="hide"/>
+                <field name="institution_id" optional="show"/>
+                <field name="subinstitution_id" optional="show"/>
+                <field name="displayed_academic_program" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="scholarship" optional="hide"/>
+                <field name="max_scholarship" optional="hide"/>
+                <field name="credits_far" optional="hide" string="Créditos/materias aprobadas"/>
+                <field name="credits_training" optional="hide" string="Créditos/materias totales"/>
+                <field name="issue_title_date" optional="hide"/>
+                <field name="homologated_title" string="Revalidado/homologado" optional="hide" width="0.5"/>
+                <field name="homologated_title_date" string="Fecha de revalidado/homologado" optional="hide"/>
+                <field name="apostilled_title" string="Apostillado" optional="hide" width="0.5"/>
+                <field name="apostilled_date" optional="hide"/>
+                <field name="is_require_thesis" string="Tesis" optional="hide"/>
+                <field name="state_thesis" optional="hide"/>
+                <field name="title_thesis" optional="hide" width="0.5"/>
+                <field name="final_note_thesis" optional="hide" width="0.5"/>
+                <field name="max_note_thesis" string="Nota máxima de tesis" optional="hide" width="0.5"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--    Grilla de Áreas relacionadas con esta educación-->
+    <record id="onsc_legajo_area_related_education_view_tree" model="ir.ui.view">
+        <field name="name">onsc_legajo_area_related_education_view_tree</field>
+        <field name="model">onsc.legajo.area.related.education</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas relacionadas con esta educación">
+                <field name="educational_area_id" />
+                <field name="educational_subarea_id"
+                       domain="[('area_id', '=', educational_area_id)]"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id"
+                       domain="[('subarea_id', '=', educational_subarea_id)]"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_area_related_education_view_form" model="ir.ui.view">
+        <field name="name">onsc_legajo_area_related_education_view_form</field>
+        <field name="model">onsc.legajo.area.related.education</field>
+        <field name="arch" type="xml">
+            <form string="Área relacionada con esta educación">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id"
+                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
+                        <field name="educational_subarea_id"
+                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

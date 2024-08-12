@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=R8180
+
 from odoo import models
 from odoo.http import request
 

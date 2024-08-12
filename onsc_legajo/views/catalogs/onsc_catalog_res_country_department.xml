@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Departamento donde desempeña funciones-->
+        <record id="onsc_legajo_res_country_department_action" model="ir.actions.act_window">
+            <field name="name">Departamento donde desempeña funciones</field>
+            <field name="res_model">onsc.legajo.res.country.department</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="onsc_legajo_res_country_department_form_view" model="ir.ui.view">
+            <field name="name">Departamento donde desempeña funciones</field>
+            <field name="model">onsc.legajo.res.country.department</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <group colspan="4">
+                                <field name="active" invisible="1"/>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="state_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_res_country_department_tree_view" model="ir.ui.view">
+            <field name="name">Departamento donde desempeña funciones</field>
+            <field name="model">onsc.legajo.res.country.department</field>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="active" invisible="1"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="state_id"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

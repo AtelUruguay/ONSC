@@ -2,6 +2,7 @@
 
 import logging
 
+from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from zeep import Client
@@ -20,6 +21,11 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
 
 def diff_month(d1, d2):
     return (d1.year - d2.year) * 12 + d1.month - d2.month
+
+
+def diff_days(d1, d2):
+    delta = d1 - d2
+    return abs(delta.days)
 
 
 class ONSCCVDigital(models.Model):
@@ -723,21 +729,21 @@ class ONSCCVDigital(models.Model):
         model_id = self.env['ir.model']._get_id(self._name)
         email_template_id.model_id = model_id
         today = fields.Date.today()
-        onsc_cv_digitals = self.env['onsc.cv.digital'].search(
-            [('last_modification_date', '!=', False),
-             ('type', '=', 'cv'),
-             ('last_modification_date', '!=', today)])
+
+        date_to_find = fields.Date.today() - relativedelta(days=int(parameter_inactivity))
+        onsc_cv_digitals = self.env['onsc.cv.digital'].search([
+            ('last_modification_date', '!=', False),
+            ('last_modification_date', '=', date_to_find),
+            ('type', '=', 'cv'),
+        ])
         for onsc_cv_digital in onsc_cv_digitals:
             rest_value = today - onsc_cv_digital.last_modification_date
-            date_value = int(rest_value.days) % int(parameter_inactivity)
-            if not date_value:
-                months = diff_month(today, onsc_cv_digital.last_modification_date)
-                view_context = dict(self._context)
-                view_context.update({
-                    'months': months,
-                })
-                email_template_id.with_context(view_context).send_mail(onsc_cv_digital.id, force_send=True,
-                                                                       notif_layout='mail.mail_notification_light')
+
+            view_context = dict(self._context)
+            view_context.update({
+                'days': int(rest_value.days),
+            })
+            email_template_id.with_context(view_context).send_mail(onsc_cv_digital.id)
 
     def _check_todisable(self):
         for record in self:

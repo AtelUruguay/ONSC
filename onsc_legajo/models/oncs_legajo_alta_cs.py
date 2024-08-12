@@ -188,10 +188,9 @@ class ONSCLegajoAltaCS(models.Model):
                                                               'cancelled': [('readonly', True)]})
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
-    state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False,
+    legajo_state_id = fields.Many2one(
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones', copy=False,
         readonly=False, states={'confirmed': [('readonly', True)], 'cancelled': [('readonly', True)]})
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
                                     readonly=False, states={'confirmed': [('readonly', True)],
@@ -620,7 +619,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('regime_origin_id')
     def _compute_security_job_id_domain(self):
-        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
+        user_level = self.env.user.employee_id.job_id.sequence
         for rec in self:
             domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
@@ -633,6 +632,13 @@ class ONSCLegajoAltaCS(models.Model):
             if record.date_end_commission and record.date_start_commission and record.date_end_commission < record.date_start_commission:
                 raise ValidationError(_("La fecha hasta debe ser mayor o igual que la fecha desde"))
 
+    @api.constrains("reason_description", "resolution_description")
+    def _check_len_description(self):
+        for record in self:
+            if record.reason_description and len(record.reason_description) > 50:
+                raise ValidationError(_("El campo Descripción del Motivo no puede tener más de 50 caracteres."))
+            if record.resolution_description and len(record.resolution_description) > 100:
+                raise ValidationError(_("El campo Descripción de la resolución no puede tener más de 100 caracteres."))
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
         contracts = self.env['hr.contract'].sudo().search([
@@ -670,7 +676,7 @@ class ONSCLegajoAltaCS(models.Model):
         self.date_end_commission = False
         self.department_id = False
         self.security_job_id = False
-        self.state_id = False
+        self.legajo_state_id = False
         self.occupation_id = False
         self.regime_commission_id = False
         self.reason_description = False
@@ -706,8 +712,8 @@ class ONSCLegajoAltaCS(models.Model):
             for required_field in REQUIRED_FIELDS:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
-            if record.inciso_destination_id.is_central_administration and not record.state_id:
-                message.append(record._fields['state_id'].string)
+            if record.inciso_destination_id.is_central_administration and not record.legajo_state_id:
+                message.append(record._fields['legajo_state_id'].string)
             if record.inciso_origin_id.is_central_administration and not record.contract_id.sec_position:
                 message.append(record._fields['secPlaza'].string)
             if record.inciso_origin_id.is_central_administration and not record.inciso_origin_id:
@@ -788,7 +794,9 @@ class ONSCLegajoAltaCS(models.Model):
         self.contract_id.with_context(no_check_write=True).deactivate_legajo_contract(
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission',
-            eff_date=fields.Date.today()
+            eff_date=fields.Date.today(),
+            inciso_dest_id=self.inciso_destination_id.id,
+            operating_unit_dest_id=self.operating_unit_destination_id.id,
         )
         if self.type_cs != 'ac2out':
             self._get_legajo_job(new_contract)
@@ -846,9 +854,14 @@ class ONSCLegajoAltaCS(models.Model):
             'commission_regime_id': self.regime_commission_id.id,
             'inciso_origin_id': self.inciso_origin_id.id,
             'operating_unit_origin_id': self.operating_unit_origin_id.id,
-            'state_id': self.state_id.id,
-            'eff_date': fields.Date.today()
+            'eff_date': fields.Date.today(),
+            'legajo_state_id': self.legajo_state_id.id,
+            'descriptor1_origin_id': origin_contract_id.descriptor1_id.id,
+            'descriptor2_origin_id': origin_contract_id.descriptor2_id.id,
+            'descriptor3_origin_id': origin_contract_id.descriptor3_id.id,
+            'descriptor4_origin_id': origin_contract_id.descriptor4_id.id,
         }
+
         if self.type_cs == 'out2ac':
             _regime_id = self.env['onsc.legajo.regime'].sudo().search([('is_fac2ac', '=', True)], limit=1).id
         else:

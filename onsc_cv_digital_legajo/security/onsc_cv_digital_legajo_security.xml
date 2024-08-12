@@ -64,5 +64,11 @@
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
+        <record id="group_legajo_reporte_legajo" model="res.groups">
+            <field name="name">Legajo - Imprimir legajo</field>
+            <field name="comment">Legajo - Imprimir legajo</field>
+            <field name="category_id" ref="onsc_legajo.module_category_onsc_legajo"/>
+        </record>
+
     </data>
 </odoo>

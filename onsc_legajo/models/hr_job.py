@@ -91,7 +91,7 @@ class HrJob(models.Model):
         string='Asignaciones de funciones'
     )
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?')
-        
+    sequence = fields.Integer(string="Nivel", compute='_compute_sequence', store=True)
 
     _sql_constraints = [
         ('name_company_uniq', 'unique(1=1)',
@@ -111,10 +111,19 @@ class HrJob(models.Model):
             record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto')
             record.role_extra_is_readonly = not self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto') and record.end_date and record.end_date <= fields.Date.today()
+
     #
     # def _compute_is_role_assignment_admin(self):
     #     for record in self:
     #         record.is_role_assignment_admin = self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar')
+    @api.depends('role_ids', 'role_ids.user_role_id.sequence', 'role_extra_ids', 'role_extra_ids.user_role_id.sequence')
+    def _compute_sequence(self):
+        today = fields.Date.today()
+        for rec in self:
+            role_list = rec.role_ids.filtered(
+                lambda r: r.active and r.start_date <= today and (r.end_date is False or r.end_date >= today)) | rec.role_extra_ids.filtered(
+                lambda r: r.active and r.start_date <= today and (r.end_date is False or r.end_date >= today))
+            rec.sequence = role_list and role_list.sorted(key=lambda line: line.user_role_id.sequence)[0].user_role_id.sequence
 
     @api.constrains("contract_id", "start_date", "end_date")
     def _check_date_range_into_contract(self):
@@ -282,7 +291,7 @@ class HrJob(models.Model):
     def deactivate(self, date_end):
         for job in self.suspend_security().filtered(
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
-            job.role_assignment_ids.write({
+            job.role_assignment_ids.filtered(lambda x: x.date_end is False or x.date_end > date_end).write({
                 'date_end': date_end
             })
             job.end_date = date_end
@@ -329,6 +338,27 @@ class HrJob(models.Model):
             ]
         return self.search_count(args) == 0
 
+    def is_this_job_available_for_manager(self, job, department, date):
+        """
+
+        :param job: Record of hr.job
+        :param date: Fecha a chequear
+        :param nro_doc: Si se pasa es para chequear si no es el mismo funcionario
+        :return:
+        """
+        # TODO no se precisa por ahora definir para periodos cerrados
+        args = [
+            ('id', '!=', job.id),
+            ('department_id', '=', department.id),
+            ('is_uo_manager', '=', True),
+            '|',
+            '|',
+            ('start_date', '>=', date),
+            '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date),
+            ('department_id.is_manager_reserved', '=', True)
+        ]
+        return self.search_count(args) == 0
+
     def update_managers(self):
         self.env['hr.department'].search([('manager_id', '!=', False)]).write({'manager_id': False})
         date = fields.Date.today()
@@ -359,10 +389,7 @@ class HrJobRoleLine(models.Model):
             job_roles |= record.job_id.role_extra_ids
             job_roles = job_roles.filtered(
                 lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
-            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (
-                    record.end_date is False or record.end_date >= x.start_date)) or (
-                                                    x.end_date and x.end_date >= record.start_date and (
-                                                    record.end_date is False or record.end_date >= x.start_date))):
+            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date)) or (x.end_date and x.end_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date))):
                 raise ValidationError(_("El rol configurado no puede repetirse para el mismo puesto en el mismo "
                                         "periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 
@@ -407,13 +434,14 @@ class HrJobRoleLine(models.Model):
             rec.user_role_id_domain = self._user_role_id_domain()
 
     def _user_role_id_domain(self):
+        user_level = self.env.user.employee_id.job_id.sequence
         if self._context.get('bulked_creation'):
             return json.dumps([('id', '!=', False)])
         if self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc'):
-            args = []
+            args = [('sequence', '>=', user_level)]
         else:
-            args = [('is_byinciso', '=', True)]
+            args = [('sequence', '>=', user_level), ('is_byinciso', '=', True)]
         roles = self.env['res.users.role'].search(args)
         return json.dumps([('id', 'in', roles.ids)])
 

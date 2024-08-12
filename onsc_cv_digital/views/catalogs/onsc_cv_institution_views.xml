@@ -26,6 +26,14 @@
         <field name="model">onsc.cv.institution</field>
         <field name="arch" type="xml">
             <tree string="Instituciones">
+                 <header>
+                    <button
+                    name = "action_reject_multi"
+                    type = "object"
+                    string = "Rechazar"
+                    groups = "onsc_cv_digital.group_reject_catalogs_cv"
+                    />
+                </header>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="country_id"/>
@@ -33,6 +41,7 @@
                 <field name="enable_mec"/>
                 <field name="company_id" groups="base.group_multi_company" invisible="1"/>
                 <field name="state"/>
+                <field name="is_default"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -79,6 +88,8 @@
                                    readonly="context.get('is_readonly')"/>
                             <field name="is_unformal_education"
                                    readonly="context.get('is_readonly')"/>
+                            <field name="is_default" readonly="context.get('is_readonly')"/>
+                            <field name="is_without_academic_program" readonly="context.get('is_readonly')"/>
                         </group>
                         <group>
                             <field name="reject_reason" states="rejected"/>

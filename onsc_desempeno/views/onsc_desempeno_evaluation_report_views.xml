@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-
+ <record id="onsc_desempeno_evaluation_report_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.report.search</field>
+        <field name="model">onsc.desempeno.evaluation.report</field>
+        <field name="arch" type="xml">
+             <search string="Consulta General del Ciclo de Evaluación">
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="general_cycle_id"/>
+                <field name="evaluation_type"/>
+                <field name="evaluator_id"/>
+                <field name="evaluated_id"/>
+                <field name="state"/>
+                <group string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_general_cycle_id" string="Ciclo general" context="{'group_by': 'general_cycle_id'}"/>
+                    <filter name="group_evaluated_id" string="Evaluado" context="{'group_by': 'evaluated_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
     <record id="onsc_desempeno_evaluation_report_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.evaluation.report.tree</field>
         <field name="model">onsc.desempeno.evaluation.report</field>
@@ -13,6 +32,7 @@
                 </header>
                 <field name="evaluation_id" invisible="1"/>
                 <field name="consolidated_id" invisible="1"/>
+                <field name="show_button_evaluation" invisible="1"/>
                 <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
                 <field name="general_cycle_id"/>
@@ -20,7 +40,8 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="state"/>
-                <button name="button_open_evaluation" type="object" string="Ver Evaluación" icon="fa-edit"/>
+                <button name="button_open_evaluation" attrs="{'invisible':[('show_button_evaluation', '=',False)]}"
+                        type="object" string="Ver Evaluación" icon="fa-edit"/>
             </tree>
 
         </field>

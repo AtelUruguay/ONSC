@@ -274,13 +274,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         " \n Los datos para la norma tiene un formato inválido")
                 if not office:
                     message_error.append(
-                        "No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
+                        "No se pudo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
                             line[self.get_position(column_names, 'program')],
                             line[self.get_position(column_names, 'project')]))
 
                 if not norm_id:
                     message_error.append(
-                        " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
+                        " \nNo se pudo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
                             line[self.get_position(column_names, 'norm_year')],
                             line[self.get_position(column_names, 'norm_number')],
                             line[self.get_position(column_names, 'norm_article')],
@@ -292,11 +292,14 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     self.get_position(column_names, 'descriptor2_id')])
                 descriptor3_id = MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[
                     self.get_position(column_names, 'descriptor3_id')])
+                if not descriptor3_id:
+                    message_error.append(
+                        "El campo Descriptor 3  no está definido o no ha sido encontrado")
                 descriptor4_id = MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[
                     self.get_position(column_names, 'descriptor4_id')])
                 budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
                 if not budget_item_id:
-                    message_error.append("No se puedo encontrar la partida con datos de los descriptores")
+                    message_error.append("No se pudo encontrar la partida con datos de los descriptores")
 
                 address_nro_door = line[self.get_position(column_names, 'address_nro_door')]
                 if len(str(address_nro_door)) > 5:
@@ -343,9 +346,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 regime_id = MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
                                                                 line[self.get_position(column_names,
                                                                                        'regime_id')])
-                state_id = MassLine.find_by_code_name_many2one('state_id', 'code', 'name', line[
-                    self.get_position(column_names, 'state_id')])
-                if not state_id:
+                legajo_state_id = MassLine.find_by_code_name_many2one('legajo_state_id', 'code', 'name', line[
+                    self.get_position(column_names, 'legajo_state_id')])
+                if not legajo_state_id:
                     message_error.append(
                         "El campo Departamento donde desempeña funciones no está definido o no ha sido encontrado")
 
@@ -416,7 +419,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         self.get_position(column_names, 'department_id')]),
                     'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[
                         self.get_position(column_names, 'security_job_id')]),
-                    'state_id': state_id,
+                    'legajo_state_id': legajo_state_id,
                     'is_responsable_uo': line[self.get_position(column_names, 'is_responsable_uo')],
                     'occupation_id': occupation_id,
                     'date_income_public_administration': datetime.datetime.fromordinal(
@@ -509,7 +512,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                })
             except Exception as e:
                 self.env.cr.rollback()
-                line.write({'state': 'error', 'message_error': "No se puedo crear el contacto: " + tools.ustr(e)})
+                line.write({'state': 'error', 'message_error': "No se pudo crear el contacto: " + tools.ustr(e)})
                 self.env.cr.commit()
                 continue
             cv_digital = CVDigital.sudo().search([('partner_id', '=', partner.id)], limit=1)
@@ -546,7 +549,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 self.env.cr.commit()
             except Exception as e:
                 self.env.cr.rollback()
-                line.write({'state': 'error', 'message_error': "No se puedo crear el CV: " + tools.ustr(e)})
+                line.write({'state': 'error', 'message_error': "No se pudo crear el CV: " + tools.ustr(e)})
                 self.env.cr.commit()
                 continue
 
@@ -568,7 +571,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'nroPlaza': line.nroPlaza,
                 'department_id': line.department_id.id if line.department_id else False,
                 'security_job_id': line.security_job_id.id if line.security_job_id else False,
-                'state_id': line.state_id.id if line.state_id else False,
+                'legajo_state_id': line.legajo_state_id.id if line.legajo_state_id else False,
                 'is_responsable_uo': line.is_responsable_uo,
                 'occupation_id': line.occupation_id.id if line.occupation_id else False,
                 'date_income_public_administration': line.date_income_public_administration,
@@ -622,7 +625,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             except Exception as e:
                 self.env.cr.rollback()
                 line.write({'state': 'error',
-                            'message_error': line.message_error + " \nNo se puedo crear el alta de vínculo laboral: " + tools.ustr(
+                            'message_error': line.message_error + " \nNo se pudo crear el alta de vínculo laboral: " + tools.ustr(
                                 e)})
                 self.env.cr.commit()
                 continue
@@ -718,7 +721,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 ('program', '=', office.programa),
                 ('project', '=', office.proyecto),
                 ('operating_unit_id', '=', self.operating_unit_id.id),
-                ('employee_id', '=', employee.id),
+                ('legajo_id.emissor_country_id', '=', country_uy_id.id),
+                ('legajo_id.document_type_id', '=', cv_document_type_id),
+                ('legajo_id.nro_doc', '=', values['document_number']),
                 ('legajo_state', '=', 'active')])):
                 exist_altaVL = True
         return exist_altaVL
@@ -808,10 +813,10 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     department_id = fields.Many2one("hr.department", string="Unidad organizativa")
     department_id_domain = fields.Char(compute='_compute_department_id_domain')
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
-    state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]")
+
+    legajo_state_id = fields.Many2one(
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones')
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
     date_income_public_administration = fields.Date(string="Fecha de ingreso a la administración pública")

@@ -8,6 +8,7 @@
             <field name="group_id" position="after">
                 <field name="is_byinciso"/>
                 <field name="is_uo_manager"/>
+                <field name="sequence"/>
             </field>
         </field>
     </record>

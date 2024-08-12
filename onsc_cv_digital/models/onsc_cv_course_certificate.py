@@ -2,8 +2,9 @@
 
 import json
 
-from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+
+from odoo import fields, models, api, _
 
 TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
@@ -55,6 +56,10 @@ class ONSCCVCourseCertificate(models.Model):
     certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)
     institution_id_domain = fields.Char(compute='_compute_institution_id_domain')
+    internal_course = fields.Selection(INDUCTION_TYPES,
+                                       '¿Fue dictado/a internamente por un miembro de su empresa/organismo/institución en el que trabaja o trabajó?',
+                                       required=True)
+    internal_course_name = fields.Char("Nombre de la empresa/organismo/institución")
 
     @api.onchange('certificate_start_date')
     def onchange_certificate_start_date(self):
@@ -149,7 +154,23 @@ class ONSCCVCourseCertificate(models.Model):
     def onchange_calc_name(self):
         self.name = self._calc_name_by_record_type()
 
-    # Auxiliary functions
+    @api.onchange('internal_course', 'country_id')
+    def onchange_internal_course(self):
+        Institution = self.env['onsc.cv.institution'].suspend_security()
+        Subinstitution = self.env['onsc.cv.subinstitution'].suspend_security()
+
+        if self.internal_course == 'yes':
+            self.institution_id = Institution.search(
+                [('is_default', '=', True), ('country_id', '=', self.country_id.id)]).id
+            self.subinstitution_id = Subinstitution.search(
+                [('institution_id', '=', self.institution_id.id), ('is_default', '=', True)]).id
+        else:
+            self.internal_course_name = False
+            self.institution_id = False
+            self.subinstitution_id = False
+
+            # Auxiliary functions
+
     def _clear_fields(self):
         self.ensure_one()
         fields_list = []
@@ -232,6 +253,7 @@ class ONSCCVCourseCertificate(models.Model):
             ("certificate_id", ['id', 'name']),
             ("line_ids", self.env['onsc.cv.education.area.course']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
+            "internal_course_name",
         ])
         return json_dict
 

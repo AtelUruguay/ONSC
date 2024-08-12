@@ -11,13 +11,43 @@ DOCUMENTARY_VALIDATION_STATES = [('to_validate', 'Para validar'),
 class ONSCCVAbstractFileValidation(models.AbstractModel):
     _inherit = 'onsc.cv.abstract.documentary.validation'
 
+    def _get_validation_config(self):
+        if self._context.get('force_show_validation_section'):
+            return self.env["onsc.cv.documentary.validation.config"].get_config()
+        return self.env["onsc.cv.documentary.validation.config"].get_config(self._name)
+
     def _check_todisable_dynamic_fields(self):
         return super(ONSCCVAbstractFileValidation,
                      self)._check_todisable_dynamic_fields() or self.cv_digital_id.is_docket
 
     @property
     def widget_call_documentary_button(self):
-        if self._context.get('is_legajo'):
+        if self._context.get('is_legajo') and self._context.get('show_only_status'):
+            return etree.XML("""
+                            <div>
+                                <field name="documentary_validation_state" invisible="1"/>
+                                <div class="alert alert-danger" role="alert"
+                                    attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            El registro ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
+                                            <p/>
+                                            Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                                        </strong>
+                                    </p>
+                                </div>
+                                <div class="alert alert-success" role="alert"
+                                    attrs="{'invisible': [('documentary_validation_state', '!=', 'validated')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            El registro ha sido validado
+                                            <p/>
+                                            Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>""")
+        elif self._context.get('is_legajo'):
             return etree.XML("""
                             <div>
                                 <field name="documentary_validation_state" invisible="1"/>
@@ -98,7 +128,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     def write(self, vals):
         result = super(ONSCCVAbstractFileValidation, self).write(vals)
-        if hasattr(self, 'cv_digital_id'):
+        if hasattr(self, 'cv_digital_id') and not self._context.get('ignore_documentary_status'):
             self.mapped('cv_digital_id').button_legajo_update_documentary_validation_sections_tovalidate()
         return result
 
@@ -120,8 +150,52 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'documentary_validation_date': fields.Date.today(),
             'documentary_user_id': _user_id,
         }
-        self.update_call_instances(args)
-        return super(ONSCCVAbstractFileValidation, self).button_documentary_approve()
+        self.with_context(updating_call_instances=True).update_call_instances(args)
+        result = super(ONSCCVAbstractFileValidation, self).button_documentary_approve()
+        if not self._context.get('updating_call_instances') and len(self) == 1 and self.cv_digital_id.type:
+            self.with_context(ignore_documentary_status=True).set_legajo_validated_records()
+        return result
+
+    def set_legajo_validated_records(self):
+        """
+        METODO PARA LLENAR ELEMENTOS DEL LEGAJO DESDE LA VALIDACION DOCUMENTAL DEL CV (TANTO EN LLAMADOS COMO EN VDL)
+        :return:
+        """
+        if hasattr(self, '_legajo_model'):
+            LegajoModel = self.env[self._legajo_model].suspend_security()
+            employee = self.cv_digital_id.employee_id
+            legajo = self.env['onsc.legajo'].sudo().search([('employee_id', '=', employee.id)], limit=1)
+            # SI EXISTE YA UN RECORD ASOCIADO ACTUALIZO
+            if self.cv_digital_id.type == 'call' and self.original_instance_identifier:
+                origin_record_id = self.original_instance_identifier
+            else:
+                origin_record_id = self.id
+            legajo_record = LegajoModel.search([
+                ('employee_id', '=', employee.id),
+                ('origin_record_id', '=', origin_record_id),
+            ], limit=1)
+            # si ya esta el record de legajo actualizo
+            if legajo_record:
+                legajo_record_vals = self.copy_data()
+                legajo_record_vals = self._update_legajo_record_vals(legajo_record_vals[0])
+                legajo_record.with_context(is_legajo_record=True).write(legajo_record_vals)
+            # sino creo uno nuevo
+            else:
+                legajo_record_vals = self.copy_data(default={
+                    'employee_id': employee.id,
+                    'legajo_id': legajo.id,
+                    'origin_record_id': origin_record_id
+                })
+                LegajoModel.with_context(is_legajo_record=True).create(legajo_record_vals)
+        return True
+
+    def _update_legajo_record_vals(self, vals):
+        """
+        METODO PARA EXTENDER EN OTRAS ENTIDADES SI SE PRECISA AJUSTAR INFORMACION A GUARDAR EN EL RECORD DE LEGAJO
+        :param vals:
+        :return:
+        """
+        return vals
 
     def documentary_reject(self, reject_reason):
         args = {
