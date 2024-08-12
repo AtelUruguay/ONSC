@@ -157,7 +157,7 @@
                                    domain="security_job_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
-                            <field name="is_responsable_uo" attrs="{'readonly': [('is_regime_manager', '=', False)]}"/>
+                            <field name="is_responsable_uo" attrs="{'readonly': ['|',('state', 'not in', ['borrador', 'error_sgh']),('is_regime_manager', '=', False)]}"/>
                             <field name="legajo_state_id"
                                    attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
