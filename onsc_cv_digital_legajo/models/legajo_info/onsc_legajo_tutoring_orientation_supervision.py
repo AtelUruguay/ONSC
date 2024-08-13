@@ -34,7 +34,9 @@ HISTORY_COLUMNS = [
     # HISTORICOS
     'documentary_validation_date',
     'documentary_validation_state',
-    'documentary_user_id'
+    'documentary_user_id',
+    'generic_academic_program_id',
+    'name_generic_academic_program'
 ]
 TREE_HISTORY_COLUMNS = [
     'start_date',
@@ -98,6 +100,8 @@ class ONSCLegajoTutorialOrientationSupervision(models.Model):
     is_tutor_master = fields.Boolean(string="Es tutor? ", history=True)
     is_tutor_option_other_enable = fields.Boolean(string='Permitir opción otra/o?', history=True)
     is_divulgation_option_other_enable = not fields.Boolean(string='Otro medio de divulgación?', history=True)
+    show_generic_academic_program = fields.Boolean('¿Ver programa academico generico?', history=True)
+    displayed_academic_program = fields.Char(string='Programa académico', history=True)
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_tutoring_orientation_supervision_form').id
