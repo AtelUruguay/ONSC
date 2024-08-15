@@ -239,7 +239,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
             'level_id': evaluation.level_id.id,
             'evaluation_stage_id': evaluation.evaluation_stage_id.id,
             'evaluation_type': evaluation_type,
-            'evaluator_ids': [(4, evaluation.evaluator_id.id)]
         }
         return Consolidated.create(data)
 
