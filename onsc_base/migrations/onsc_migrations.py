@@ -76,3 +76,11 @@ class ONSCMigrations(models.Model):
 
         _logger.info("FIN CARGA DE SECCIONES VALIDADAS")
         return True
+
+    def _v28_5_1(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        for evaluation in Evaluation.with_context(ignore_security_rules=True).search([
+            ('evaluation_type', '=', 'collaborator'),
+        ]):
+            evaluation.write({'uo_id': evaluation.evaluator_uo_id.id})
+        return True
