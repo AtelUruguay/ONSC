@@ -562,7 +562,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     'list_manager_id': data.evaluation_list_id.manager_id.id,
                     'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
                     'evaluation_type': 'collaborator',
-                    'uo_id': data.job_id.department_id.id,
+                    'uo_id': self.manager_uo_id.id,
                     'inciso_id': data.contract_id.inciso_id.id,
                     'operating_unit_id': data.contract_id.operating_unit_id.id,
                     'occupation_id': data.contract_id.occupation_id.id,
