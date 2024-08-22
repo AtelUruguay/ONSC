@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import models, _
+from odoo import models
 
 _logger = logging.getLogger(__name__)
 
@@ -94,4 +94,5 @@ class ONSCMigrations(models.Model):
                     evaluation.evaluator_uo_id.display_name,
                 ))
                 evaluation.write({'uo_id': evaluation.evaluator_uo_id.id})
+        _logger.info('FIN CRON 28.6')
         return True

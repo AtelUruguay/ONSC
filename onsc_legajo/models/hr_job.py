@@ -381,7 +381,6 @@ class HrJob(models.Model):
         ], limit=1)
 
 
-
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'
 

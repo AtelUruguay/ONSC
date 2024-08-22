@@ -224,7 +224,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
             self._check_date()
         return True
 
-
     def _create_consolidated(self, evaluation, evaluation_type):
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security().with_context(
             ignore_security_rules=True)
@@ -248,13 +247,12 @@ class ONSCDesempenoEvaluationStage(models.Model):
             number = random.randint(1, 1000)
             competency.write({'consolidate_id': consolidate.id,
                               'order': number})
+
     def _process_create_consolidated(self):
-        # TODO mejorable en términos lógicos y de optimización
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
 
         search_domain = [('evaluation_stage_id', '=', self.id), ('state', '=', 'finished'),
                          ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]
-
         evaluated_dict = {}
         evaluations = Evaluation.search(search_domain)
         for evaluation in evaluations:
@@ -269,27 +267,27 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 # R3: >1 COLABORADOR Y <=1 ENTORNO: HAGO CONSOLIDADO DE COLABORADOR E INCLUYO SOLO COMPETENCIAS DE EVALUACIONES DE COLABORADOR
                 # R4: >1 COLABORADOR Y >1 ENTORNO: HAGO CONSOLIDADO DE COLABORADOR Y ENTORNO Y CADA COMPETENCIA POR SU TIPO
 
-                if (_collaborator_qty + _environment_evaluation_qty) <= 1: #R1 es exluyente que al menos haya 1 de algún tipo
+                if (_collaborator_qty + _environment_evaluation_qty) <= 1:  # R1 es exluyente que al menos haya 1 de algún tipo
                     evaluated_dict[evaluated_id] = {
                         'case': 1,
                         'collaborator_consolidated': self.env['onsc.desempeno.consolidated'],
                         'environment_consolidated': self.env['onsc.desempeno.consolidated'],
                     }
-                elif _environment_evaluation_qty >= 1 and _collaborator_qty <= 1: #2
+                elif _environment_evaluation_qty >= 1 and _collaborator_qty <= 1:  # 2
                     consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='environment')
                     evaluated_dict[evaluated_id] = {
                         'case': 2,
                         'collaborator_consolidated': self.env['onsc.desempeno.consolidated'],
                         'environment_consolidated': consolidated,
                     }
-                elif _collaborator_qty > 1 and _environment_evaluation_qty <= 1: #3
+                elif _collaborator_qty > 1 and _environment_evaluation_qty <= 1:  # 3
                     consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='collaborator')
                     evaluated_dict[evaluated_id] = {
                         'case': 3,
                         'collaborator_consolidated': consolidated,
                         'environment_consolidated': self.env['onsc.desempeno.consolidated'],
                     }
-                elif _collaborator_qty > 1 and _environment_evaluation_qty > 1: #4
+                elif _collaborator_qty > 1 and _environment_evaluation_qty > 1:  # 4
                     collaborator_consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='collaborator')
                     environment_consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='environment')
                     evaluated_dict[evaluated_id] = {
