@@ -173,7 +173,6 @@ class ONSCLegajoAltaCS(models.Model):
                                       related='program_project_destination_id.programaDescripcion')
     project_destination = fields.Char(string='Proyecto',
                                       related='program_project_destination_id.proyectoDescripcion')
-    regime_destination = fields.Char(string='Régimen', default='3001')
     date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False,
                                         readonly=False, states={'confirmed': [('readonly', True)],
                                                                 'cancelled': [('readonly', True)]})
@@ -684,7 +683,6 @@ class ONSCLegajoAltaCS(models.Model):
         self.program_project_destination_id = False
         self.program_destination = False
         self.project_destination = False
-        self.regime_destination = False
         self.date_start_commission = False
         self.date_end_commission = False
         self.department_id = False
