@@ -317,7 +317,8 @@ class ONSCDesempenoEvaluationList(models.Model):
             ('evaluation_stage_id', '=', evaluation_stage.id),
             ('state', '=', 'in_progress'),
         ]):
-
+            if not evaluation_list.manager_uo_id:
+                continue
             manage_job = Jobs.get_management_job_from_department(evaluation_list.manager_uo_id)
             is_manager_job_in_other_autoevaluations = self.is_manager_job_in_other_autoevaluations(
                 manage_job,

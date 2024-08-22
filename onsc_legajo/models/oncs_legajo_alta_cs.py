@@ -144,7 +144,7 @@ class ONSCLegajoAltaCS(models.Model):
     program_origin = fields.Char(string='Programa', related='program_project_origin_id.programaDescripcion')
     project_origin = fields.Char(string='Proyecto', related='program_project_origin_id.proyectoDescripcion')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
-    is_regime_manager = fields.Boolean(related="regime_origin_id.is_manager", store=True)
+    is_regime_manager = fields.Boolean(compute='_compute_is_regime_manager', store=True)
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
@@ -455,6 +455,17 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.type_cs = 'undefined'
 
+    @api.depends('type_cs', 'regime_origin_id')
+    def _compute_is_regime_manager(self):
+        Regime = self.env['onsc.legajo.regime'].sudo()
+        for record in self:
+            if record.type_cs == 'out2ac':
+                record.is_regime_manager = Regime.search_count([('is_fac2ac', '=', True), ('is_manager', '=', True)])
+            elif record.regime_origin_id:
+                record.is_regime_manager = record.regime_origin_id.is_manager
+            else:
+                record.is_regime_manager = False
+
     @api.depends('contract_id')
     def _compute_program_project_origin_id(self):
         Office = self.env['onsc.legajo.office'].sudo()
@@ -466,6 +477,7 @@ class ONSCLegajoAltaCS(models.Model):
                     ('programa', '=', rec.contract_id.program), ('proyecto', '=', rec.contract_id.project)], limit=1).id
             else:
                 rec.program_project_origin_id = False
+            rec.is_responsable_uo = False
 
     # COMPUTES COMPORTAMIENTOS
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'operating_unit_origin_id',
@@ -650,6 +662,7 @@ class ONSCLegajoAltaCS(models.Model):
             self.contract_id = contracts.id
         else:
             self.contract_id = False
+        self.is_responsable_uo = False
 
     @api.onchange('inciso_origin_id')
     def onchange_inciso_origin_id(self):
