@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import models
+from odoo import models, _
 
 _logger = logging.getLogger(__name__)
 
@@ -77,10 +77,21 @@ class ONSCMigrations(models.Model):
         _logger.info("FIN CARGA DE SECCIONES VALIDADAS")
         return True
 
-    def _v28_5_1(self):
+    def _v28_6(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        _logger.info('CRON 28.6')
         for evaluation in Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', '=', 'collaborator'),
         ]):
-            evaluation.write({'uo_id': evaluation.evaluator_uo_id.id})
+            if evaluation.uo_id.id != evaluation.evaluator_uo_id.id:
+                _logger.info('INFO EVALUACION: %s, EVALUADOR: %s, EVALUADO: %s, UO_ACTUAL: %s,%s, UO_NUEVA: %s,%s' % (
+                    evaluation.id,
+                    evaluation.evaluator_id.display_name,
+                    evaluation.evaluated_id.display_name,
+                    evaluation.uo_id.id,
+                    evaluation.uo_id.display_name,
+                    evaluation.evaluator_uo_id.id,
+                    evaluation.evaluator_uo_id.display_name,
+                ))
+                evaluation.write({'uo_id': evaluation.evaluator_uo_id.id})
         return True
