@@ -362,8 +362,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         :param evaluation_stage: Recorder onsc.desempeno.evaluation.stage Ciclo 390
         :return: Si ese puesto ya tiene autoevaluaciones no canceladas para ese Ciclo360
         """
-        self._cr.execute("""SELECT COUNT(id) FROM 
-                                                onsc_desempeno_evaluation WHERE 
+        self._cr.execute("""SELECT COUNT(id) FROM onsc_desempeno_evaluation WHERE 
                                                 current_job_id=%s AND 
                                                 evaluation_type='%s' AND
                                                 evaluation_stage_id=%s AND

@@ -2,6 +2,7 @@
 
 from odoo import fields, models
 
+
 class Department(models.Model):
     _inherit = "hr.department"
 
