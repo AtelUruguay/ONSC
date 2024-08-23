@@ -476,7 +476,6 @@ class ONSCLegajoAltaCS(models.Model):
                     ('programa', '=', rec.contract_id.program), ('proyecto', '=', rec.contract_id.project)], limit=1).id
             else:
                 rec.program_project_origin_id = False
-            rec.is_responsable_uo = False
 
     # COMPUTES COMPORTAMIENTOS
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'operating_unit_origin_id',
@@ -687,6 +686,7 @@ class ONSCLegajoAltaCS(models.Model):
         self.date_end_commission = False
         self.department_id = False
         self.security_job_id = False
+        self.is_responsable_uo = False
         self.legajo_state_id = False
         self.occupation_id = False
         self.regime_commission_id = False
@@ -698,6 +698,9 @@ class ONSCLegajoAltaCS(models.Model):
     def onchange_inciso_destination_id(self):
         self.norm_id = False
         self.operating_unit_destination_id = False
+        self.department_id = False
+        self.security_job_id = False
+        self.is_responsable_uo = False
 
     @api.onchange('operating_unit_destination_id')
     def onchange_operating_unit_destination_id(self):
