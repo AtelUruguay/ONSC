@@ -56,9 +56,10 @@ class ONSCCVCourseCertificate(models.Model):
     certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)
     institution_id_domain = fields.Char(compute='_compute_institution_id_domain')
-    internal_course = fields.Selection(INDUCTION_TYPES,
-                                       '¿Fue dictado/a internamente por un miembro de su empresa/organismo/institución en el que trabaja o trabajó?',
-                                       required=True)
+    internal_course = fields.Selection(
+        INDUCTION_TYPES,
+        '¿Fue dictado/a internamente por un miembro de su empresa/organismo/institución en el que trabaja o trabajó?'
+    )
     internal_course_name = fields.Char("Nombre de la empresa/organismo/institución")
 
     @api.onchange('certificate_start_date')
