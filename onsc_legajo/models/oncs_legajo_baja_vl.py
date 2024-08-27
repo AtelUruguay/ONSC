@@ -268,7 +268,9 @@ class ONSCLegajoBajaVL(models.Model):
         for record in self:
             message = []
             for required_field in REQUIRED_FIELDS:
-                if not eval('record.%s' % required_field):
+                if required_field == 'norm_number' and not record.norm_id:
+                    message.append(record._fields[required_field].string)
+                elif required_field != 'norm_number' and not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
             if not record.employee_id.cv_nro_doc:
                 message.append(_("Debe tener numero de documento"))
