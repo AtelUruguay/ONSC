@@ -22,8 +22,7 @@ STATES = [
 ]
 # campos requeridos para la sincronización
 
-REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article',
-                   'norm_type', 'norm_year', 'resolution_description', 'resolution_date',
+REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_id', 'resolution_description', 'resolution_date',
                    'resolution_type', 'causes_discharge_id', 'contract_id']
 
 
@@ -268,9 +267,7 @@ class ONSCLegajoBajaVL(models.Model):
         for record in self:
             message = []
             for required_field in REQUIRED_FIELDS:
-                if required_field == 'norm_number' and not record.norm_id:
-                    message.append(record._fields[required_field].string)
-                elif required_field != 'norm_number' and not eval('record.%s' % required_field):
+                if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
             if not record.employee_id.cv_nro_doc:
                 message.append(_("Debe tener numero de documento"))
