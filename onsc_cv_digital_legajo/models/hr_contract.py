@@ -15,7 +15,6 @@ class HrContract(models.Model):
             eff_date=eff_date,
             clean_destination_info=clean_destination_info
         )
-        if legajo_state == 'active':
-            for record in self:
-                record.legajo_id.update_all_legajo_sections()
+        for record in self:
+            record.legajo_id.update_all_legajo_sections()
         return result
