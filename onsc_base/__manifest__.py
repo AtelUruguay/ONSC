@@ -26,7 +26,8 @@ ONSC - Base
         'field_binary_show_filename',
         'disable_userprofile_menuitems',
         'disable_mail_message_options',
-        'web_dialog_confirm_disable_button'
+        'web_dialog_confirm_disable_button',
+        'web_prevent_close_wizard'
     ],
     'data': [
         'security/onsc_base_security.xml',
