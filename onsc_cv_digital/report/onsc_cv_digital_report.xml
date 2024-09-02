@@ -864,7 +864,7 @@
                         <span t-field="object.subinstitution_id.name"/>
                     </t>
                 </h4>
-                <h4 t-if="object.institution_id=False and object.institution_cert_id">
+                <h4 t-if="object.institution_cert_id">
                     <span t-field="object.institution_cert_id.name"/>
                     <t t-if="object.institution_cert_id.id!=object.subinstitution_cert_id.id">/
                         <span t-field="object.subinstitution_cert_id.name"/>
