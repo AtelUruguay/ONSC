@@ -110,7 +110,6 @@
                                 <field name="norm_id_domain" invisible="1"/>
                                 <field name="norm_id" colspan="3"
                                        domain="norm_id_domain"
-                                       attrs="{'readonly': [('is_read_only_description', '=', True)]}"  force_save="1"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="norm_type" colspan="2"/>
