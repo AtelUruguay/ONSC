@@ -101,10 +101,16 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         if evaluations:
             args_extended = [('state_summary', 'in', ['draft', 'in_process']),
                              ('evaluation_type', 'in',
-                              ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator',
-                               'tracing_plan']), ('inciso_id', '=', inciso_id),
+                              ['self_evaluation', 'leader_evaluation', 'collaborator', 'tracing_plan']),
+                             ('inciso_id', '=', inciso_id),
                              ('operating_unit_id', '=', operating_unit_id),
                              ('evaluator_id', '=', self.env.user.employee_id.id), ]
+
+            args_extended = expression.OR(
+                [[('state_summary', 'in', ['draft', 'in_process']),
+                  ('evaluator_id', '=', self.env.user.employee_id.id),
+                  ('evaluation_type', '=', 'environment_evaluation')], args_extended])
+
 
             args_extended = expression.OR(
                 [[('state_summary', 'in', ['draft', 'in_process']), ('evaluated_id', '=', self.env.user.employee_id.id),
@@ -117,6 +123,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                   ('gap_deal_state', '=', 'no_deal'), '|', ('evaluated_id', '=', self.env.user.employee_id.id),
                   ('evaluator_id', '=', self.env.user.employee_id.id),
                   ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
+
             args_extended = expression.OR(
                 [[('state_summary', '=', 'in_process'), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
                   ('gap_deal_state', '=', 'agree_leader'), ('evaluated_id', '=', self.env.user.employee_id.id),
@@ -130,9 +137,13 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         else:
             args_extended = [
                 ('evaluation_type', 'in',
-                 ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator',
-                  'tracing_plan']), ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
+                 ['self_evaluation', 'leader_evaluation', 'collaborator', 'tracing_plan']),
+                ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
                 ('evaluator_id', '=', self.env.user.employee_id.id), ]
+
+            args_extended = expression.OR(
+                [[('evaluator_id', '=', self.env.user.employee_id.id),
+                  ('evaluation_type', '=', 'environment_evaluation')], args_extended])
 
             args_extended = expression.OR(
                 [[('evaluated_id', '=', self.env.user.employee_id.id),

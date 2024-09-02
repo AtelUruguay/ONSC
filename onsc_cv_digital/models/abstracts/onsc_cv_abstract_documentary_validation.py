@@ -102,11 +102,25 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                             </strong>
                         </p>
                     </div>
+                    <div class="alert alert-success" role="alert"
+                        attrs="{'invisible': [('documentary_validation_state', '!=', 'validated')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ha sido validado
+                                <p/>
+                                Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                            </strong>
+                        </p>
+                    </div>
                 </div>""")
 
     @property
     def field_documentary_validation_state_tree(self):
         return etree.XML(_("""<field name='documentary_validation_state' optional='show'/>"""))
+
+    @property
+    def field_documentary_validation_state_tree_hidden(self):
+        return etree.XML(_("""<field name='documentary_validation_state' optional='hide'/>"""))
 
     def _get_validation_config(self):
         return self.env["onsc.cv.documentary.validation.config"].get_config(self._name)
@@ -133,11 +147,14 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
                 res['arch'] = xarch
                 res['fields'] = xfields
-        elif view_type == 'tree' and self._context.get('is_call_documentary_validation', False):
+        elif view_type == 'tree':
             doc = etree.XML(res['arch'])
             if len(config):
                 for node in doc.xpath('//tree'):
-                    node.append(self.field_documentary_validation_state_tree)
+                    if self._context.get('is_call_documentary_validation', False):
+                        node.append(self.field_documentary_validation_state_tree)
+                    else:
+                        node.append(self.field_documentary_validation_state_tree_hidden)
                 xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
                 res['arch'] = xarch
                 res['fields'] = xfields
