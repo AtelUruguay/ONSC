@@ -237,7 +237,7 @@
                                     <field name="cjppu_affiliate_number"/>
                                     <field name="professional_resume"
                                            placeholder="Resumen del candidato a modo de introducción"/>
-                                    <field name="is_driver_license"/>
+                                    <field name="is_driver_license" force_save="1"/>
                                 </group>
                             </group>
                             <group string="Licencias de Conducir"
