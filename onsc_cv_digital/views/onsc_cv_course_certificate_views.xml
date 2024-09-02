@@ -10,7 +10,7 @@
                         <group>
                             <field name="course_type"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
-                            <field name="internal_course"  attrs="{'invisible': [('record_type', '!=', 'course')]}" />
+                            <field name="internal_course"  attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}" />
                             <field name="course_title"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="country_id"

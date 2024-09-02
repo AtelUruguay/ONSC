@@ -24,7 +24,7 @@
                     <group>
                         <group>
                             <field name="active" invisible="1"/>
-                            <field name="code"/>
+                            <field name="code" required="0" readonly="1"/>
                             <field name="state_id" readonly="context.get('is_readonly')" force_save="1"/>
                         </group>
                         <group>

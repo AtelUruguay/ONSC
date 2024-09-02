@@ -162,6 +162,7 @@ class ONSCLegajoAltaVL(models.Model):
             legajo_vals.update({'public_admin_inactivity_years_qty': self.inactivity_years})
         if legajo_vals:
             legajo.write(legajo_vals)
+        # legajo.update_all_legajo_sections()
         return legajo
 
     @api.onchange('partner_id')

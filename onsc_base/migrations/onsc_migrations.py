@@ -76,3 +76,54 @@ class ONSCMigrations(models.Model):
 
         _logger.info("FIN CARGA DE SECCIONES VALIDADAS")
         return True
+
+    def _v28_6(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        _logger.info('CRON 28.6')
+        for evaluation in Evaluation.with_context(ignore_security_rules=True).search([
+            ('evaluation_type', '=', 'collaborator'),
+        ]):
+            if evaluation.uo_id.id != evaluation.evaluator_uo_id.id:
+                _logger.info('INFO EVALUACION: %s, EVALUADOR: %s, EVALUADO: %s, UO_ACTUAL: %s,%s, UO_NUEVA: %s,%s' % (
+                    evaluation.id,
+                    evaluation.evaluator_id.display_name,
+                    evaluation.evaluated_id.display_name,
+                    evaluation.uo_id.id,
+                    evaluation.uo_id.display_name,
+                    evaluation.evaluator_uo_id.id,
+                    evaluation.evaluator_uo_id.display_name,
+                ))
+                evaluation.write({'uo_id': evaluation.evaluator_uo_id.id})
+        _logger.info('FIN CRON 28.6')
+        return True
+
+    def _v28_7_altaVL(self, date=False, id=False):
+        _logger.info('CRON 28.7 ALTAVL')
+        AltaVL = self.env['onsc.legajo.alta.vl'].sudo().with_context(ignore_base_restrict=True)
+        if date:
+            args = [('create_date', '>=', date)]
+        elif id:
+            args = [('id', '>=', id)]
+        else:
+            return
+        cv_digitals = AltaVL.search(args).mapped('cv_digital_id')
+        _logger.info('CVS: %s' % (str(cv_digitals.ids)))
+        self._v27(cv_digitals.ids)
+        _logger.info('FIN CRON 28.7 ALTAVL')
+
+    def _v28_7_altaCS(self, date=False, id=False):
+        _logger.info('CRON 28.7 ALTACS')
+        AltaCS = self.env['onsc.legajo.alta.cs'].sudo().with_context(ignore_base_restrict=True)
+        CvDigital = self.env['onsc.cv.digital'].sudo()
+        if date:
+            args = [('create_date', '>=', date)]
+        elif id:
+            args = [('id', '>=', id)]
+        else:
+            return
+        partners = AltaCS.search(args).mapped('partner_id')
+        cv_digitals = CvDigital.search([('partner_id', 'in', partners.ids), ('type', '=', 'cv')])
+
+        _logger.info('CVS: %s' % (str(cv_digitals.ids)))
+        self._v27(cv_digitals.ids)
+        _logger.info('FIN CRON 28.7 ALTACS')

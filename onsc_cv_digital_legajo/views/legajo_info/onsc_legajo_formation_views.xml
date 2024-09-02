@@ -67,6 +67,7 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="show_generic_academic_program" invisible="1"/>
                             <field name="country_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
                             <field name="institution_id"
@@ -81,10 +82,13 @@
                             <field name="advanced_study_level_id"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
                             <field name="academic_program_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
-                                   attrs="{'readonly': ['|',('subinstitution_id', '=', False),('advanced_study_level_id', '=', False)]}"
+                                   attrs="{'invisible': [('show_generic_academic_program', '=', True)],'readonly': ['|',('subinstitution_id', '=', False),('advanced_study_level_id', '=', False)]}"
                                    domain="[('study_level_id', '=', advanced_study_level_id), ('subinstitution_id', '=', subinstitution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id,
                                             'default_country_id': country_id, 'default_study_level_id': advanced_study_level_id, 'is_readonly': True}"/>
+                            <field name="generic_academic_program_id"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
+                                   attrs="{'invisible': [('show_generic_academic_program', '=', False)]}"/>
+                            <field name="name_generic_academic_program" attrs="{'invisible': [('show_generic_academic_program', '=', False)]}"/>
                             <field name="homologated_title"
                                    attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
                             <field name="homologated_title_date"
@@ -173,7 +177,7 @@
                 <field name="country_id" string="País" optional="hide"/>
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
-                <field name="academic_program_id" optional="show"/>
+                <field name="displayed_academic_program" optional="show"/>
                 <field name="state" optional="show"/>
                 <field name="scholarship" optional="hide"/>
                 <field name="max_scholarship" optional="hide"/>

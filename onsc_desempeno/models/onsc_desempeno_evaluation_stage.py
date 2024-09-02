@@ -224,91 +224,88 @@ class ONSCDesempenoEvaluationStage(models.Model):
             self._check_date()
         return True
 
-    def _process_create_consolidated(self):
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
+    def _create_consolidated(self, evaluation, evaluation_type):
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security().with_context(
             ignore_security_rules=True)
+        data = {
+            'general_cycle_id': evaluation.general_cycle_id.id,
+            'current_job_id': evaluation.current_job_id.id,
+            'evaluated_id': evaluation.evaluated_id.id,
+            'inciso_id': evaluation.inciso_id.id,
+            'operating_unit_id': evaluation.operating_unit_id.id,
+            'uo_id': evaluation.uo_id.id,
+            'occupation_id': evaluation.occupation_id.id,
+            'level_id': evaluation.level_id.id,
+            'evaluation_stage_id': evaluation.evaluation_stage_id.id,
+            'evaluation_type': evaluation_type,
+        }
+        return Consolidated.create(data)
+
+    def _set_competency_to_consolidated(self, evaluation, consolidate):
+        consolidate.write({'evaluator_ids': [(4, evaluation.evaluator_id.id)]})
+        for competency in evaluation.evaluation_competency_ids:
+            number = random.randint(1, 1000)
+            competency.write({'consolidate_id': consolidate.id,
+                              'order': number})
+
+    def _process_create_consolidated(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
 
         search_domain = [('evaluation_stage_id', '=', self.id), ('state', '=', 'finished'),
                          ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]
+        evaluated_dict = {}
+        evaluations = Evaluation.search(search_domain)
+        for evaluation in evaluations:
+            evaluated_id = evaluation.evaluated_id.id
+            if evaluated_id not in evaluated_dict:
+                filtered_evaluations = evaluations.filtered(lambda r: r.evaluated_id.id == evaluated_id)
+                _collaborator_qty = sum(1 for r in filtered_evaluations if r.evaluation_type == 'collaborator')
+                _environment_evaluation_qty = sum(1 for r in filtered_evaluations if r.evaluation_type == 'environment_evaluation')
 
-        results = Evaluation.search(search_domain)
-        future_environment_from_collaborator_dict = {}
-        for res in results:
-            search_domain_consolidated = [
-                ('evaluated_id', '=', res.evaluated_id.id),
-                ('evaluation_stage_id', '=', self.id)
-            ]
-            if res.evaluation_type == 'environment_evaluation':
-                evaluation_type = 'environment'
-            elif res.evaluation_type == 'collaborator':
-                evaluation_type = 'collaborator'
-            # TODO ps07 12763 si es de colaborador y == 1 el filtro de abajo entonces juntarla con la de entorno, o sea,
-            # manipular el search_domain_consolidated para que si ya está pero de ENTORNO tirarla para ahí.
-            _qty = len(results.filtered(
-                lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id))
-            _full_qty = len(results.filtered(
-                lambda r: r.evaluated_id.id == res.evaluated_id.id))
-            if evaluation_type == 'environment' and _full_qty > 1:
-                create_consolidated = True
-                search_domain_consolidated = expression.AND(
-                    [[('evaluation_type', '=', 'environment')], search_domain_consolidated])
-            elif evaluation_type == 'collaborator' and _qty > 1:
-                create_consolidated = True
-                search_domain_consolidated = expression.AND(
-                    [[('evaluation_type', '=', 'collaborator')], search_domain_consolidated])
-            elif evaluation_type == 'collaborator' and _qty == 1:
-                create_consolidated = False
-                evaluation_type = 'environment'
-                future_environment_from_collaborator_dict[res.evaluated_id.id] = res
-                # search_domain_consolidated = expression.AND(
-                #     [[('evaluation_type', '=', 'environment')], search_domain_consolidated])
-            else:
-                create_consolidated = False
-            if create_consolidated:
-                if Consolidated.search_count(search_domain_consolidated) == 0:
-                    data = {
-                        'general_cycle_id': res.general_cycle_id.id,
-                        'current_job_id': res.current_job_id.id,
-                        'evaluated_id': res.evaluated_id.id,
-                        'inciso_id': res.inciso_id.id,
-                        'operating_unit_id': res.operating_unit_id.id,
-                        'uo_id': res.uo_id.id,
-                        'level_id': res.level_id.id,
-                        'evaluation_stage_id': res.evaluation_stage_id.id,
-                        'evaluation_type': evaluation_type,
-                        'evaluator_ids': [(4, res.evaluator_id.id)]
+                # R1: TIENE QUE HABER EN TOTAL MÁS DE 1
+                # R2: >=1 ENTORNO Y <=1 COLABORADOR: HAGO CONSOLIDADO DE ENTORNO E INCLUYO TODAS LAS COMPETENCIAS DE EVALUACIONES
+                # R3: >1 COLABORADOR Y <=1 ENTORNO: HAGO CONSOLIDADO DE COLABORADOR E INCLUYO SOLO COMPETENCIAS DE EVALUACIONES DE COLABORADOR
+                # R4: >1 COLABORADOR Y >1 ENTORNO: HAGO CONSOLIDADO DE COLABORADOR Y ENTORNO Y CADA COMPETENCIA POR SU TIPO
+
+                if (_collaborator_qty + _environment_evaluation_qty) <= 1:  # R1 es exluyente que al menos haya 1 de algún tipo
+                    evaluated_dict[evaluated_id] = {
+                        'case': 1,
+                        'collaborator_consolidated': self.env['onsc.desempeno.consolidated'],
+                        'environment_consolidated': self.env['onsc.desempeno.consolidated'],
                     }
+                elif _environment_evaluation_qty >= 1 and _collaborator_qty <= 1:  # 2
+                    consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='environment')
+                    evaluated_dict[evaluated_id] = {
+                        'case': 2,
+                        'collaborator_consolidated': self.env['onsc.desempeno.consolidated'],
+                        'environment_consolidated': consolidated,
+                    }
+                elif _collaborator_qty > 1 and _environment_evaluation_qty <= 1:  # 3
+                    consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='collaborator')
+                    evaluated_dict[evaluated_id] = {
+                        'case': 3,
+                        'collaborator_consolidated': consolidated,
+                        'environment_consolidated': self.env['onsc.desempeno.consolidated'],
+                    }
+                elif _collaborator_qty > 1 and _environment_evaluation_qty > 1:  # 4
+                    collaborator_consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='collaborator')
+                    environment_consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='environment')
+                    evaluated_dict[evaluated_id] = {
+                        'case': 4,
+                        'collaborator_consolidated': collaborator_consolidated,
+                        'environment_consolidated': environment_consolidated,
+                    }
+            evaluated_dict_element = evaluated_dict[evaluated_id]
+            if evaluated_dict_element['case'] == 2:
+                self._set_competency_to_consolidated(evaluation, evaluated_dict_element['environment_consolidated'])
+            elif evaluated_dict_element['case'] == 3 and evaluation.evaluation_type == 'collaborator':
+                self._set_competency_to_consolidated(evaluation, evaluated_dict_element['collaborator_consolidated'])
+            elif evaluated_dict_element['case'] == 4 and evaluation.evaluation_type == 'collaborator':
+                self._set_competency_to_consolidated(evaluation, evaluated_dict_element['collaborator_consolidated'])
+            elif evaluated_dict_element['case'] == 4 and evaluation.evaluation_type == 'environment_evaluation':
+                self._set_competency_to_consolidated(evaluation, evaluated_dict_element['environment_consolidated'])
 
-                    consolidate = Consolidated.create(data)
-
-                    for competency in res.evaluation_competency_ids:
-                        number = random.randint(1, 1000)
-                        competency.write({'consolidate_id': consolidate.id,
-                                          'order': number})
-
-                else:
-                    consolidate = Consolidated.search(search_domain_consolidated)
-                    consolidate.write({'evaluator_ids': [(4, res.evaluator_id.id)]})
-
-                    for competency in res.evaluation_competency_ids:
-                        number = random.randint(1, 1000)
-                        competency.write({'consolidate_id': consolidate.id,
-                                          'order': number})
-        # en caso de 1 colaborar crearlo si hay de environment
-        for evaluated_id, res in future_environment_from_collaborator_dict.items():
-            search_domain_consolidated = [
-                ('evaluation_type', '=', 'environment'),
-                ('evaluated_id', '=', res.evaluated_id.id),
-                ('evaluation_stage_id', '=', res.evaluation_stage_id.id)
-            ]
-            environment_consolidated = Consolidated.search(search_domain_consolidated, limit=1)
-            if environment_consolidated:
-                environment_consolidated.write({'evaluator_ids': [(4, res.evaluator_id.id)]})
-                for competency in res.evaluation_competency_ids:
-                    number = random.randint(1, 1000)
-                    competency.write({'consolidate_id': consolidate.id,
-                                      'order': number})
+        return True
 
     def _process_end_stage(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()

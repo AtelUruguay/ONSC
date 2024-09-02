@@ -144,7 +144,7 @@ class ONSCLegajoAltaCS(models.Model):
     program_origin = fields.Char(string='Programa', related='program_project_origin_id.programaDescripcion')
     project_origin = fields.Char(string='Proyecto', related='program_project_origin_id.proyectoDescripcion')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
-    is_regime_manager = fields.Boolean(related="regime_origin_id.is_manager", store=True)
+    is_regime_manager = fields.Boolean(compute='_compute_is_regime_manager', store=True)
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
@@ -173,7 +173,6 @@ class ONSCLegajoAltaCS(models.Model):
                                       related='program_project_destination_id.programaDescripcion')
     project_destination = fields.Char(string='Proyecto',
                                       related='program_project_destination_id.proyectoDescripcion')
-    regime_destination = fields.Char(string='Régimen', default='3001')
     date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False,
                                         readonly=False, states={'confirmed': [('readonly', True)],
                                                                 'cancelled': [('readonly', True)]})
@@ -455,6 +454,17 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.type_cs = 'undefined'
 
+    @api.depends('type_cs', 'regime_origin_id')
+    def _compute_is_regime_manager(self):
+        Regime = self.env['onsc.legajo.regime'].sudo()
+        for record in self:
+            if record.type_cs == 'out2ac':
+                record.is_regime_manager = Regime.search_count([('is_fac2ac', '=', True), ('is_manager', '=', True)])
+            elif record.regime_origin_id:
+                record.is_regime_manager = record.regime_origin_id.is_manager
+            else:
+                record.is_regime_manager = False
+
     @api.depends('contract_id')
     def _compute_program_project_origin_id(self):
         Office = self.env['onsc.legajo.office'].sudo()
@@ -650,6 +660,7 @@ class ONSCLegajoAltaCS(models.Model):
             self.contract_id = contracts.id
         else:
             self.contract_id = False
+        self.is_responsable_uo = False
 
     @api.onchange('inciso_origin_id')
     def onchange_inciso_origin_id(self):
@@ -671,11 +682,11 @@ class ONSCLegajoAltaCS(models.Model):
         self.program_project_destination_id = False
         self.program_destination = False
         self.project_destination = False
-        self.regime_destination = False
         self.date_start_commission = False
         self.date_end_commission = False
         self.department_id = False
         self.security_job_id = False
+        self.is_responsable_uo = False
         self.legajo_state_id = False
         self.occupation_id = False
         self.regime_commission_id = False
@@ -687,6 +698,9 @@ class ONSCLegajoAltaCS(models.Model):
     def onchange_inciso_destination_id(self):
         self.norm_id = False
         self.operating_unit_destination_id = False
+        self.department_id = False
+        self.security_job_id = False
+        self.is_responsable_uo = False
 
     @api.onchange('operating_unit_destination_id')
     def onchange_operating_unit_destination_id(self):

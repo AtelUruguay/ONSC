@@ -101,10 +101,16 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         if evaluations:
             args_extended = [('state_summary', 'in', ['draft', 'in_process']),
                              ('evaluation_type', 'in',
-                              ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator',
-                               'tracing_plan']), ('inciso_id', '=', inciso_id),
+                              ['self_evaluation', 'leader_evaluation', 'collaborator', 'tracing_plan']),
+                             ('inciso_id', '=', inciso_id),
                              ('operating_unit_id', '=', operating_unit_id),
                              ('evaluator_id', '=', self.env.user.employee_id.id), ]
+
+            args_extended = expression.OR(
+                [[('state_summary', 'in', ['draft', 'in_process']),
+                  ('evaluator_id', '=', self.env.user.employee_id.id),
+                  ('evaluation_type', '=', 'environment_evaluation')], args_extended])
+
 
             args_extended = expression.OR(
                 [[('state_summary', 'in', ['draft', 'in_process']), ('evaluated_id', '=', self.env.user.employee_id.id),
@@ -117,6 +123,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                   ('gap_deal_state', '=', 'no_deal'), '|', ('evaluated_id', '=', self.env.user.employee_id.id),
                   ('evaluator_id', '=', self.env.user.employee_id.id),
                   ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
+
             args_extended = expression.OR(
                 [[('state_summary', '=', 'in_process'), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
                   ('gap_deal_state', '=', 'agree_leader'), ('evaluated_id', '=', self.env.user.employee_id.id),
@@ -130,9 +137,13 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         else:
             args_extended = [
                 ('evaluation_type', 'in',
-                 ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator',
-                  'tracing_plan']), ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
+                 ['self_evaluation', 'leader_evaluation', 'collaborator', 'tracing_plan']),
+                ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
                 ('evaluator_id', '=', self.env.user.employee_id.id), ]
+
+            args_extended = expression.OR(
+                [[('evaluator_id', '=', self.env.user.employee_id.id),
+                  ('evaluation_type', '=', 'environment_evaluation')], args_extended])
 
             args_extended = expression.OR(
                 [[('evaluated_id', '=', self.env.user.employee_id.id),
@@ -197,14 +208,22 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         else:
             # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
             action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_readonly_action")
-        _logger.info(
-            '**** evaluation_id: %s, summary_evaluation_type: %s, evaluation_evaluation_type: %s, user_id: %s ***********,' %
-            (self.evaluation_id.id, self.evaluation_type, self.evaluation_id.evaluation_type, self.env.user.id))
         # action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
 
         # TEST SECOND WAY
         # COPY ACTION AND UPDATE OTHERWISE USE SAME ACTION
         # action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
+        if self._context.get('evaluation_id'):
+            _evaluation_id = self._context.get('evaluation_id')
+            _logger.info('CONTEXT EVALUATION: %s' % _evaluation_id)
+        else:
+            _evaluation_id = self.evaluation_id.id
+            _logger.info('RECORD EVALUATION: %s' % _evaluation_id)
+        _logger.info(
+            '**** context_evaluation_id: %s, evaluation_id: %s, summary_evaluation_type: %s, evaluation_evaluation_type: %s, user_id: %s ***********,' %
+            (self._context.get('evaluation_id'), self.evaluation_id.id, self.evaluation_type, self.evaluation_id.evaluation_type, self.env.user.id))
+        _logger.info('**** SELF: %s ***********,' % (self.read()))
+        _logger.info('**** CONTEXT: %s ***********,' % (self._context))
         action["res_id"] = self.evaluation_id.id
         action["context"] = ctx
         _logger.info(action)

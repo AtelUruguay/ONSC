@@ -22,6 +22,7 @@ class ONSCCVIntitution(models.Model):
     is_advanced_formation = fields.Boolean(string=u'Formación avanzada', tracking=True)
     is_basic_formation = fields.Boolean(string=u'Formación básica', tracking=True)
     is_default = fields.Boolean(string=u'¿Usar por defecto?', tracking=True)
+    is_without_academic_program = fields.Boolean(string=u'¿Sin programa académico?', tracking=True)
 
     @api.depends('name', 'country_id')
     def _compute_name_country_id(self):

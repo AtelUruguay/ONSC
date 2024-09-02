@@ -15,7 +15,8 @@
                     <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
                     <t t-if="object.state!='completed'"><span>Actualidad</span></t>
                     <t t-else=""><span t-field="object.egress_date" t-options='{"format": "dd/MM/yyyy"}'/></t>:
-                    <span t-field="object.academic_program_id.name"/>
+                    <t t-if="not object.institution_id.is_without_academic_program"><span t-field="object.academic_program_id.name"/></t>
+                    <t t-if="object.institution_id.is_without_academic_program"><span t-field="object.generic_academic_program_id.name"/></t>
                 </li>
                 <li style="list-style:none;" t-if="object.institution_id">
                     <span t-field="object.institution_id.name_country"/>
@@ -23,6 +24,7 @@
                     <t t-if="object.subinstitution_id">/<span t-field="object.subinstitution_id.name"/></t>
                     </t>
                 </li>
+                <li style="list-style:none;" t-if="object.name_generic_academic_program and object.institution_id.is_without_academic_program">Nombre específico del programa académico: <span t-field="object.name_generic_academic_program"/></li>
                 <li style="list-style:none;" t-if="object.advanced_study_level_id">Nivel de estudio: <span t-field="object.advanced_study_level_id.name"/></li>
                 <li style="list-style:none;" t-if="object.state">Estado: <span t-field="object.state"/></li>
                 <li style="list-style:none;" t-if="object.issue_title_date">Fecha Expedición: <span t-field="object.issue_title_date" t-options='{"format": "dd/MM/yyyy"}'/></li>

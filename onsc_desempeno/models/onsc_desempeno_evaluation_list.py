@@ -312,7 +312,64 @@ class ONSCDesempenoEvaluationList(models.Model):
                 }])
             evaluation_vals['line_ids'] = line_vals
             evaluation_lists |= EvaluationList.create(evaluation_vals)
+
+        for evaluation_list in EvaluationList.search([
+            ('evaluation_stage_id', '=', evaluation_stage.id),
+            ('state', '=', 'in_progress'),
+        ]):
+            if not evaluation_list.manager_uo_id:
+                continue
+            manage_job = Jobs.get_management_job_from_department(evaluation_list.manager_uo_id)
+            is_manager_job_in_other_autoevaluations = self.is_manager_job_in_other_autoevaluations(
+                manage_job,
+                evaluation_stage
+            )
+            if is_manager_job_in_other_autoevaluations:
+                continue
+
+            parent_manager_department = evaluation_list.manager_uo_id.parent_id
+            parent_evaluation_list = EvaluationList.search([
+                ('operating_unit_id', '=', evaluation_list.operating_unit_id.id),
+                ('department_id', '=', parent_manager_department.id),
+                ('evaluation_stage_id', '=', evaluation_stage.id),
+                ('state', '=', 'in_progress')
+            ], limit=1)
+
+            if parent_manager_department and not parent_evaluation_list:
+                contract_state_valid = manage_job and manage_job.contract_id.legajo_state in [
+                    'active',
+                    'incoming_commission'
+                ]
+                contract_not_excluded = manage_job and manage_job.contract_id.descriptor1_id not in exluded_descriptor1_ids
+
+                if manage_job and contract_state_valid and contract_not_excluded:
+                    evaluation_vals = {
+                        'evaluation_stage_id': evaluation_stage.id,
+                        'department_id': parent_manager_department.id,
+                        'line_ids': [(0, 0, {'job_id': manage_job.id})]
+                    }
+                    evaluation_lists |= EvaluationList.create(evaluation_vals)
+            elif manage_job and parent_evaluation_list and not parent_evaluation_list.with_context(active_test=False).line_ids.filtered(
+                    lambda x: x.employee_id.id == evaluation_list.manager_id.id):
+                parent_evaluation_list.write({'line_ids': [(0, 0, {'job_id': manage_job.id})]})
+
         return evaluation_lists
+
+    def is_manager_job_in_other_autoevaluations(self, manage_job, evaluation_stage):
+        """
+
+        :param manage_job: Recordset: hr.job Puesto del responsable
+        :param evaluation_stage: Recorder onsc.desempeno.evaluation.stage Ciclo 390
+        :return: Si ese puesto ya tiene autoevaluaciones no canceladas para ese Ciclo360
+        """
+        self._cr.execute("""SELECT COUNT(id) FROM onsc_desempeno_evaluation WHERE 
+                                                current_job_id=%s AND 
+                                                evaluation_type='%s' AND
+                                                evaluation_stage_id=%s AND
+                                                state <> '%s'
+                                """ % (manage_job.id, 'self_evaluation', evaluation_stage.id, 'canceled'))
+        result = self._cr.fetchone()
+        return result[0] > 0
 
     def _get_evaluation_list_departments(self, evaluation_stages):
         """
@@ -501,7 +558,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     'list_manager_id': data.evaluation_list_id.manager_id.id,
                     'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
                     'evaluation_type': 'collaborator',
-                    'uo_id': data.job_id.department_id.id,
+                    'uo_id': self.manager_uo_id.id,
                     'inciso_id': data.contract_id.inciso_id.id,
                     'operating_unit_id': data.contract_id.operating_unit_id.id,
                     'level_id': level_id.id,

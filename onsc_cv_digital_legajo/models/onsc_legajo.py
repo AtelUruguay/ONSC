@@ -154,3 +154,36 @@ class ONSCLegajo(models.Model):
                     'date': vote_registry.date.strftime('%d/%m/%Y')
                 })
         return result
+
+    def update_all_legajo_sections(self):
+        cv = self.cv_digital_id.sudo().with_context(
+            ignore_base_restrict=True,
+            ignore_documentary_status=True
+        )
+        if not cv:
+            return True
+
+        # Lista de nombres de campos a procesar
+        field_names = [
+            'basic_formation_ids',
+            'advanced_formation_ids',
+            'course_certificate_ids',
+            'other_relevant_information_ids',
+            'participation_event_ids',
+            'publication_production_evaluation_ids',
+            'tutoring_orientation_supervision_ids',
+            'volunteering_ids',
+            'work_experience_ids',
+            'work_investigation_ids',
+            'work_teaching_ids'
+        ]
+
+        def process_validated_records(records):
+            for record in records.filtered(lambda x: x.documentary_validation_state == 'validated'):
+                record.set_legajo_validated_records()
+
+        for field_name in field_names:
+            records = getattr(cv, field_name)
+            process_validated_records(records)
+
+        return True

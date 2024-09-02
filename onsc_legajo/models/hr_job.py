@@ -371,6 +371,15 @@ class HrJob(models.Model):
             if record.department_id.manager_id.id != record.employee_id.id:
                 record.department_id.suspend_security().write({'manager_id': record.employee_id.id})
 
+    def get_management_job_from_department(self, department, date=fields.Date.today()):
+        return self.search([
+            ('department_id', '=', department.id),
+            ('is_uo_manager', '=', True),
+            '|',
+            ('start_date', '>=', date),
+            '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date)
+        ], limit=1)
+
 
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'
