@@ -103,7 +103,11 @@ class ONSCLegajoBajaVL(models.Model):
                                               compute='_compute_should_disable_form_edit')
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
     full_name = fields.Char('Nombre', compute='_compute_full_name')
-    is_read_only_description = fields.Boolean("Solo lectura los campos descripcion y norma")
+    is_read_only_description = fields.Boolean(
+        "Solo lectura los campos descripcion y norma",
+        compute='_compute_is_read_only_description',
+        store=True
+    )
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -148,6 +152,20 @@ class ONSCLegajoBajaVL(models.Model):
                 record.employee_id.cv_last_name_1,
                 record.employee_id.cv_last_name_2) + ' - ' + record.end_date.strftime('%Y%m%d')
 
+    @api.depends('causes_discharge_id','causes_discharge_extended_id','state')
+    def _compute_is_read_only_description(self):
+        for record in self:
+            if record.state not in ['borrador','error_sgh']:
+                record.is_read_only_description = True
+            elif not record.causes_discharge_id.is_require_extended and (
+                record.causes_discharge_id.reason_description or record.causes_discharge_id.resolution_description or record.causes_discharge_id.norm_id):
+                record.is_read_only_description = True
+            elif record.causes_discharge_extended_id.reason_description or record.causes_discharge_extended_id.resolution_description or record.causes_discharge_extended_id.norm_id:
+                record.is_read_only_description = True
+            else:
+                record.is_read_only_description = False
+
+
     @api.constrains("end_date")
     def _check_date(self):
         for record in self:
@@ -170,9 +188,9 @@ class ONSCLegajoBajaVL(models.Model):
             self.reason_description = self.causes_discharge_id.reason_description
             self.resolution_description = self.causes_discharge_id.resolution_description
             self.norm_id = self.causes_discharge_id.norm_id
-            self.is_read_only_description = True
+            # self.is_read_only_description = True
         else:
-            self.is_read_only_description = False
+            # self.is_read_only_description = False
             self.reason_description = False
             self.resolution_description = False
             self.norm_id = False
@@ -183,12 +201,12 @@ class ONSCLegajoBajaVL(models.Model):
             self.reason_description = self.causes_discharge_extended_id.reason_description
             self.resolution_description = self.causes_discharge_extended_id.resolution_description
             self.norm_id = self.causes_discharge_extended_id.norm_id
-            self.is_read_only_description = True
+            # self.is_read_only_description = True
         else:
             self.reason_description = False
             self.resolution_description = False
             self.norm_id = False
-            self.is_read_only_description = False
+            # self.is_read_only_description = False
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
