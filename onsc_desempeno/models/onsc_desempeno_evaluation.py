@@ -372,7 +372,6 @@ class ONSCDesempenoEvaluation(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
@@ -866,7 +865,6 @@ class ONSCDesempenoEvaluation(models.Model):
                     'uo_id': rec.uo_id.id,
                     'inciso_id': rec.inciso_id.id,
                     'operating_unit_id': rec.operating_unit_id.id,
-                    'occupation_id': rec.occupation_id.id,
                     'level_id': level_id.id,
                     'evaluation_stage_id': rec.evaluation_stage_id.id,
                     'general_cycle_id': rec.general_cycle_id.id,
