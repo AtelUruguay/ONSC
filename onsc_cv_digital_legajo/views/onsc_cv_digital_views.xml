@@ -202,6 +202,16 @@
                             </strong>
                         </p>
                     </div>
+                    <div class="alert alert-success" role="alert"  style="width:70%"
+                         attrs="{'invisible': [('photo_documentary_validation_state', '!=', 'validated')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección foto ha sido validada
+                                <p/>
+                                Fecha: <field name="photo_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="photo_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
                 </div>
             </field>
             <field name="marital_status_id" position="after">
@@ -262,6 +272,19 @@
                             </strong>
                         </p>
                     </div>
+                    <div class="alert alert-success" role="alert" style="width:70%"
+                         attrs="{'invisible': ['|',('is_occupational_health_card','=',False),('occupational_health_card_documentary_validation_state', '!=', 'validated')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección carné de salud laboral ha sido validada
+                                <p/>
+                                Fecha: <field name="occupational_health_card_documentary_validation_date" readonly="1" class="oe_inline"/> Usuario:
+                                <field name="occupational_health_card_documentary_user_id" class="oe_inline"
+                                       readonly="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
                 </div>
             </field>
             <field name="medical_aptitude_certificate_filename" position="after">
@@ -273,6 +296,19 @@
                                 La sección certificado de aptitud médico-deportiva ha sido rechazada. Motivo del rechazo: <field name="medical_aptitude_certificate_documentary_reject_reason" readonly="1" class="oe_inline"/>
                                 <p/>
                                 Fecha: <field name="medical_aptitude_certificate_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="medical_aptitude_certificate_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                    <div class="alert alert-success" role="alert" style="width:70%"
+                         attrs="{'invisible': ['|',('is_medical_aptitude_certificate_status','=',False),('medical_aptitude_certificate_documentary_validation_state', '!=', 'validated')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección certificado de aptitud médico-deportiva ha sido validada
+                                <p/>
+                                Fecha: <field name="medical_aptitude_certificate_documentary_validation_date" readonly="1" class="oe_inline"/> Usuario:
+                                <field name="medical_aptitude_certificate_documentary_user_id" class="oe_inline"
+                                       readonly="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             </strong>
                         </p>
                     </div>
@@ -301,7 +337,7 @@
             <page name="address" position="inside">
                 <div class="row" nolabel="1" colspan="2">
                     <div class="alert alert-danger" role="alert" style="width:70%"
-                        attrs="{'invisible': [('cv_address_documentary_validation_state', '!=', 'rejected')]}">
+                        attrs="{'invisible': ['|',('is_cv_address_populated','=',False),('cv_address_documentary_validation_state', '!=', 'rejected')]}">
                         <p class="mb-0">
                             <strong>
                                 La sección domicilio ha sido rechazada. Motivo del rechazo: <field name="cv_address_documentary_reject_reason" readonly="1" class="oe_inline"/>
@@ -310,6 +346,20 @@
                             </strong>
                         </p>
                     </div>
+                    <div class="alert alert-success" role="alert" style="width:70%"
+                         attrs="{'invisible': ['|',('is_cv_address_populated','=',False),('cv_address_documentary_validation_state', '!=', 'validated')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección domicilio ha sido validada
+                                <p/>
+                                Fecha: <field name="cv_address_documentary_validation_date" readonly="1" class="oe_inline"/> Usuario:
+                                <field name="cv_address_documentary_user_id" class="oe_inline"
+                                       readonly="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                    <field name="is_cv_address_populated" invisible="1"/>
                 </div>
             </page>
         </field>
