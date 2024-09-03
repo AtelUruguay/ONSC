@@ -867,12 +867,14 @@
                         <span t-field="object.subinstitution_id.name"/>
                     </t>
                 </h4>
-                <h4 t-if="object.institution_cert_id">
-                    <span t-field="object.institution_cert_id.name"/>
-                    <t t-if="object.institution_cert_id.id!=object.subinstitution_cert_id.id">/
-                        <span t-field="object.subinstitution_cert_id.name"/>
-                    </t>
-                </h4>
+                <t t-else="">
+                  <h4 t-if="object.institution_cert_id">
+                      <span t-field="object.institution_cert_id.name"/>
+                      <t t-if="object.institution_cert_id.id!=object.subinstitution_cert_id.id">/
+                          <span t-field="object.subinstitution_cert_id.name"/>
+                      </t>
+                  </h4>
+                </t>
                 <h4 t-if="object.internal_course_name">Nombre de la empresa/organismo/institución:
                     <span t-field="object.internal_course_name"/>
                 </h4>
