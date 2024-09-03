@@ -127,3 +127,14 @@ class ONSCMigrations(models.Model):
         _logger.info('CVS: %s' % (str(cv_digitals.ids)))
         self._v27(cv_digitals.ids)
         _logger.info('FIN CRON 28.7 ALTACS')
+
+    def _v28_8_bajaVL(self, date=False, id=False):
+        _logger.info('CRON 28.8 bajaVL')
+        BajaVL = self.env['onsc.legajo.baja.vl'].sudo().with_context(ignore_base_restrict=True)
+        bajasVL_towrite = self.env['onsc.legajo.baja.vl']
+        for bajaVl in BajaVL.search([('state', 'in', ['borrador','error_sgh'])]):
+            if not bajaVl.is_require_extended and bajaVl.causes_discharge_extended_id:
+                bajasVL_towrite |= bajaVl
+        bajasVL_towrite.write({'causes_discharge_extended_id': False})
+        bajasVL_towrite._compute_is_read_only_description()
+        _logger.info('FIN CRON 28.8 bajaVL')

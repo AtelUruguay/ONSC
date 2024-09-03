@@ -188,9 +188,7 @@ class ONSCLegajoBajaVL(models.Model):
             self.reason_description = self.causes_discharge_id.reason_description
             self.resolution_description = self.causes_discharge_id.resolution_description
             self.norm_id = self.causes_discharge_id.norm_id
-            # self.is_read_only_description = True
         else:
-            # self.is_read_only_description = False
             self.reason_description = False
             self.resolution_description = False
             self.norm_id = False
@@ -202,12 +200,10 @@ class ONSCLegajoBajaVL(models.Model):
             self.reason_description = self.causes_discharge_extended_id.reason_description
             self.resolution_description = self.causes_discharge_extended_id.resolution_description
             self.norm_id = self.causes_discharge_extended_id.norm_id
-            # self.is_read_only_description = True
         else:
             self.reason_description = False
             self.resolution_description = False
             self.norm_id = False
-            # self.is_read_only_description = False
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
