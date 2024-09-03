@@ -76,3 +76,17 @@ class ONSCMigrations(models.Model):
 
         _logger.info("FIN CARGA DE SECCIONES VALIDADAS")
         return True
+
+    def _v28_5(self, cv_ids=False):
+        Course = self.env['onsc.cv.course.certificate'].sudo().with_context(ignore_base_restrict=True,
+                                                                            ignore_documentary_status=True)
+        course_args = [
+            ('cv_digital_id.is_docket_active', '=', True),
+            ('cv_digital_id.type', '=', 'cv'),
+            ('documentary_validation_state', '=', 'validated'),
+        ]
+        for record in Course.search(course_args):
+            record.set_legajo_validated_records()
+
+        _logger.info("FIN CARGA DE SECCIONES VALIDADAS")
+        return True
