@@ -194,6 +194,7 @@ class ONSCLegajoBajaVL(models.Model):
             self.reason_description = False
             self.resolution_description = False
             self.norm_id = False
+            self.causes_discharge_extended_id = False
 
     @api.onchange('causes_discharge_extended_id')
     def onchange_causes_discharge_extended_id(self):
