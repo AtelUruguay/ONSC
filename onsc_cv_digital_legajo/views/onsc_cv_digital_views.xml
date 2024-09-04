@@ -203,7 +203,7 @@
                         </p>
                     </div>
                     <div class="alert alert-success" role="alert"  style="width:70%"
-                         attrs="{'invisible': [('photo_documentary_validation_state', '!=', 'validated')]}">
+                         attrs="{'invisible': ['|',('image_1920','=',False),('photo_documentary_validation_state', '!=', 'validated')]}">
                         <p class="mb-0">
                             <strong>
                                 La sección foto ha sido validada
