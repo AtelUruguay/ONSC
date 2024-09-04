@@ -599,6 +599,15 @@ class ONSCCVDigital(models.Model):
             self.document_certificate_filename = False
             self.certificate_date = False
             self.to_date = False
+        else:
+            self.disabilitie_documentary_validation_state = 'to_validate'
+
+    @api.onchange('uy_citizenship', 'crendencial_serie', 'credential_number', 'civical_credential_file')
+    def onchange_credencial_info(self):
+        cond1 = self.uy_citizenship != 'extranjero'
+        cond2 = self.crendencial_serie or self.credential_number or self.civical_credential_file
+        if cond1 or cond2:
+            self.civical_credential_documentary_validation_state = 'to_validate'
 
     def button_unlink(self):
         self.unlink()

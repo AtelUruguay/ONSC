@@ -10,7 +10,6 @@
                         <field name="theme"/>
                         <field name="description"/>
                     </group>
-
                 </sheet>
             </form>
         </field>
@@ -23,7 +22,7 @@
             <tree string="Otra información relevante">
                 <field name="theme"/>
                 <field name="description"/>
-                 <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
             </tree>
         </field>
     </record>

@@ -251,6 +251,7 @@
                                                filename="license_filename"
                                                options="{'accepted_file_extensions': '.pdf'}"/>
                                         <field name="license_filename" invisible="1"/>
+                                        <field name='documentary_validation_state' optional='hide'/>
                                     </tree>
                                 </field>
                             </group>
@@ -573,12 +574,39 @@
                                 <tree editable="top">
                                     <field name="theme"/>
                                     <field name="description"/>
+                                    <field name='documentary_validation_state' optional='hide'/>
                                 </tree>
                                 <form>
-                                    <group>
-                                        <field name="theme"/>
-                                        <field name="description"/>
-                                    </group>
+                                    <sheet>
+                                        <div>
+                                            <field name="documentary_validation_state" invisible="1"/>
+                                            <div class="alert alert-danger" role="alert"
+                                                attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
+                                                <p class="mb-0">
+                                                    <strong>
+                                                        El registro ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
+                                                        <p/>
+                                                        Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                            <div class="alert alert-success" role="alert"
+                                                attrs="{'invisible': [('documentary_validation_state', '!=', 'validated')]}">
+                                                <p class="mb-0">
+                                                    <strong>
+                                                        El registro ha sido validado
+                                                        <p/>
+                                                        Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <group>
+                                            <field name="theme"/>
+                                            <field name="description"/>
+                                            <field name="documentary_validation_state" invisible="1"/>
+                                        </group>
+                                    </sheet>
                                 </form>
                             </field>
                         </page>

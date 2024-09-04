@@ -387,6 +387,23 @@ class ONSCCVDigital(models.Model):
             self.status_civil_date = False
             self.disability_date = False
 
+    @api.onchange('is_occupational_health_card')
+    def onchange_is_occupational_health_card(self):
+        super(ONSCCVDigital, self).onchange_is_occupational_health_card()
+        if self.is_occupational_health_card:
+            self.occupational_health_card_documentary_validation_state = 'to_validate'
+
+    @api.onchange('is_medical_aptitude_certificate_status')
+    def onchange_is_medical_aptitude_certificate_status(self):
+        super(ONSCCVDigital, self).onchange_is_medical_aptitude_certificate_status()
+        if self.is_medical_aptitude_certificate_status:
+            self.medical_aptitude_certificate_documentary_validation_state = 'to_validate'
+
+    @api.onchange('is_cv_address_populated')
+    def onchange_is_cv_address_populated(self):
+        if self.is_cv_address_populated:
+            self.cv_address_documentary_validation_state = 'to_validate'
+
     def write(self, vals):
         if self._context.get('no_update_employee_status', False) is False:
             self._update_employee_status(vals)
@@ -913,4 +930,3 @@ class ONSCCVInformationContact(models.Model):
                 'remark_contact_person': self.remark_contact_person
             })
             self.write({'legajo_information_contact_id': legajo_information_contact_id.id})
-
