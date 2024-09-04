@@ -128,7 +128,7 @@ class ONSCMigrations(models.Model):
         self._v27(cv_digitals.ids)
         _logger.info('FIN CRON 28.7 ALTACS')
 
-    def _v28_8_bajaVL(self, date=False, id=False):
+    def _v28_8_bajaVL(self):
         _logger.info('CRON 28.8 bajaVL')
         BajaVL = self.env['onsc.legajo.baja.vl'].sudo().with_context(ignore_base_restrict=True)
         bajasVL_towrite = self.env['onsc.legajo.baja.vl']

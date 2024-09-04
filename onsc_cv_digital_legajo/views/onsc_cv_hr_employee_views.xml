@@ -66,7 +66,8 @@
                         </group>
                         <group string="Licencias de Conducir"
                                attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                            <field name="drivers_license_ids" nolabel="1" readonly="1">
+                            <field name="drivers_license_ids" nolabel="1" readonly="1"
+                                   context="{'force_show_validation_section': True, 'show_only_status': True}">
                                 <tree editable="bottom">
                                     <field name="validation_date" width="0.5" readonly="1"/>
                                     <field name="category_id" readonly="1"/>
@@ -317,6 +318,29 @@
                         </group>
                     </page>
                 </notebook>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_driver_license_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.driver.license.form</field>
+            <field name="model">onsc.legajo.driver.license</field>
+            <field name="arch" type="xml">
+            <form string="Licencias de conducir" delete="0" edit="0" create="0" duplicate="0">
+                <header/>
+                <sheet>
+                    <group>
+                    <group>
+                    <field name="validation_date" width="0.5"/>
+                    <field name="category_id"/>
+                    <field name="license_file"
+                           widget="binary"
+                           filename="license_filename"
+                           options="{'accepted_file_extensions': '.pdf'}"/>
+                    <field name="license_filename" invisible="1"/>
+                    </group>
+                    </group>
+                </sheet>
+            </form>
             </field>
         </record>
     </data>
