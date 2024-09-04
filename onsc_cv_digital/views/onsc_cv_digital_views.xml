@@ -251,7 +251,7 @@
                                                filename="license_filename"
                                                options="{'accepted_file_extensions': '.pdf'}"/>
                                         <field name="license_filename" invisible="1"/>
-                                        <field name='documentary_validation_state' optional='hide'/>
+                                        <field name='documentary_validation_state' optional='hide' readonly="1" force_save="1"/>
                                     </tree>
                                 </field>
                             </group>
@@ -579,7 +579,7 @@
                                 <tree editable="top">
                                     <field name="theme"/>
                                     <field name="description"/>
-                                    <field name='documentary_validation_state' optional='hide'/>
+                                    <field name='documentary_validation_state' optional="hide" readonly="1" force_save="1"/>
                                 </tree>
                                 <form>
                                     <sheet>

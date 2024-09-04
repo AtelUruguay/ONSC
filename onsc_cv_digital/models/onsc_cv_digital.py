@@ -609,6 +609,10 @@ class ONSCCVDigital(models.Model):
         if cond1 or cond2:
             self.civical_credential_documentary_validation_state = 'to_validate'
 
+    @api.onchange('image_1920')
+    def onchange_image_1920(self):
+        self.photo_documentary_validation_state = 'to_validate'
+
     def button_unlink(self):
         self.unlink()
         return self._action_open_user_cv()
@@ -943,6 +947,10 @@ class ONSCCVOtherRelevantInformation(models.Model):
     cv_digital_id = fields.Many2one("onsc.cv.digital", string=u"CV", index=True, ondelete='cascade', required=True)
     theme = fields.Char(string=u"Tema")
     description = fields.Text(string=u"Descripción")
+
+    @api.onchange('theme', 'description')
+    def onchange_other_relevant_info(self):
+        self.documentary_validation_state = 'to_validate'
 
     def _get_json_dict(self):
         json_dict = super(ONSCCVOtherRelevantInformation, self)._get_json_dict()
