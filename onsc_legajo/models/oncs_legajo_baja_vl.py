@@ -152,10 +152,10 @@ class ONSCLegajoBajaVL(models.Model):
                 record.employee_id.cv_last_name_1,
                 record.employee_id.cv_last_name_2) + ' - ' + record.end_date.strftime('%Y%m%d')
 
-    @api.depends('causes_discharge_id','causes_discharge_extended_id','state')
+    @api.depends('causes_discharge_id', 'causes_discharge_extended_id', 'state')
     def _compute_is_read_only_description(self):
         for record in self:
-            if record.state not in ['borrador','error_sgh']:
+            if record.state not in ['borrador', 'error_sgh']:
                 record.is_read_only_description = True
             elif not record.causes_discharge_id.is_require_extended and (
                 record.causes_discharge_id.reason_description or record.causes_discharge_id.resolution_description or record.causes_discharge_id.norm_id):
