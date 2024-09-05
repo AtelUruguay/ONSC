@@ -22,7 +22,7 @@
                                    required="1"
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
-                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
+                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True, 'can_create': is_country_uy == False}"/>
                         </group>
                         <group>
                             <field name="state" required="1"/>
