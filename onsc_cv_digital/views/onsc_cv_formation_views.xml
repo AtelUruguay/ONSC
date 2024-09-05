@@ -22,7 +22,8 @@
                                    required="1"
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
-                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
+                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True, 'can_create': is_country_uy == False}"
+                            />
                         </group>
                         <group>
                             <field name="state" required="1"/>
@@ -71,15 +72,16 @@
                              <field name="show_generic_academic_program" invisible="1"/>
                             <field name="country_id" required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
+                            <field name="is_country_uy" invisible="0"/>
                             <field name="institution_id"
                                    required="1"
                                    domain="[('country_id', '=?', country_id),('is_advanced_formation', '=', True)]"
-                                   context="{'default_country_id': country_id, 'is_readonly': True,'default_is_advanced_formation': True,'default_is_without_academic_program': True,}" />
+                                   context="{'default_country_id': country_id, 'is_readonly': True,'default_is_advanced_formation': True,'default_is_without_academic_program': True,'can_create': is_country_uy == False}" />
                             <field name="subinstitution_id"
                                    required="1"
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
-                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
+                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True, 'can_create': is_country_uy == False}"/>
                             <field name="advanced_study_level_id"/>
                             <field name="academic_program_id"
                                    attrs="{'invisible': [('show_generic_academic_program', '=', True)],'required': [('show_generic_academic_program', '=', False)],
