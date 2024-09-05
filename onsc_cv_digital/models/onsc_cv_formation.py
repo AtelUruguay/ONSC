@@ -18,13 +18,6 @@ class ONSCCVFormationBasic(models.Model):
     coursed_years = fields.Text(string="Años cursados")
     study_certificate_file = fields.Binary(string="Certificado de estudio")
     study_certificate_filename = fields.Char('Nombre del documento digital')
-    is_country_uy = fields.Boolean(string='¿Es el País Uruguay?', compute='_compute_is_country_uy')
-
-    @api.depends('country_id')
-    def _compute_is_country_uy(self):
-        for rec in self:
-            rec.is_country_uy = rec.country_id.id == self.env.ref('base.uy', raise_if_not_found=False).id
-
 
     @api.onchange('state')
     def onchange_state(self):
