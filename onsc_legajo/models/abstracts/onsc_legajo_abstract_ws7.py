@@ -40,11 +40,12 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                 paFechaHasta = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
                 paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
                 paFechaHastawithTz = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
-                paFechaHastawithTz -= datetime.timedelta(hours=int(tz_delta))
+                paFechaHastawithTz += datetime.timedelta(hours=int(tz_delta))
             else:
                 paFechaHasta = fecha_hasta
                 paFechaHastawithTz = fecha_hasta
-                paFechaHastawithTz -= datetime.timedelta(hours=int(tz_delta))
+                paFechaHasta += datetime.timedelta(hours=int(tz_delta))
+                paFechaHastawithTz += datetime.timedelta(hours=int(tz_delta))
         else:
             paFechaHasta = fields.Datetime.now()
             paFechaHastawithTz = fields.Datetime.now()
@@ -72,9 +73,10 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                 "onsc_legajo.onsc_legajo_integration_error_WS7_9004")
             try:
                 self._populate_staging(response)
-                self.env.user.company_id.sudo().write({
-                    'ws7_date_from': self.env.context.get('date_to')
-                })
+                if not self._context.get('wizard'):
+                    self.env.user.company_id.sudo().write({
+                        'ws7_date_from': self.env.context.get('date_to')
+                    })
             except Exception as e:
                 long_description = "Error: %s" % tools.ustr(e)
                 _logger.warning(long_description)
