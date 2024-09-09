@@ -186,7 +186,12 @@ class ONSCLegajoAltaCS(models.Model):
                                       readonly=False, states={'confirmed': [('readonly', True)],
                                                               'cancelled': [('readonly', True)]})
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
-    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
+    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?",
+                                       readonly=False,
+                                       states={
+                                           'confirmed': [('readonly', True)],
+                                           'cancelled': [('readonly', True)]
+                                       })
     legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones', copy=False,
@@ -479,13 +484,13 @@ class ONSCLegajoAltaCS(models.Model):
 
     # COMPUTES COMPORTAMIENTOS
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'operating_unit_origin_id',
-                 'operating_unit_destination_id')
+                 'operating_unit_destination_id', 'state')
     def _compute_is_edit_origin(self):
         for record in self:
             record.is_edit_origin = record.state == 'draft'
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'operating_unit_origin_id',
-                 'operating_unit_destination_id')
+                 'operating_unit_destination_id', 'state')
     def _compute_is_edit_destination(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:

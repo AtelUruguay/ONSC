@@ -569,7 +569,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         self._check_valid_eff_date(contract, record.fecha_aud.date())
         contract.write({
-            'date_end': record.fecha_vig,
+            'contract_expiration_date': record.fecha_vig,
             'eff_date': fields.Date.today(),
         })
         records.write({'state': 'processed'})
