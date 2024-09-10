@@ -819,9 +819,11 @@ class ONSCLegajoStagingWS7(models.Model):
         total_qty = len(records)
         sorted_records = sorted(records, key=lambda r: (r.fecha_aud))
         date_from = sorted_records[0].fecha_aud if sorted_records else None
-        date_from += datetime.timedelta(hours=int(tz_delta))
+        if date_from:
+            date_from += datetime.timedelta(hours=int(tz_delta))
         date_to = sorted_records[-1].fecha_aud if sorted_records else None
-        date_to += datetime.timedelta(hours=int(tz_delta))
+        if date_to:
+            date_to += datetime.timedelta(hours=int(tz_delta))
         today = fields.Datetime.from_string(fields.Datetime.now())
         today += datetime.timedelta(hours=int(tz_delta))
         process_end_date = today.strftime('%d-%m-%Y')
@@ -837,7 +839,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'na_qty': na_qty,
             'na_no_contract_qty': na_no_contract_qty,
             'total_qty': total_qty,
-            'date_from': date_from.strftime('%d-%m-%Y %H:%M:%S'),
-            'date_to': date_to.strftime('%d-%m-%Y %H:%M:%S')
+            'date_from': date_from and date_from.strftime('%d-%m-%Y %H:%M:%S') or None,
+            'date_to': date_from and date_to.strftime('%d-%m-%Y %H:%M:%S') or None
         })
         email_template_id.with_context(view_context).send_mail(self.id)
