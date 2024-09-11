@@ -37,7 +37,7 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             is_iam_current_eval = rec.evaluation_id.evaluator_id.id == self.env.user.employee_id.id
             rec.is_reasign_tome_available = is_iam_original_eval and not is_iam_current_eval
 
-    @api.depends('evaluation_id')
+    @api.depends('evaluation_id', 'job_id')
     def _compute_is_reason_id_available(self):
         is_gh_responsable = self.evaluation_id._is_group_responsable_uo()
         is_usuario_gh = self.user_has_groups(
@@ -73,7 +73,17 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
                 jobs = user_job
             else:
                 jobs = self.env['hr.job']
-            if is_usuario_gh:
+
+            is_order_1 = self.evaluation_id.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
+            if is_usuario_gh and is_leader_eval:
+                jobs |= Job.search([
+                    ('department_id.parent_id', '=', self.evaluation_id.evaluator_uo_id.id),
+                    ('department_id.function_nature', '=', 'adviser'),
+                    '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())])
+                jobs |= Job.search([
+                    ('department_id', '=', self.evaluation_id.evaluator_uo_id.id),
+                    '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())])
+            elif is_usuario_gh and not is_leader_eval and is_order_1:
                 jobs |= Job.search([
                     ('department_id.parent_id', '=', self.evaluation_id.evaluator_uo_id.id),
                     ('department_id.function_nature', '=', 'adviser'),
