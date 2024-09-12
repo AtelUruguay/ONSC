@@ -364,8 +364,11 @@ class ONSCDesempenoEvaluationStage(models.Model):
                             ('department_id', '=', manager_department.id),
                             '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
                         ], limit=1).id
+
+                        # ACTUALIZANDO INFO DEL EVALUADOR
                         evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
                         evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+                        evaluation[0]["evaluator_uo_id"] = manager_department.id
                         evaluation[0]["uo_id"] = record.current_job_id.department_id.id
 
                     gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
