@@ -149,6 +149,14 @@
                     <span t-field="object.institution_id.name_country"/>
                     <t t-if="object.institution_id.id!=object.subinstitution_id.id"> / <span t-field="object.subinstitution_id.name"/></t>
                 </li>
+                <t t-else="">
+                  <li style="list-style:none;" t-if="object.institution_cert_id">
+                      <span t-field="object.institution_cert_id.name"/>
+                      <t t-if="object.institution_cert_id.id!=object.subinstitution_cert_id.id">/
+                          <span t-field="object.subinstitution_cert_id.name"/>
+                      </t>
+                  </li>
+                </t>
                 <li style="list-style:none;" t-if="object.internal_course_name">Nombre de la empresa/organismo/institución: <span t-field="object.internal_course_name"/></li>
                 <li style="list-style:none;" t-if="object.state">Estado: <span t-field="object.state"/></li>
                 <li style="list-style:none;" t-if="object.approbation_mode">Modalidad de aprobación: <span t-field="object.approbation_mode"/></li>
