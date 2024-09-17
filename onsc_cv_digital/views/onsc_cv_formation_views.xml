@@ -13,7 +13,7 @@
                             <field name="country_id"
                                    required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="is_country_uy" invisible="0"/>
+                            <field name="is_country_uy" invisible="1"/>
                             <field name="institution_id"
                                    required="1"
                                    domain="[('country_id', '=?', country_id),('is_basic_formation', '=', True)]"
@@ -72,7 +72,7 @@
                              <field name="show_generic_academic_program" invisible="1"/>
                             <field name="country_id" required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
-                            <field name="is_country_uy" invisible="0"/>
+                            <field name="is_country_uy" invisible="1"/>
                             <field name="institution_id"
                                    required="1"
                                    domain="[('country_id', '=?', country_id),('is_advanced_formation', '=', True)]"
