@@ -105,22 +105,36 @@
             <field name="model_id" ref="onsc_legajo.model_onsc_legajo_staging_ws7"/>
             <field name="email_from"></field>
             <field name="email_to">{{ object.get_followers_mails()}}</field>
-            <field name="subject">Procesamiento WS7</field>
+            <field name="subject">Resultado del Procesamiento WS7.2</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Procesamiento WS7
+                        <strong>Procesamiento WS7</strong>
                         <br/>
                         <br/>
-                        Fecha:  <t t-out="ctx.get('process_end_date')" contenteditable="false" data-oe-t-inline="true"></t>
+                        Fecha/Hora Inicio: <t t-out="ctx.get('process_start_date')" contenteditable="false" data-oe-t-inline="true"/> <t t-out="ctx.get('process_start_time')" contenteditable="false" data-oe-t-inline="true"></t>
+                        <br/>
+                        Fecha/Hora Fin: <t t-out="ctx.get('process_end_date')" contenteditable="false" data-oe-t-inline="true"/> <t t-out="ctx.get('process_end_time')" contenteditable="false" data-oe-t-inline="true"></t>
+                        <br/>
+                        <br/>
+                        <t t-if="ctx.get('has_analyzed_period')">
+                        Periodo analizado: <t t-out="ctx.get('analyze_date_from')" contenteditable="false" data-oe-t-inline="true"/>/<t t-out="ctx.get('analyze_date_to')" contenteditable="false" data-oe-t-inline="true"/>
+                        <br/>
+                        Líneas Procesadas: <t t-out="ctx.get('analyze_process_qty')" contenteditable="false" data-oe-t-inline="true"></t>
                          <br/>
-                        Hora:  <t t-out="ctx.get('process_end_time')" contenteditable="false" data-oe-t-inline="true"></t>
+                        Líneas En proceso: <t t-out="ctx.get('analyze_in_process_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                        <br/>
+                        Líneas con Error:  <t t-out="ctx.get('analyze_error_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                         <br/>
+                        Líneas No aplica:  <t t-out="ctx.get('analyze_na_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                        <br/>
+                        No aplica/Contrato no encontrado: <t t-out="ctx.get('analyze_na_no_contract_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                        <br/>
+                        Total de líneas recibidas: <t t-out="ctx.get('analyze_total_qty')" contenteditable="false" data-oe-t-inline="true"></t>
                         <br/>
                         <br/>
-                        Fecha/hora desde: <t t-out="ctx.get('date_from')" contenteditable="false" data-oe-t-inline="true"></t>
-                        <br/>
-                        Fecha/hora hasta: <t t-out="ctx.get('date_to')" contenteditable="false" data-oe-t-inline="true"></t>
-                        <br/>
+                        </t>
+                        Periodo total procesado: <t t-out="ctx.get('date_from')" contenteditable="false" data-oe-t-inline="true"/>/<t t-out="ctx.get('date_to')" contenteditable="false" data-oe-t-inline="true"/>
                         <br/>
                         Líneas Procesadas: <t t-out="ctx.get('process_qty')" contenteditable="false" data-oe-t-inline="true"></t>
                          <br/>
