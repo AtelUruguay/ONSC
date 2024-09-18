@@ -222,6 +222,7 @@
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
                     <filter name="group_mov" string="mov" context="{'group_by': 'mov'}"/>
                     <filter name="group_tipo_mov" string="tipo_mov" context="{'group_by': 'tipo_mov'}"/>
+                    <filter name="group_fecha_aud" string="fecha_aud" context="{'group_by': 'fecha_aud'}"/>
                 </group>
             </search>
         </field>

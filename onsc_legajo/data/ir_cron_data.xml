@@ -94,7 +94,7 @@
         <field name="name">Legajo: WS7.2 Procesar staging de Movimientos</field>
         <field name="model_id" ref="model_onsc_legajo_staging_ws7"/>
         <field name="state">code</field>
-        <field name="code">model.process_staging()</field>
+        <field name="code">model.process_staging(ids=False, limit=0, delay_to_analyze_in_days=0)</field>
         <field name='interval_number'>1</field>
         <field name='interval_type'>days</field>
         <field name="numbercall">-1</field>
