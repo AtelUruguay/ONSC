@@ -361,8 +361,13 @@ class ONSCLegajoStagingWS7(models.Model):
             # B (entrante): incoming_contract
             # CASO CONTRATO A SALIENTE Y ENCUENTRA UN CONTRATO B ENTRANTE
 
+            # si el movimiento es de la misma jerarquia inciso/ue del contrato entrante
+            same_ue = second_movement.inciso_id.id == incoming_contract.inciso_id.id and \
+                      second_movement.operating_unit_id.id == incoming_contract.operating_unit_id.id
+
             # GENERA NUEVO CONTRATO (C)
-            new_contract = self._get_contract_copy(contract, second_movement, 'outgoing_commission')
+            new_contract_status = same_ue and 'active' or 'outgoing_commission'
+            new_contract = self._get_contract_copy(contract, second_movement, new_contract_status)
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
             # DESACTIVA EL CONTRATO SALIENTE (A)
@@ -371,6 +376,15 @@ class ONSCLegajoStagingWS7(models.Model):
                 legajo_state='baja',
                 eff_date=fields.Date.today()
             )
+
+            # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
+            if same_ue:
+                incoming_contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                    second_movement.fecha_vig + datetime.timedelta(days=-1),
+                    legajo_state='baja',
+                    eff_date=fields.Date.today()
+                )
+
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
             elif record.mov == 'TRANSFORMA':
@@ -381,11 +395,18 @@ class ONSCLegajoStagingWS7(models.Model):
                 'causes_discharge_id': causes_discharge.id,
             })
 
-            # CONTRACTO ORIGINAL B RELACIONADO AL CONTRATO C
-            incoming_contract.write({
-                'eff_date': fields.Date.today(),
-                'cs_contract_id': new_contract.id,
-            })
+            if same_ue:
+                # CONTRACTO A RELACIONADO AL CONTRATO C
+                contract.write({
+                    'eff_date': fields.Date.today(),
+                    'cs_contract_id': new_contract.id,
+                })
+            else:
+                # CONTRACTO ORIGINAL B RELACIONADO AL CONTRATO C
+                incoming_contract.write({
+                    'eff_date': fields.Date.today(),
+                    'cs_contract_id': new_contract.id,
+                })
         else:
             new_contract = self._get_contract_copy(contract, second_movement)
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
