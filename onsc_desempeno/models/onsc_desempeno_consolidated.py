@@ -136,6 +136,7 @@ class ONSCDesempenoConsolidated(models.Model):
 class ONSCDesempenoConsolidatedComment(models.Model):
     _name = 'onsc.desempeno.consolidated.comment'
     _description = u'Consolidado-Comentarios'
+    _order = 'sequence'
 
     name = fields.Text(string="Comentario", required=True)
     sequence = fields.Integer(string='Orden', required=True)
