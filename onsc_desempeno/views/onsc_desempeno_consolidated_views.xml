@@ -120,7 +120,7 @@
                             <field name="comment_ids" readonly="1"
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree editable="top" nolabel="1">
-                                       <field name="Comentario"/>
+                                       <field name="name"/>
                                 </tree>
                             </field>
                         </page>
