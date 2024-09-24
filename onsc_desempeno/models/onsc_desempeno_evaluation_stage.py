@@ -221,7 +221,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 raise ValidationError(
                     _("No se pueden desarchivar Etapa de evaluaciones 360° si no esta activa la configuración"))
             self._check_unique_config()
-            self._check_date()
+            self._check_dates()
         return True
 
     def _create_consolidated(self, evaluation, evaluation_type):
