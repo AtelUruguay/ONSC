@@ -140,4 +140,9 @@ class ONSCDesempenoConsolidatedComment(models.Model):
 
     name = fields.Text(string="Comentario", required=True)
     sequence = fields.Integer(string='Orden', required=True)
-    consolidated_id = fields.Many2one('onsc.desempeno.consolidated', string='Consolidado', required=True)
+    consolidated_id = fields.Many2one(
+        'onsc.desempeno.consolidated',
+        string='Consolidado',
+        required=True,
+        ondelete='cascade'
+    )
