@@ -45,6 +45,9 @@ class ONSCCatalogOccupationalFamily(models.Model):
         ("short_name_uniq", "unique (short_name)", "La sigla debe ser única"),
     ]
 
+    def toggle_active(self):
+        return super(ONSCCatalogOccupationalFamily, self.with_context(no_check_active=True)).toggle_active()
+
 
 class ONSCCatalogOccupationalFamilyHistory(models.Model):
     _name = 'onsc.catalog.occupational.family.history'
@@ -59,6 +62,9 @@ class ONSCCatalogManagementProcess(models.Model):
     _description = u'Proceso de gestión'
     _inherit = ['onsc.catalog.abstract.base', 'model.history', 'mail.thread', 'mail.activity.mixin']
     _history_model = 'onsc.catalog.management.process.history'
+
+    def toggle_active(self):
+        return super(ONSCCatalogManagementProcess, self.with_context(no_check_active=True)).toggle_active()
 
 
 class ONSCCatalogManagementProcessHistory(models.Model):
