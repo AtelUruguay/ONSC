@@ -653,6 +653,7 @@ class ONSCLegajoStagingWS7(models.Model):
             ('mov', '=', operation.mov),
             ('movimientoPadreId', '=', operation.movimientoPadreId),
             ('tipo_mov', '=', tipo_mov),
+            ('doc', '=', operation.doc),
             ('state', '=', 'in_process')
         ], limit=1)
 
