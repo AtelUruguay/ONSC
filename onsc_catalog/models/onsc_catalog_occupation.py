@@ -89,7 +89,9 @@ class ONSCCatalogOccupation(models.Model):
 
     def toggle_active(self):
         self._check_toggle_active()
-        return super(ONSCCatalogOccupation, self.with_context(no_check_write=True)).toggle_active()
+        return super(ONSCCatalogOccupation, self.with_context(
+            no_check_write=True,
+            no_check_active=True)).toggle_active()
 
     def _check_toggle_active(self):
         if False in self.mapped('is_approve_cgn'):
