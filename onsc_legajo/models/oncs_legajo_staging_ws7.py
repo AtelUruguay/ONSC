@@ -872,7 +872,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'na_no_contract_qty': na_no_contract_qty,
             'total_qty': total_qty,
             'date_from': date_from and date_from.strftime('%d-%m-%Y %H:%M:%S') or None,
-            'date_to': date_from and date_to.strftime('%d-%m-%Y %H:%M:%S') or None,
+            'date_to': date_to and date_to.strftime('%d-%m-%Y %H:%M:%S') or None,
         })
 
         if analyze_date_from:
@@ -901,8 +901,8 @@ class ONSCLegajoStagingWS7(models.Model):
                 'analyze_na_qty': analyze_na_qty,
                 'analyze_in_process_qty': analyze_in_process_qty,
                 'analyze_total_qty': analyze_total_qty,
-                'analyze_date_from': date_from and date_from.strftime('%d-%m-%Y %H:%M:%S') or None,
-                'analyze_date_to': date_from and date_to.strftime('%d-%m-%Y %H:%M:%S') or None,
+                'analyze_date_from': analyze_date_from and analyze_date_from.strftime('%d-%m-%Y %H:%M:%S') or None,
+                'analyze_date_to': analyze_date_to and analyze_date_to.strftime('%d-%m-%Y %H:%M:%S') or None,
             })
 
         email_template_id.with_context(view_context).send_mail(self.id)

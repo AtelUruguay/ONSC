@@ -118,7 +118,7 @@
                         <br/>
                         <br/>
                         <t t-if="ctx.get('has_analyzed_period')">
-                        Periodo analizado: <t t-out="ctx.get('analyze_date_from')" contenteditable="false" data-oe-t-inline="true"/>/<t t-out="ctx.get('analyze_date_to')" contenteditable="false" data-oe-t-inline="true"/>
+                        Periodo analizado: <t t-out="ctx.get('analyze_date_from')" contenteditable="false" data-oe-t-inline="true"/>  /  <t t-out="ctx.get('analyze_date_to')" contenteditable="false" data-oe-t-inline="true"/>
                         <br/>
                         Líneas Procesadas: <t t-out="ctx.get('analyze_process_qty')" contenteditable="false" data-oe-t-inline="true"></t>
                          <br/>
@@ -134,7 +134,7 @@
                         <br/>
                         <br/>
                         </t>
-                        Periodo total procesado: <t t-out="ctx.get('date_from')" contenteditable="false" data-oe-t-inline="true"/>/<t t-out="ctx.get('date_to')" contenteditable="false" data-oe-t-inline="true"/>
+                        Periodo total procesado: <t t-out="ctx.get('date_from')" contenteditable="false" data-oe-t-inline="true"/>  /  <t t-out="ctx.get('date_to')" contenteditable="false" data-oe-t-inline="true"/>
                         <br/>
                         Líneas Procesadas: <t t-out="ctx.get('process_qty')" contenteditable="false" data-oe-t-inline="true"></t>
                          <br/>
