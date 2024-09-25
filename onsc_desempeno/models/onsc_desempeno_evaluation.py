@@ -1054,8 +1054,12 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('department_id', '=', manager_department.id),
                     '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
                 ], limit=1).id
+
+                # ACTUALIZANDO INFO DEL EVALUADOR
                 evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
                 evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+                evaluation[0]["evaluator_uo_id"] = manager_department.id
+
                 evaluation[0]["original_evaluator_id"] = False
                 evaluation[0]["reason_change_id"] = False
                 evaluation[0]["uo_id"] = self.current_job_id.department_id.id
@@ -1098,8 +1102,12 @@ class ONSCDesempenoEvaluation(models.Model):
                 ('department_id', '=', manager_department.id),
                 '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
             ], limit=1).id
+
+            # ACTUALIZANDO INFO DEL EVALUADOR
             evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+            evaluation[0]["evaluator_uo_id"] = manager_department.id
+
             evaluation[0]["original_evaluator_id"] = False
             evaluation[0]["reason_change_id"] = False
             evaluation[0]["uo_id"] = self.current_job_id.department_id.id

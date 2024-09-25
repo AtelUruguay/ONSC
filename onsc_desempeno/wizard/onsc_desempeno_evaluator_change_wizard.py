@@ -37,18 +37,26 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             is_iam_current_eval = rec.evaluation_id.evaluator_id.id == self.env.user.employee_id.id
             rec.is_reasign_tome_available = is_iam_original_eval and not is_iam_current_eval
 
-    @api.depends('evaluation_id')
+    @api.depends('evaluation_id', 'job_id')
     def _compute_is_reason_id_available(self):
+        is_gh_responsable = self.evaluation_id._is_group_responsable_uo()
+        is_usuario_gh = self.user_has_groups(
+            'onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_usuario_gh_inciso')
+        user_job = self.env.user.employee_id.job_id
+
         if self.evaluation_id.evaluation_type == 'leader_evaluation':
             self.is_reason_id_available = True
-        else:
+        elif is_gh_responsable:
             Department = self.env['hr.department'].sudo()
-            is_gh_responsable = self.evaluation_id._is_group_responsable_uo()
             employee = self.env.user.employee_id
             hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and self.evaluation_id.uo_id.id in hierarchy_deparments.ids
             self.is_reason_id_available = is_responsable
+        elif is_usuario_gh and self.job_id.id != user_job.id:
+            self.is_reason_id_available = True
+        else:
+            self.is_reason_id_available = False
 
     @api.depends('evaluation_id')
     def _compute_evaluator_id_domain(self):
@@ -65,6 +73,8 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
                 jobs = user_job
             else:
                 jobs = self.env['hr.job']
+
+            is_order_1 = self.evaluation_id.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
             if is_usuario_gh and is_leader_eval:
                 jobs |= Job.search([
                     ('department_id.parent_id', '=', self.evaluation_id.evaluator_uo_id.id),
@@ -73,7 +83,14 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
                 jobs |= Job.search([
                     ('department_id', '=', self.evaluation_id.evaluator_uo_id.id),
                     '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())])
-
+            elif is_usuario_gh and not is_leader_eval and is_order_1:
+                jobs |= Job.search([
+                    ('department_id.parent_id', '=', self.evaluation_id.evaluator_uo_id.id),
+                    ('department_id.function_nature', '=', 'adviser'),
+                    '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())])
+                jobs |= Job.search([
+                    ('department_id', '=', self.evaluation_id.evaluator_uo_id.id),
+                    '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())])
             rec.job_id_domain = json.dumps([
                 ('id', 'in', jobs.ids),
                 ('employee_id', 'not in', [self.evaluation_id.evaluated_id.id, self.evaluation_id.evaluator_id.id]),
