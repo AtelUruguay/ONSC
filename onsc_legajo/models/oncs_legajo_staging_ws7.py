@@ -850,6 +850,7 @@ class ONSCLegajoStagingWS7(models.Model):
         if date_to:
             date_to += datetime.timedelta(hours=int(tz_delta))
         datetime_start = datetime_start or fields.Datetime.now()
+        datetime_start += datetime.timedelta(hours=int(tz_delta))
         today = fields.Datetime.from_string(fields.Datetime.now())
         today += datetime.timedelta(hours=int(tz_delta))
         process_start_date = datetime_start.strftime('%d-%m-%Y')
