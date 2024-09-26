@@ -408,7 +408,8 @@
                                    nolabel="1" options="{'reload_on_button': True}"
                                    context="{
                                    'no_save': True,
-                                   'default_competency_id': active_id
+                                   'default_competency_id': active_id,
+                                   'show_close_option': 1
                                    }"
                                    force_save="1">
                                 <tree nolabel="1" delete="0">
@@ -434,7 +435,7 @@
                             <field name="tracing_means_ids"
                                    attrs="{'invisible': [('is_tracing', '=', False)],'readonly':[('should_disable_form_edit', '=',True)]}"
                                    nolabel="1" options="{'reload_on_button': True}"
-                                   context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"
+                                   context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form','show_close_option': 1}"
                                    force_save="1">
                                 <tree nolabel="1" delete="0" create="0">
                                     <field name="show_buttons" invisible="1"/>
