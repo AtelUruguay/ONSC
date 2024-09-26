@@ -221,7 +221,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 raise ValidationError(
                     _("No se pueden desarchivar Etapa de evaluaciones 360° si no esta activa la configuración"))
             self._check_unique_config()
-            self._check_date()
+            self._check_dates()
         return True
 
     def _create_consolidated(self, evaluation, evaluation_type):
@@ -244,8 +244,16 @@ class ONSCDesempenoEvaluationStage(models.Model):
         consolidate.write({'evaluator_ids': [(4, evaluation.evaluator_id.id)]})
         for competency in evaluation.evaluation_competency_ids:
             number = random.randint(1, 1000)
-            competency.write({'consolidate_id': consolidate.id,
-                              'order': number})
+            competency.write({'consolidate_id': consolidate.id, 'order': number})
+
+    def _set_comment_to_consolidated(self, evaluation, consolidate):
+        if consolidate:
+            consolidate.write({
+                'comment_ids': [(0, 0, {
+                    'name': evaluation.general_comments,
+                    'sequence': random.randint(1, 1000)
+                })]
+            })
 
     def _process_create_consolidated(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
@@ -297,12 +305,17 @@ class ONSCDesempenoEvaluationStage(models.Model):
             evaluated_dict_element = evaluated_dict[evaluated_id]
             if evaluated_dict_element['case'] == 2:
                 self._set_competency_to_consolidated(evaluation, evaluated_dict_element['environment_consolidated'])
+                self._set_comment_to_consolidated(evaluation, evaluated_dict_element['environment_consolidated'])
             elif evaluated_dict_element['case'] == 3 and evaluation.evaluation_type == 'collaborator':
                 self._set_competency_to_consolidated(evaluation, evaluated_dict_element['collaborator_consolidated'])
+                self._set_comment_to_consolidated(evaluation, evaluated_dict_element['collaborator_consolidated'])
             elif evaluated_dict_element['case'] == 4 and evaluation.evaluation_type == 'collaborator':
                 self._set_competency_to_consolidated(evaluation, evaluated_dict_element['collaborator_consolidated'])
+                self._set_comment_to_consolidated(evaluation, evaluated_dict_element['collaborator_consolidated'])
             elif evaluated_dict_element['case'] == 4 and evaluation.evaluation_type == 'environment_evaluation':
                 self._set_competency_to_consolidated(evaluation, evaluated_dict_element['environment_consolidated'])
+                self._set_comment_to_consolidated(evaluation, evaluated_dict_element['environment_consolidated'])
+
 
         return True
 
