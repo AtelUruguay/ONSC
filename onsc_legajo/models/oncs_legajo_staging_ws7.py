@@ -885,11 +885,11 @@ class ONSCLegajoStagingWS7(models.Model):
             analyze_in_process_qty = len(analyze_records.filtered(lambda x: x.state in ['in_process']))
             analyze_total_qty = len(analyze_records)
 
-            analyze_sorted_records = sorted(analyze_records, key=lambda r: (r.fecha_aud))
-            analyze_date_from = analyze_sorted_records[0].fecha_aud if analyze_sorted_records else analyze_date_from
+            # analyze_sorted_records = sorted(analyze_records, key=lambda r: (r.fecha_aud))
+            # analyze_date_from = analyze_sorted_records[0].fecha_aud if analyze_sorted_records else analyze_date_from
             if analyze_date_from:
                 analyze_date_from += datetime.timedelta(hours=int(tz_delta))
-            analyze_date_to = analyze_sorted_records[-1].fecha_aud if analyze_sorted_records else self.env.user.company_id.ws7_date_from
+            analyze_date_to = self.env.user.company_id.ws7_date_from
             if analyze_date_to:
                 analyze_date_to += datetime.timedelta(hours=int(tz_delta))
 
