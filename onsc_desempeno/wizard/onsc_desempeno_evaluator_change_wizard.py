@@ -46,6 +46,8 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
 
         if self.evaluation_id.evaluation_type == 'leader_evaluation':
             self.is_reason_id_available = True
+        elif is_usuario_gh and self.job_id.id != user_job.id:
+            self.is_reason_id_available = True
         elif is_gh_responsable:
             Department = self.env['hr.department'].sudo()
             employee = self.env.user.employee_id
@@ -53,8 +55,6 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and self.evaluation_id.uo_id.id in hierarchy_deparments.ids
             self.is_reason_id_available = is_responsable
-        elif is_usuario_gh and self.job_id.id != user_job.id:
-            self.is_reason_id_available = True
         else:
             self.is_reason_id_available = False
 
