@@ -391,21 +391,16 @@ class ONSCLegajoStagingWS7(models.Model):
                 causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
             else:
                 causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
+
             contract.write({
                 'causes_discharge_id': causes_discharge.id,
+                'cs_contract_id': new_contract.id
             })
 
-            if same_ue:
-                # CONTRACTO A RELACIONADO AL CONTRATO C
-                contract.write({
-                    'eff_date': fields.Date.today(),
-                    'cs_contract_id': new_contract.id,
-                })
-            else:
-                # CONTRACTO ORIGINAL B RELACIONADO AL CONTRATO C
+            if incoming_contract.legajo_state == 'incoming_commission' and new_contract.legajo_state == 'outgoing_commission':
                 incoming_contract.write({
                     'eff_date': fields.Date.today(),
-                    'cs_contract_id': new_contract.id,
+                    'cs_contract_id': new_contract.id
                 })
         else:
             new_contract = self._get_contract_copy(contract, second_movement)
@@ -431,7 +426,10 @@ class ONSCLegajoStagingWS7(models.Model):
                 causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
             else:
                 causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
+
             contract.write({
+                'eff_date': fields.Date.today(),
+                'cs_contract_id': new_contract.id,
                 'causes_discharge_id': causes_discharge.id,
             })
 
@@ -697,7 +695,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return Contract.search_count(args)
         return Contract.search(args, limit=1)
 
-    def _get_contract_copy(self, contract, record, legajo_state='active'):
+    def _get_contract_copy(self, contract, record, legajo_state='active', link_tocontract=False):
         """
         Duplica el contrato aplicando los cambios de la operacion
         :param contract: Recordset de contrato
@@ -718,10 +716,9 @@ class ONSCLegajoStagingWS7(models.Model):
         descriptor2 = record.descriptor2_id
         descriptor3 = record.descriptor3_id
         descriptor4 = record.descriptor4_id
-        # income_mechanism = record.income_mechanism_id
         regime = record.regime_id
 
-        new_contract = self.env['hr.contract'].suspend_security().create({
+        vals = {
             'employee_id': contract.employee_id.id,
             'inciso_id': inciso.id,
             'operating_unit_id': operating_unit.id,
@@ -735,8 +732,6 @@ class ONSCLegajoStagingWS7(models.Model):
             'descriptor4_id': descriptor4.id,
             'income_mechanism_id': contract.income_mechanism_id.id,
             'retributive_day_id': record.retributive_day_id.id,
-            # 'description_day': record.retributive_day_id.descripcionJornada,
-            # 'code_day': record.retributive_day_id.codigoJornada,
             'regime_id': regime.id,
             'position': str(record.idPuesto),
             'workplace': str(record.nroPlaza),
@@ -744,11 +739,12 @@ class ONSCLegajoStagingWS7(models.Model):
             'program': str(record.programa),
             'project': str(record.proyecto),
             'state_square_id': contract.state_square_id.id,
-            'cs_contract_id': contract.id,
             'legajo_state_id': contract.legajo_state_id.id,
-            #
             'wage': contract.wage
-        })
+        }
+        if link_tocontract:
+            vals['cs_contract_id'] = contract.id
+        new_contract = self.env['hr.contract'].suspend_security().create(vals)
         return new_contract
 
     def _copy_jobs(self, source_contract, target_contract, operation='ws7'):
