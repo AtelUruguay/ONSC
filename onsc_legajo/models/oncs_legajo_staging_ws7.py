@@ -9,6 +9,8 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
+CV_SEX = [('male', 'Masculino'), ('feminine', 'Femenino')]
+
 
 class ONSCLegajoStagingWS7(models.Model):
     _name = 'onsc.legajo.staging.ws7'
@@ -91,6 +93,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
     # CV
     gender_id = fields.Many2one("onsc.cv.gender", string=u"Género")  # sexo
+    cv_sex = fields.Selection(CV_SEX, u'Sexo')
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil")  # codigoEstadoCivil
 
     state = fields.Selection(
@@ -251,11 +254,11 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             descriptor4_id = self.descriptor4_id.id
         vals.update({'descriptor4_id': descriptor4_id})
-        if self.sexo and not self.gender_id:
-            gender_id = BaseUtils._get_catalog_id(Gender, 'code', self, 'sexo', log_list)
+        if self.sexo and not self.cv_sex:
+            cv_sex = self.sexo == '1' and 'feminine' or 'male'
         else:
-            gender_id = self.gender_id.id
-        vals.update({'gender_id': gender_id})
+            cv_sex = self.cv_sex
+        vals.update({'cv_sex': cv_sex})
         if self.codigoEstadoCivil and not self.marital_status_id:
             marital_status_id = BaseUtils._get_catalog_id(MaritalStatus, 'code', self, 'codigoEstadoCivil', log_list)
         else:
