@@ -40,7 +40,8 @@ class ONSCCVAbstractInstitution(models.AbstractModel):
     @api.depends('country_id')
     def _compute_is_country_uy(self):
         for rec in self:
-            rec.is_country_uy = rec.country_id.id == self.env.ref('base.uy', raise_if_not_found=False).id
+            rec.is_country_uy = rec.country_id.id == self.env.ref('base.uy',
+                                                                  raise_if_not_found=False).id or not rec.country_id
 
     @api.onchange('institution_id')
     def onchange_institution_id(self):
