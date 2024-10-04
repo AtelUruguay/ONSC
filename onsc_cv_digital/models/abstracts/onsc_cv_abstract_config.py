@@ -148,7 +148,6 @@ class ONSCCVAbstractConfig(models.AbstractModel):
         }
 
     def action_reject_multi(self):
-
         ctx = self._context.copy()
         ctx.update({'default_model_name': self._name,
                     'active_ids': self.ids,
@@ -156,6 +155,10 @@ class ONSCCVAbstractConfig(models.AbstractModel):
 
         if self.filtered(lambda x: x.state not in ['to_validate']):
             raise ValidationError(_("Solo se pueden rechazar registros en estado Para validar"))
+        if ctx.get('tree_view_ref'):
+            ctx.pop('tree_view_ref')
+        if ctx.get('form_view_ref'):
+            ctx.pop('form_view_ref')
         return {
             'name': _('Rechazo de %s' % self._description),
             'view_mode': 'form',
