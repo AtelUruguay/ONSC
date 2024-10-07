@@ -9,6 +9,8 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
+CV_SEX = [('male', 'Masculino'), ('feminine', 'Femenino')]
+
 
 class ONSCLegajoStagingWS7(models.Model):
     _name = 'onsc.legajo.staging.ws7'
@@ -91,6 +93,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
     # CV
     gender_id = fields.Many2one("onsc.cv.gender", string=u"Género")  # sexo
+    cv_sex = fields.Selection(CV_SEX, u'Sexo')
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil")  # codigoEstadoCivil
 
     state = fields.Selection(
@@ -251,11 +254,11 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             descriptor4_id = self.descriptor4_id.id
         vals.update({'descriptor4_id': descriptor4_id})
-        if self.sexo and not self.gender_id:
-            gender_id = BaseUtils._get_catalog_id(Gender, 'code', self, 'sexo', log_list)
+        if self.sexo and not self.cv_sex:
+            cv_sex = self.sexo == '1' and 'feminine' or 'male'
         else:
-            gender_id = self.gender_id.id
-        vals.update({'gender_id': gender_id})
+            cv_sex = self.cv_sex
+        vals.update({'cv_sex': cv_sex})
         if self.codigoEstadoCivil and not self.marital_status_id:
             marital_status_id = BaseUtils._get_catalog_id(MaritalStatus, 'code', self, 'codigoEstadoCivil', log_list)
         else:
@@ -264,8 +267,11 @@ class ONSCLegajoStagingWS7(models.Model):
         return vals
 
     # flake8: noqa: C901
-    def process_staging(self, ids=False, limit=0):
+    def process_staging(self, ids=False, limit=0, delay_to_analyze_in_days=0):
+        datetime_start = fields.Datetime.now()
         Contract = self.env['hr.contract'].sudo()
+
+        analyze_date_from = self.env.user.company_id.ws7_date_from - datetime.timedelta(days=delay_to_analyze_in_days)
 
         args = [('state', 'in', ['in_process', 'na']), ('checked_bysystem', '=', False)]
         if ids:
@@ -302,12 +308,11 @@ class ONSCLegajoStagingWS7(models.Model):
                         self.set_modif_funcionario(Contract, record)
 
             except Exception as e:
-
                 record.write({
                     'state': 'error',
                     'log': 'Error: %s' % tools.ustr(e)})
 
-        self._send_ws7_processing_notification(records)
+        self._send_ws7_processing_notification(records, datetime_start, analyze_date_from)
 
     def _check_movement(self, Contract, record):
         """
@@ -359,9 +364,21 @@ class ONSCLegajoStagingWS7(models.Model):
             # B (entrante): incoming_contract
             # CASO CONTRATO A SALIENTE Y ENCUENTRA UN CONTRATO B ENTRANTE
 
+            # si el movimiento es de la misma jerarquia inciso/ue del contrato entrante
+            same_ue = second_movement.inciso_id.id == incoming_contract.inciso_id.id and \
+                      second_movement.operating_unit_id.id == incoming_contract.operating_unit_id.id
+
             # GENERA NUEVO CONTRATO (C)
-            new_contract = self._get_contract_copy(contract, second_movement, 'outgoing_commission')
+            new_contract_status = same_ue and 'active' or 'outgoing_commission'
+            new_contract = self._get_contract_copy(contract, second_movement, new_contract_status)
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
+
+            if record.mov == 'ASCENSO':
+                causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
+            elif record.mov == 'TRANSFORMA':
+                causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
+            else:
+                causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
 
             # DESACTIVA EL CONTRATO SALIENTE (A)
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
@@ -369,21 +386,28 @@ class ONSCLegajoStagingWS7(models.Model):
                 legajo_state='baja',
                 eff_date=fields.Date.today()
             )
-            if record.mov == 'ASCENSO':
-                causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
-            elif record.mov == 'TRANSFORMA':
-                causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
-            else:
-                causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
+
+            # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
+            if same_ue:
+                incoming_contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                    second_movement.fecha_vig + datetime.timedelta(days=-1),
+                    legajo_state='baja',
+                    eff_date=fields.Date.today()
+                )
+                incoming_contract.write({
+                    'causes_discharge_id': causes_discharge.id,
+                })
+
             contract.write({
                 'causes_discharge_id': causes_discharge.id,
+                'cs_contract_id': new_contract.id
             })
 
-            # CONTRACTO ORIGINAL B RELACIONADO AL CONTRATO C
-            incoming_contract.write({
-                'eff_date': fields.Date.today(),
-                'cs_contract_id': new_contract.id,
-            })
+            if incoming_contract.legajo_state == 'incoming_commission' and new_contract.legajo_state == 'outgoing_commission':
+                incoming_contract.write({
+                    'eff_date': fields.Date.today(),
+                    'cs_contract_id': new_contract.id
+                })
         else:
             new_contract = self._get_contract_copy(contract, second_movement)
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
@@ -408,7 +432,10 @@ class ONSCLegajoStagingWS7(models.Model):
                 causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
             else:
                 causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
+
             contract.write({
+                'eff_date': fields.Date.today(),
+                'cs_contract_id': new_contract.id,
                 'causes_discharge_id': causes_discharge.id,
             })
 
@@ -569,7 +596,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         self._check_valid_eff_date(contract, record.fecha_aud.date())
         contract.write({
-            'date_end': record.fecha_vig,
+            'contract_expiration_date': record.fecha_vig,
             'eff_date': fields.Date.today(),
         })
         records.write({'state': 'processed'})
@@ -630,6 +657,7 @@ class ONSCLegajoStagingWS7(models.Model):
             ('mov', '=', operation.mov),
             ('movimientoPadreId', '=', operation.movimientoPadreId),
             ('tipo_mov', '=', tipo_mov),
+            ('doc', '=', operation.doc),
             ('state', '=', 'in_process')
         ], limit=1)
 
@@ -673,7 +701,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return Contract.search_count(args)
         return Contract.search(args, limit=1)
 
-    def _get_contract_copy(self, contract, record, legajo_state='active'):
+    def _get_contract_copy(self, contract, record, legajo_state='active', link_tocontract=False):
         """
         Duplica el contrato aplicando los cambios de la operacion
         :param contract: Recordset de contrato
@@ -694,10 +722,9 @@ class ONSCLegajoStagingWS7(models.Model):
         descriptor2 = record.descriptor2_id
         descriptor3 = record.descriptor3_id
         descriptor4 = record.descriptor4_id
-        # income_mechanism = record.income_mechanism_id
         regime = record.regime_id
 
-        new_contract = self.env['hr.contract'].suspend_security().create({
+        vals = {
             'employee_id': contract.employee_id.id,
             'inciso_id': inciso.id,
             'operating_unit_id': operating_unit.id,
@@ -711,8 +738,6 @@ class ONSCLegajoStagingWS7(models.Model):
             'descriptor4_id': descriptor4.id,
             'income_mechanism_id': contract.income_mechanism_id.id,
             'retributive_day_id': record.retributive_day_id.id,
-            # 'description_day': record.retributive_day_id.descripcionJornada,
-            # 'code_day': record.retributive_day_id.codigoJornada,
             'regime_id': regime.id,
             'position': str(record.idPuesto),
             'workplace': str(record.nroPlaza),
@@ -720,11 +745,12 @@ class ONSCLegajoStagingWS7(models.Model):
             'program': str(record.programa),
             'project': str(record.proyecto),
             'state_square_id': contract.state_square_id.id,
-            'cs_contract_id': contract.id,
             'legajo_state_id': contract.legajo_state_id.id,
-            #
             'wage': contract.wage
-        })
+        }
+        if link_tocontract:
+            vals['cs_contract_id'] = contract.id
+        new_contract = self.env['hr.contract'].suspend_security().create(vals)
         return new_contract
 
     def _copy_jobs(self, source_contract, target_contract, operation='ws7'):
@@ -809,8 +835,9 @@ class ONSCLegajoStagingWS7(models.Model):
                 _logger.info(_("Mail de Contacto no válido: %s") % email)
         return ','.join(followers_emails)
 
-    def _send_ws7_processing_notification(self, records):
+    def _send_ws7_processing_notification(self, records, datetime_start=False, analyze_date_from=False):
         tz_delta = self.env['ir.config_parameter'].sudo().get_param('server_timezone_delta')
+
         process_qty = len(records.filtered(lambda x: x.state in ['processed']))
         error_qty = len(records.filtered(lambda x: x.state in ['error']))
         na_no_contract_qty = len(records.filtered(lambda x: x.state in ['na'] and x.log == 'Contrato no encontrado'))
@@ -819,16 +846,25 @@ class ONSCLegajoStagingWS7(models.Model):
         total_qty = len(records)
         sorted_records = sorted(records, key=lambda r: (r.fecha_aud))
         date_from = sorted_records[0].fecha_aud if sorted_records else None
-        date_from += datetime.timedelta(hours=int(tz_delta))
+        if date_from:
+            date_from += datetime.timedelta(hours=int(tz_delta))
         date_to = sorted_records[-1].fecha_aud if sorted_records else None
-        date_to += datetime.timedelta(hours=int(tz_delta))
+        if date_to:
+            date_to += datetime.timedelta(hours=int(tz_delta))
+        datetime_start = datetime_start or fields.Datetime.now()
+        datetime_start += datetime.timedelta(hours=int(tz_delta))
         today = fields.Datetime.from_string(fields.Datetime.now())
         today += datetime.timedelta(hours=int(tz_delta))
+        process_start_date = datetime_start.strftime('%d-%m-%Y')
+        process_start_time = datetime_start.strftime('%H:%M:%S')
         process_end_date = today.strftime('%d-%m-%Y')
         process_end_time = today.strftime('%H:%M:%S')
+
         email_template_id = self.env.ref('onsc_legajo.email_template_ws7_processing_notification')
         view_context = dict(self._context)
         view_context.update({
+            'process_start_date': process_start_date,
+            'process_start_time': process_start_time,
             'process_end_date': process_end_date,
             'process_end_time': process_end_time,
             'process_qty': process_qty,
@@ -837,7 +873,38 @@ class ONSCLegajoStagingWS7(models.Model):
             'na_qty': na_qty,
             'na_no_contract_qty': na_no_contract_qty,
             'total_qty': total_qty,
-            'date_from': date_from.strftime('%d-%m-%Y %H:%M:%S'),
-            'date_to': date_to.strftime('%d-%m-%Y %H:%M:%S')
+            'date_from': date_from and date_from.strftime('%d-%m-%Y %H:%M:%S') or None,
+            'date_to': date_to and date_to.strftime('%d-%m-%Y %H:%M:%S') or None,
         })
+
+        if analyze_date_from:
+            analyze_records = records.filtered(lambda x: x.fecha_aud >= analyze_date_from)
+            analyze_process_qty = len(analyze_records.filtered(lambda x: x.state in ['processed']))
+            analyze_error_qty = len(analyze_records.filtered(lambda x: x.state in ['error']))
+            analyze_na_no_contract_qty = len(
+                analyze_records.filtered(lambda x: x.state in ['na'] and x.log == 'Contrato no encontrado'))
+            analyze_na_qty = len(analyze_records.filtered(lambda x: x.state in ['na']))
+            analyze_in_process_qty = len(analyze_records.filtered(lambda x: x.state in ['in_process']))
+            analyze_total_qty = len(analyze_records)
+
+            # analyze_sorted_records = sorted(analyze_records, key=lambda r: (r.fecha_aud))
+            # analyze_date_from = analyze_sorted_records[0].fecha_aud if analyze_sorted_records else analyze_date_from
+            if analyze_date_from:
+                analyze_date_from += datetime.timedelta(hours=int(tz_delta))
+            analyze_date_to = self.env.user.company_id.ws7_date_from
+            if analyze_date_to:
+                analyze_date_to += datetime.timedelta(hours=int(tz_delta))
+
+            view_context.update({
+                'has_analyzed_period': True,
+                'analyze_process_qty': analyze_process_qty,
+                'analyze_error_qty': analyze_error_qty,
+                'analyze_na_no_contract_qty': analyze_na_no_contract_qty,
+                'analyze_na_qty': analyze_na_qty,
+                'analyze_in_process_qty': analyze_in_process_qty,
+                'analyze_total_qty': analyze_total_qty,
+                'analyze_date_from': analyze_date_from and analyze_date_from.strftime('%d-%m-%Y %H:%M:%S') or None,
+                'analyze_date_to': analyze_date_to and analyze_date_to.strftime('%d-%m-%Y %H:%M:%S') or None,
+            })
+
         email_template_id.with_context(view_context).send_mail(self.id)

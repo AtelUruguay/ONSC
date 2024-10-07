@@ -165,6 +165,12 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             LegajoModel = self.env[self._legajo_model].suspend_security()
             employee = self.cv_digital_id.employee_id
             legajo = self.env['onsc.legajo'].sudo().search([('employee_id', '=', employee.id)], limit=1)
+
+            if legajo.legajo_state != 'active':
+                # SOLO DEBE ACTUALIZAR SECCIONES SI EL LEGAJO ESTA ACTIVO. DE LO CONTRARIO DE LA ACTUALIZACION SE
+                # ENCARGA LA ACTIVACION DE LEGAJO MEDIANTE LOS CONTRATOS. EJ: ALTAVL Y ALTACS
+                return True
+
             # SI EXISTE YA UN RECORD ASOCIADO ACTUALIZO
             if self.cv_digital_id.type == 'call' and self.original_instance_identifier:
                 origin_record_id = self.original_instance_identifier

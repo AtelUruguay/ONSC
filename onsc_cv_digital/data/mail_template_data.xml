@@ -66,30 +66,80 @@
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
             <field name="body_html" type="html">
-                <html>
-                    <body>
-                        <div style="margin: 0px; padding: 0px;">
-                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                Estimado Usuario,
-                                <br/>
-                                Han pasado
-                                <t t-out="ctx.get('months')" contenteditable="false" data-oe-t-inline="true"></t>
-                                meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
-                                actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado
-                                Uruguayo.
-                                <br/>
-                                Si es funcionario publico de la Administración Central, recuerde que mantener su CV
-                                digital al
-                                día es la única forma de actualizar la información personal y la formación de su legajo
-                                laboral.
-                                <br/>
-                                Puede chequear su CV digital a través del siguiente link a la plataforma GHE.uy
-                                <br/>
-                                Cualquier consulta puede dirigirse a mesa.servicios@onsc.gub.uy.
-                            </p>
-                        </div>
-                    </body>
-                </html>
+                <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"><tr><td align="center">
+
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 24px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                         <tr>
+                            <td align="center" style="min-width: 590px;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: white; padding: 0; border-collapse:separate;">
+                                    <tr><td valign="middle">
+                                        <table border="0" cellpadding="0" cellspacing="0" style="background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+                                            <tbody><tr style="background-color:#003DA5;"><td align="right" style="border-top-left-radius: 10px;border-top-right-radius: 10px;">
+
+                                                <img src="/onsc_cv_digital/static/img/cabezal-correo.png" alt="Logo IdUY!" style="width:200px;margin:20px 0;"/>
+
+                                            </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td></tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="min-width: 590px;" align="center">
+                            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                            <tr>
+                                <td valign="top" style="font-size: 13px;">
+                                <div style="margin: 0px; padding: 0px;">
+                                    <p style="margin: 0px; padding: 0px; font-size: 13px;text-align: center;">
+                                        Estimado Usuario,
+                                        <br/>
+                                        Han pasado
+                                        <t t-out="ctx.get('days')" contenteditable="false" data-oe-t-inline="true"></t>
+                                        días desde su ultima modificación a su CV digital . Recuerde mantenerlo
+                                        actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado
+                                        Uruguayo.
+                                        <br/>
+                                        Si es funcionario público de la Administración Central, recuerde que mantener su CV
+                                        digital al
+                                        día es la única forma de actualizar la información personal y la formación de su legajo
+                                        laboral.
+                                        <br/>
+                                        Puede chequear su CV digital a través del siguiente link a la <a t-attf-href="https://gestionhumana.onsc.gub.uy/" target="new">plataforma GHE.uy</a>
+                                        <br/>
+                                    </p>
+                                </div>
+                                </td>
+                            </tr>
+                            </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" style="min-width: 590px;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: white; padding: 0; border-collapse:separate;">
+                                    <tr><td valign="middle">
+                                        <table border="0" cellpadding="0" cellspacing="0" style="background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+                                                <tbody>
+                                                <tr style="background-color:#003DA5;">
+                                                <td align="center" style="border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;color:white">
+
+                                                Por consultas: mesa.servicios@onsc.gub.uy
+
+                                                </td>
+                                                </tr>
+                                                <br/>
+                                                </tbody>
+                                        </table>
+                                    </td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td></tr></table>
             </field>
         </record>
 

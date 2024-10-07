@@ -72,7 +72,10 @@ ADVANCED_HISTORY_COLUMNS = [
     # HISTORICOS
     'documentary_validation_date',
     'documentary_validation_state',
-    'documentary_user_id'
+    'documentary_user_id',
+    'generic_academic_program_id',
+    'name_generic_academic_program'
+
 ]
 ADVANCED_TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
@@ -164,7 +167,8 @@ class ONSCLegajoAdvancedFormation(models.Model):
                                               required=True,
                                               ondelete='restrict',
                                               store=True)
-
+    show_generic_academic_program = fields.Boolean('¿Ver programa academico generico?', history=True)
+    displayed_academic_program = fields.Char(string='Programa académico', history=True)
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_advanced_formation_form').id
         return self.with_context(model_view_form_id=model_view_form_id,

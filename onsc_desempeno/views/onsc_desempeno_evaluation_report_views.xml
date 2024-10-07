@@ -32,6 +32,7 @@
                 </header>
                 <field name="evaluation_id" invisible="1"/>
                 <field name="consolidated_id" invisible="1"/>
+                <field name="show_button_evaluation" invisible="1"/>
                 <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
                 <field name="general_cycle_id"/>
@@ -39,7 +40,8 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="state"/>
-                <button name="button_open_evaluation" type="object" string="Ver Evaluación" icon="fa-edit"/>
+                <button name="button_open_evaluation" attrs="{'invisible':[('show_button_evaluation', '=',False)]}"
+                        type="object" string="Ver Evaluación" icon="fa-edit"/>
             </tree>
 
         </field>

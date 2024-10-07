@@ -162,6 +162,7 @@ class ONSCLegajoAltaVL(models.Model):
             legajo_vals.update({'public_admin_inactivity_years_qty': self.inactivity_years})
         if legajo_vals:
             legajo.write(legajo_vals)
+        # legajo.update_all_legajo_sections()
         return legajo
 
     @api.onchange('partner_id')
@@ -204,7 +205,7 @@ class ONSCLegajoAltaVL(models.Model):
                     record.juramento_bandera_presentacion_date = legajo.juramento_bandera_presentacion_date
                     # record.juramento_bandera_file = legajo.with_context(bin_size=False).juramento_bandera_file
                     # record.juramento_bandera_filename = legajo.juramento_bandera_filename
-                else:
+                elif not self._context.get('no_update_extra'):
                     record.date_income_public_administration = False
                     record.inactivity_years = False
                     record.juramento_bandera_date = False

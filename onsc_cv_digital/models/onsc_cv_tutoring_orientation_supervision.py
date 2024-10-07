@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
+from odoo import fields, models, api, _
 from .abstracts.onsc_cv_abstract_work import PAID_ACTIVITY_TYPES
 from .onsc_cv_useful_tools import is_valid_url, is_exist_url
 
@@ -22,7 +22,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     is_tutor_option_other_enable = fields.Boolean(related='tutor_type_id.is_option_other_enable')
     other_tutor_type = fields.Char('Otro tipo/clase')
     dependence = fields.Char('Dependencia')
-    academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)
+    academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico')
     postgraduate_type = fields.Selection(POSTGRADUATE_TYPES, 'Tipo posgrado')
     student_name = fields.Char('Nombre del orientado/estudiante', required=True)
     language_id = fields.Many2one('onsc.cv.language', 'Idioma', required=True)
@@ -50,6 +50,16 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     is_orientation_type_pie = fields.Boolean(compute='_compute_is_orientation_type_pie')
     receipt_file = fields.Binary("Comprobante")
     receipt_filename = fields.Char('Nombre del documento digital')
+    show_generic_academic_program = fields.Boolean('Ver programa academico genrico',
+                                                   compute='_compute_show_generic_academic_program')
+    name_generic_academic_program = fields.Char('Nombre específico del programa académico')
+    generic_academic_program_id = fields.Many2one('onsc.cv.generic.academic.program',
+                                                  string=u'Programa académico genérico')
+    # UTILITARIO PARA USAR EN VISTA TREE
+    displayed_academic_program = fields.Char(
+        string='Programa académico',
+        store=True,
+        compute='_compute_displayed_academic_program')
 
     @api.depends('orientation_type_id')
     def _compute_is_orientation_type_pie(self):
@@ -62,6 +72,19 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         for rec in self:
             rec.is_tutor_docent = rec.tutor_type_id == self.env.ref('onsc_cv_digital.onsc_cv_type_tutor_docent')
             rec.is_tutor_master = rec.tutor_type_id == self.env.ref('onsc_cv_digital.onsc_cv_type_tutor_master')
+
+    @api.depends('institution_id')
+    def _compute_show_generic_academic_program(self):
+        for record in self:
+            record.show_generic_academic_program = record.institution_id.is_without_academic_program
+
+    @api.depends('generic_academic_program_id', 'academic_program_id')
+    def _compute_displayed_academic_program(self):
+        for rec in self:
+            if rec.show_generic_academic_program and rec.generic_academic_program_id:
+                rec.displayed_academic_program = rec.generic_academic_program_id.display_name
+            else:
+                rec.displayed_academic_program = rec.academic_program_id.display_name
 
     @api.onchange('is_tutoring_finished')
     def onchange_is_tutoring_finished(self):
@@ -80,6 +103,13 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     def onchange_tutor_type_id(self):
         self.other_tutor_type = False
         self.orientation_type_id = False
+
+    @api.onchange('institution_id')
+    def onchange_institution_id(self):
+        if self.institution_id and not self.institution_id.is_without_academic_program:
+            self.generic_academic_program_id = False
+            self.name_generic_academic_program = False
+        super(ONSCCVTutorialOrientationSupervision, self).onchange_institution_id()
 
     @api.onchange('divulgation_media_id')
     def onchange_divulgation_media_id(self):
@@ -121,7 +151,9 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
             ("orientation_type_id", ['id', 'name']),
             ("area_ids", self.env['onsc.cv.education.area.tutoring']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
-            ("knowledge_acquired_ids", ['id', 'name'])
+            ("knowledge_acquired_ids", ['id', 'name']),
+            ("generic_academic_program_id", ['id', 'name']),
+            "name_generic_academic_program",
         ])
         return json_dict
 

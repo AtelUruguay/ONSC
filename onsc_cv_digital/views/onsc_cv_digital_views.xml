@@ -136,6 +136,19 @@
                                         </strong>
                                     </p>
                                 </div>
+                                <div class="alert alert-success" role="alert"  style="width:70%"
+                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'validated')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            La sección documento de identidad ha sido validada
+                                            <p/>
+                                            Fecha: <field name="nro_doc_documentary_validation_date" readonly="1" class="oe_inline"/>
+                                            Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline"
+                                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                                            readonly="1"/>
+                                        </strong>
+                                    </p>
+                                </div>
                             </div>
                             <field name="partner_id" invisible="1"/>
                             <field name="active" invisible="1"/>
@@ -185,7 +198,20 @@
                                                 </strong>
                                             </p>
                                         </div>
+                                        <div class="alert alert-success" role="alert" style="width:70%"
+                                             attrs="{'invisible': ['|','|',('is_civical_credential_populated','=',False),('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '!=', 'validated')]}">
+                                            <p class="mb-0">
+                                                <strong>
+                                                    La sección credencial cívica ha sido validada
+                                                    <p/>
+                                                    Fecha: <field name="civical_credential_documentary_validation_date" readonly="1" class="oe_inline"/> Usuario:
+                                                    <field name="civical_credential_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                                        readonly="1"/>
+                                                </strong>
+                                            </p>
+                                        </div>
                                     </div>
+                                    <field name="is_civical_credential_populated" invisible="1"/>
                                     <field name="document_identity_filename" invisible="1"/>
                                     <field name="civical_credential_filename" invisible="1"/>
                                     <field name="civical_credential_documentary_validation_state" invisible="1"/>
@@ -211,7 +237,7 @@
                                     <field name="cjppu_affiliate_number"/>
                                     <field name="professional_resume"
                                            placeholder="Resumen del candidato a modo de introducción"/>
-                                    <field name="is_driver_license"/>
+                                    <field name="is_driver_license" force_save="1"/>
                                 </group>
                             </group>
                             <group string="Licencias de Conducir"
@@ -225,6 +251,7 @@
                                                filename="license_filename"
                                                options="{'accepted_file_extensions': '.pdf'}"/>
                                         <field name="license_filename" invisible="1"/>
+                                        <field name='documentary_validation_state' optional='hide' readonly="1" force_save="1"/>
                                     </tree>
                                 </field>
                             </group>
@@ -472,6 +499,19 @@
                                         </strong>
                                     </p>
                                 </div>
+                                <div class="alert alert-success" role="alert"
+                                     attrs="{'invisible': ['|',('disabilitie_documentary_validation_state', '!=', 'validated'),('people_disabilitie', '!=', 'si')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            La sección discapacidad ha sido validada
+                                            <p/>
+                                            Fecha: <field name="disabilitie_documentary_validation_date" readonly="1" class="oe_inline"/> Usuario:
+                                            <field name="disabilitie_documentary_user_id" class="oe_inline"
+                                                   readonly="1"
+                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                        </strong>
+                                    </p>
+                                </div>
                             </div>
                             <group>
                                 <group>
@@ -539,12 +579,39 @@
                                 <tree editable="top">
                                     <field name="theme"/>
                                     <field name="description"/>
+                                    <field name='documentary_validation_state' optional="hide" readonly="1" force_save="1"/>
                                 </tree>
                                 <form>
-                                    <group>
-                                        <field name="theme"/>
-                                        <field name="description"/>
-                                    </group>
+                                    <sheet>
+                                        <div>
+                                            <field name="documentary_validation_state" invisible="1"/>
+                                            <div class="alert alert-danger" role="alert"
+                                                attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
+                                                <p class="mb-0">
+                                                    <strong>
+                                                        El registro ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
+                                                        <p/>
+                                                        Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                            <div class="alert alert-success" role="alert"
+                                                attrs="{'invisible': [('documentary_validation_state', '!=', 'validated')]}">
+                                                <p class="mb-0">
+                                                    <strong>
+                                                        El registro ha sido validado
+                                                        <p/>
+                                                        Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <group>
+                                            <field name="theme"/>
+                                            <field name="description"/>
+                                            <field name="documentary_validation_state" invisible="1"/>
+                                        </group>
+                                    </sheet>
                                 </form>
                             </field>
                         </page>

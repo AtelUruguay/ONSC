@@ -152,6 +152,11 @@
                   action="onsc_cv_academic_program_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="17"/>
+        <menuitem id="onsc_cv_generic_academic_program_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_generic_academic_program_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="17"/>
 
         <menuitem id="onsc_cv_race_action_menu"
                   parent="onsc_cv_config_menu"
@@ -260,6 +265,7 @@
                   action="onsc_cv_professional_link_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="35"/>
+
 
     <menuitem id="onsc_cv_partner_menu"
               name="Contactos"

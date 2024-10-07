@@ -14,3 +14,4 @@ from . import onsc_cv_professional_link
 from . import onsc_cv_subtypes
 from . import onsc_cv_type_event
 from . import onsc_cv_street
+from . import onsc_cv_generic_academic_program

@@ -219,9 +219,6 @@
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="level_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="occupation_id"
-                                   style="margin-bottom: 5px!important; min-width: 100px !important;"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
                         </group>
                     </group>
@@ -308,7 +305,7 @@
                                        widget="boolean_toggle"/>
                                 <field name="full_environment_ids" nolabel="1"
                                        colspan="2"
-                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_job_hs_basic_tree_view','search_view_ref': 'onsc_legajo.onsc_legajo_hr_job_base_search_view'}"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_job_hs_basic_tree_view','search_view_ref': 'onsc_legajo.onsc_legajo_hr_job_base_search_view', 'show_close_option': 1, 'hide_custom_filters': 1}"
                                        options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"
                                        domain="full_environment_ids_domain"
                                        attrs="{'readonly': [('state', '!=', 'in_process')]}">
@@ -378,7 +375,6 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="original_evaluator_id"/>
-                <field name="occupation_id"/>
                 <filter name="leader_evaluation_filter"
                         domain="[('collaborators', 'in', [True, False])]"
                         string="Mis colaboradores/ras"/>
@@ -398,7 +394,6 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="original_evaluator_id"/>
-                <field name="occupation_id"/>
                 <filter name="evaluations_filter"
                         domain="[('evaluations', 'in', [True, False])]"
                         string="Mis evaluaciones"/>

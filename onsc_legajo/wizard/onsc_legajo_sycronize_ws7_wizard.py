@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -18,4 +18,4 @@ class ONSCLegajoSynconizeWS7Wizard(models.TransientModel):
     @api.constrains('start_datetime', 'end_datetime')
     def _check_start_date_end_date(self):
         if self.start_datetime and self.end_datetime and self.end_datetime < self.start_datetime:
-            raise ValidationError(u"La fecha desde no puede ser mayor que la fecha hasta")
+            raise ValidationError(_(u"La fecha desde no puede ser mayor que la fecha hasta"))

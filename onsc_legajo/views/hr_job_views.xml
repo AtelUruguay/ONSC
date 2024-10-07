@@ -77,7 +77,7 @@
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="sequence" string="Nivel" invisible="1"/>
-                        <field name="is_uo_manager" readonly="1"/>
+                        <field name="is_uo_manager"  attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="company_id" invisible="1"/>
                         <field name="is_readonly" invisible="1"/>
                         <field name="role_extra_is_readonly" invisible="1"/>
@@ -235,7 +235,7 @@
                 <field name="employee_id" string="Funcionario"/>
                 <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
-                <field name="department_id"/>
+                <field name="department_id" string="UO"/>
             </tree>
         </field>
     </record>

@@ -17,7 +17,7 @@
         <field name="arch" type="xml">
             <tree string="Emergencias" editable="top">
                 <field name="name"/>
-                <field name="code"/>
+                <field name="code" readonly="1" required="0"/>
                 <field name="phone" groups="onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>

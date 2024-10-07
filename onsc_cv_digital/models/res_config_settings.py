@@ -31,3 +31,4 @@ class ResConfigSettings(models.TransientModel):
 
     call_server_json_url = fields.Char(related="company_id.call_server_json_url", readonly=False)
     cv_zip_url = fields.Char(related="company_id.cv_zip_url", readonly=False)
+    cv_help_contacts = fields.Char(related="company_id.cv_help_contacts", readonly=False, related_sudo=True)

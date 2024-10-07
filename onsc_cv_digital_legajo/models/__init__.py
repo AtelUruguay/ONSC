@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import abstracts
 from . import res_partner
+from . import hr_contract
 from . import onsc_cv_documentary_validation_config
 from . import onsc_cv_digital
 from . import onsc_cv_digital_call
@@ -15,3 +16,4 @@ from . import onsc_legajo_alta_cs
 from . import oncs_legajo_staging_ws7
 from . import legajo_info
 from . import onsc_legajo_report_config
+from . import onsc_cv_settings

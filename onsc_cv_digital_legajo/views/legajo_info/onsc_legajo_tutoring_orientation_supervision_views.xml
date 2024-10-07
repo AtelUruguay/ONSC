@@ -11,6 +11,7 @@
                     <field name="is_tutor_docent" invisible="1"/>
                     <field name="is_tutor_master" invisible="1"/>
                     <field name="is_orientation_type_pie" invisible="1"/>
+                    <field name="show_generic_academic_program" invisible="1"/>
                     <group>
                         <group>
                             <field name="work_title"/>
@@ -22,7 +23,11 @@
                             <field name="subinstitution_id" required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="academic_program_id"
+                                   attrs="{'invisible': [('show_generic_academic_program', '=', True)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="generic_academic_program_id"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
+                                   attrs="{'invisible': [('show_generic_academic_program', '=', False)]}"/>
+                            <field name="name_generic_academic_program" attrs="{'invisible': [('show_generic_academic_program', '=', False)]}"/>
                             <field name="tutor_type_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="other_tutor_type"
@@ -91,7 +96,7 @@
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
                 <field name="dependence" optional="hide"/>
-                <field name="academic_program_id" optional="show"/>
+                <field name="displayed_academic_program" optional="show"/>
                 <field name="postgraduate_type" optional="hide"/>
                 <field name="student_name" optional="hide"/>
                 <field name="language_id" optional="hide"/>

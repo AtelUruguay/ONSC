@@ -274,13 +274,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         " \n Los datos para la norma tiene un formato inválido")
                 if not office:
                     message_error.append(
-                        "No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
+                        "No se pudo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
                             line[self.get_position(column_names, 'program')],
                             line[self.get_position(column_names, 'project')]))
 
                 if not norm_id:
                     message_error.append(
-                        " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
+                        " \nNo se pudo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
                             line[self.get_position(column_names, 'norm_year')],
                             line[self.get_position(column_names, 'norm_number')],
                             line[self.get_position(column_names, 'norm_article')],
@@ -292,11 +292,14 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     self.get_position(column_names, 'descriptor2_id')])
                 descriptor3_id = MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[
                     self.get_position(column_names, 'descriptor3_id')])
+                if not descriptor3_id:
+                    message_error.append(
+                        "El campo Descriptor 3  no está definido o no ha sido encontrado")
                 descriptor4_id = MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[
                     self.get_position(column_names, 'descriptor4_id')])
                 budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
                 if not budget_item_id:
-                    message_error.append("No se puedo encontrar la partida con datos de los descriptores")
+                    message_error.append("No se pudo encontrar la partida con datos de los descriptores")
 
                 address_nro_door = line[self.get_position(column_names, 'address_nro_door')]
                 if len(str(address_nro_door)) > 5:
@@ -509,7 +512,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                })
             except Exception as e:
                 self.env.cr.rollback()
-                line.write({'state': 'error', 'message_error': "No se puedo crear el contacto: " + tools.ustr(e)})
+                line.write({'state': 'error', 'message_error': "No se pudo crear el contacto: " + tools.ustr(e)})
                 self.env.cr.commit()
                 continue
             cv_digital = CVDigital.sudo().search([('partner_id', '=', partner.id)], limit=1)
@@ -546,7 +549,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 self.env.cr.commit()
             except Exception as e:
                 self.env.cr.rollback()
-                line.write({'state': 'error', 'message_error': "No se puedo crear el CV: " + tools.ustr(e)})
+                line.write({'state': 'error', 'message_error': "No se pudo crear el CV: " + tools.ustr(e)})
                 self.env.cr.commit()
                 continue
 
@@ -622,7 +625,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             except Exception as e:
                 self.env.cr.rollback()
                 line.write({'state': 'error',
-                            'message_error': line.message_error + " \nNo se puedo crear el alta de vínculo laboral: " + tools.ustr(
+                            'message_error': line.message_error + " \nNo se pudo crear el alta de vínculo laboral: " + tools.ustr(
                                 e)})
                 self.env.cr.commit()
                 continue

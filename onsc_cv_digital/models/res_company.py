@@ -38,3 +38,4 @@ class ResCompany(models.Model):
 
     call_server_json_url = fields.Char(string="JSON Url")
     cv_zip_url = fields.Char(string="ZIP Directorio")
+    cv_help_contacts = fields.Char('Contactos')

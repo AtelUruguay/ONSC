@@ -506,6 +506,7 @@ class HrEmployee(models.Model):
 
 class ONSCLegajoDriverLicense(models.Model):
     _name = 'onsc.legajo.driver.license'
+    _inherit = 'onsc.cv.abstract.documentary.validation'
     _description = 'Licencia de conducir'
 
     cv_driver_license_id = fields.Many2one("onsc.cv.driver.license", string="Licencia de conducir del CV",
@@ -546,7 +547,11 @@ class ONSCCVDigitalDriverLicense(models.Model):
             'validation_date': self.validation_date,
             'category_id': self.category_id.id,
             'license_file': self.license_file,
-            'license_filename': self.license_filename
+            'license_filename': self.license_filename,
+            'documentary_validation_state': self.documentary_validation_state,
+            'documentary_reject_reason': self.documentary_reject_reason,
+            'documentary_validation_date': self.documentary_validation_date,
+            'documentary_user_id': self.documentary_user_id.id,
         }
         if self.legajo_driver_license_id:
             self.legajo_driver_license_id.suspend_security().write(dict_vals)

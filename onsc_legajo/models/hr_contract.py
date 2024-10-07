@@ -137,6 +137,12 @@ class HrContract(models.Model):
     code_day = fields.Char(string="Código de la jornada", history=True)
     description_day = fields.Char(string="Descripción de la Jornada", history=True)
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva', history=True)
+    retributive_day_description = fields.Char(
+        string='Descripción de jornada retributiva',
+        related='retributive_day_id.descripcionJornada',
+        store=True,
+        history=True
+    )
     id_alta = fields.Char(string='Id de alta', history=True)
     id_deregistration_discharge = fields.Char(string='Id de baja', history=True)
     reason_deregistration = fields.Char(string='Descripción del motivo baja', history=True)

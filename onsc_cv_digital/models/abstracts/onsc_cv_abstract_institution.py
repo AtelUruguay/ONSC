@@ -14,6 +14,7 @@ class ONSCCVAbstractInstitution(models.AbstractModel):
     subinstitution_id = fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución")
     country_id = fields.Many2one('res.country', string=u'País de la institución')
     country_id_domain = fields.Char(compute='_compute_country_id_domain')
+    is_country_uy = fields.Boolean(string='¿Es el País Uruguay?', compute='_compute_is_country_uy')
 
     @api.depends('country_id')
     def _compute_institution_id_domain(self):
@@ -35,6 +36,12 @@ class ONSCCVAbstractInstitution(models.AbstractModel):
                 )
             else:
                 rec.country_id_domain = json.dumps([])
+
+    @api.depends('country_id')
+    def _compute_is_country_uy(self):
+        for rec in self:
+            rec.is_country_uy = rec.country_id.id == self.env.ref('base.uy',
+                                                                  raise_if_not_found=False).id or not rec.country_id
 
     @api.onchange('institution_id')
     def onchange_institution_id(self):

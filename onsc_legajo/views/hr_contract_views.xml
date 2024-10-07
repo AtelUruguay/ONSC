@@ -9,8 +9,7 @@
                     <button name="button_update_occupation"
                             attrs="{'invisible': ['|',('show_button_update_occupation', '!=', True), ('is_mi_legajo', '=', True)]}"
                             type="object"
-                            string="Actualizar ocupación" class="oe_highlight"
-                            />
+                            string="Actualizar ocupación" class="oe_highlight"/>
                     <field name="legajo_state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -133,6 +132,7 @@
                             <field name="description_day" />
                             <field name="retributive_day_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="retributive_day_description"/>
                             <field name="id_alta"/>
                             <field name="id_deregistration_discharge"/>
                             <field name="reason_deregistration"/>

@@ -154,6 +154,9 @@ class ONSCDesempenoEvaluation(models.Model):
             if not self._is_group_admin_gh_inciso() and not self._is_group_usuario_gh_inciso():
                 args_extended = expression.AND(
                     [[('operating_unit_id', '=', operating_unit_id)], args_extended])
+            if self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue():
+                args_extended = expression.AND(
+                    [[('evaluated_id', '!=', self.env.user.employee_id.id)], args_extended])
         else:
             # BREAKPOINT - Todos los usuarios deben ver las evaluaciones en las que es evaluador
             args_extended = [
@@ -206,12 +209,29 @@ class ONSCDesempenoEvaluation(models.Model):
                     [[('evaluated_id', '=', self.env.user.employee_id.id)], args_extended])
 
             if self._is_group_admin_gh_inciso():
-                args_extended = expression.OR(
-                    [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+                if evaluation_type == 'environment_evaluation':
+                    args_extended = expression.OR([[
+                        ('evaluated_id', '!=', self.env.user.employee_id.id),
+                        ('inciso_id', '=', inciso_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
+                else:
+                    args_extended = expression.OR([[
+                        ('inciso_id', '=', inciso_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
             elif self._is_group_admin_gh_ue():
-                args_extended = expression.OR(
-                    [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
-                     args_extended])
+                if evaluation_type == 'environment_evaluation':
+                    args_extended = expression.OR([[
+                        ('evaluated_id', '!=', self.env.user.employee_id.id),
+                        ('operating_unit_id', '=', operating_unit_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
+                else:
+                    args_extended = expression.OR([[
+                        ('operating_unit_id', '=', operating_unit_id),
+                        ('evaluation_type', '=', evaluation_type)
+                    ], args_extended])
         if evaluation_type == 'environment_evaluation':
             args_extended = expression.OR([[
                 ('evaluator_id', '=', self.env.user.employee_id.id),
@@ -301,6 +321,7 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
+            _logger.info('*********** EVALUATION SEARCH DOMAIN IN ******************')
             args = self._get_domain(args)
         return super(ONSCDesempenoEvaluation, self)._search(args, offset=offset, limit=limit, order=order,
                                                             count=count,
@@ -351,7 +372,6 @@ class ONSCDesempenoEvaluation(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
@@ -471,7 +491,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 raise ValidationError(_('La cantidad de evaluadores de entorno debe ser menor a 10!'))
             environment_employee = {}
             for environment_id in rec.full_environment_ids:
-                environment_employee[environment_id.employee_id.id] = environment_employee.get(environment_id.employee_id.id, 0) + 1
+                environment_employee[environment_id.employee_id.id] = environment_employee.get(
+                    environment_id.employee_id.id, 0) + 1
                 if environment_employee[environment_id.employee_id.id] > 1:
                     raise ValidationError(_('El funcionario %s no puede ser seleccionado en más de una ocasión, '
                                             'favor seleccionar otra persona') % (environment_id.employee_id.full_name))
@@ -844,7 +865,6 @@ class ONSCDesempenoEvaluation(models.Model):
                     'uo_id': rec.uo_id.id,
                     'inciso_id': rec.inciso_id.id,
                     'operating_unit_id': rec.operating_unit_id.id,
-                    'occupation_id': rec.occupation_id.id,
                     'level_id': level_id.id,
                     'evaluation_stage_id': rec.evaluation_stage_id.id,
                     'general_cycle_id': rec.general_cycle_id.id,
@@ -1034,8 +1054,12 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('department_id', '=', manager_department.id),
                     '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
                 ], limit=1).id
+
+                # ACTUALIZANDO INFO DEL EVALUADOR
                 evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
                 evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+                evaluation[0]["evaluator_uo_id"] = manager_department.id
+
                 evaluation[0]["original_evaluator_id"] = False
                 evaluation[0]["reason_change_id"] = False
                 evaluation[0]["uo_id"] = self.current_job_id.department_id.id
@@ -1078,8 +1102,12 @@ class ONSCDesempenoEvaluation(models.Model):
                 ('department_id', '=', manager_department.id),
                 '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
             ], limit=1).id
+
+            # ACTUALIZANDO INFO DEL EVALUADOR
             evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+            evaluation[0]["evaluator_uo_id"] = manager_department.id
+
             evaluation[0]["original_evaluator_id"] = False
             evaluation[0]["reason_change_id"] = False
             evaluation[0]["uo_id"] = self.current_job_id.department_id.id

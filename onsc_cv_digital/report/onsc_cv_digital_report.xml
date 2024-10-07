@@ -648,8 +648,8 @@
                             <span t-field="object.egress_date" t-options='{"format": "dd/MM/yyyy"}'/>
                         </t>
                         :
-
-                        <span t-field="object.academic_program_id.name"/>
+                        <t t-if="not object.institution_id.is_without_academic_program"><span t-field="object.academic_program_id.name"/></t>
+                        <t t-if="object.institution_id.is_without_academic_program"><span t-field="object.generic_academic_program_id.name"/></t>
                     </h4>
                 </li>
                 <h4 t-if="object.institution_id">
@@ -659,6 +659,9 @@
                             <span t-field="object.subinstitution_id.name"/>
                         </t>
                     </t>
+                </h4>
+                <h4 t-if="object.institution_id.is_without_academic_program and object.name_generic_academic_program">Nombre específico del programa académico:
+                    <span t-field="object.name_generic_academic_program"/>
                 </h4>
                 <h4 t-if="object.advanced_study_level_id">Nivel de estudio:
                     <span t-field="object.advanced_study_level_id.name"/>
@@ -885,7 +888,7 @@
                         <span t-field="object.subinstitution_cert_id.name"/>
                     </t>
                 </h4>
-                <h4 t-if="object.internal_course">Nombre de la empresa/organismo/institución:
+                <h4 t-if="object.internal_course_name">Nombre de la empresa/organismo/institución:
                     <span t-field="object.internal_course_name"/>
                 </h4>
                 <h4 t-if="object.state">Estado:
@@ -1490,11 +1493,17 @@
                         <span t-field="object.subinstitution_id.name"/>
                     </t>
                 </h4>
+                <h4 t-if="object.institution_id.is_without_academic_program and object.name_generic_academic_program">Nombre específico del programa académico:
+                    <span t-field="object.name_generic_academic_program"/>
+                </h4>
                 <h4 t-if="object.description">Descripción:
                     <span t-field="object.description"/>
                 </h4>
-                <h4 t-if="object.academic_program_id">Programa académico:
-                    <span t-field="object.academic_program_id.name"/>
+                <h4 t-if="not object.institution_id.is_without_academic_program">Programa académico:
+                     <span t-field="object.academic_program_id.name"/>
+                 </h4>
+                <h4 t-if="object.institution_id.is_without_academic_program">Programa académico genérico:
+                    <span t-field="object.generic_academic_program_id.name"/>
                 </h4>
                 <h4 t-if="object.tutor_type_id">Tipo/clase:
                     <span t-field="object.tutor_type_id.name"/>

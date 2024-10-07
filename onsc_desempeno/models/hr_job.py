@@ -6,6 +6,14 @@ from odoo import models, fields
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(HrJob, self).fields_get(allfields, attributes)
+        if self._context.get('hide_custom_filters'):
+            for field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+        return res
+
     evaluation_list_line_ids = fields.Many2many(
         comodel_name='onsc.desempeno.evaluation.list.line',
         ondelete="cascade",

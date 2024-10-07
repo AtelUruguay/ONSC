@@ -96,7 +96,6 @@ class ONSCDesempenoConsolidated(models.Model):
         string='Puesto actual',
         help=u'Usado para en caso de cambio de puesto saber el Puesto actual '
              'en el que se encuentra el Funcionario')
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
@@ -119,6 +118,11 @@ class ONSCDesempenoConsolidated(models.Model):
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
     evaluations = fields.Boolean(string="Mis evaluaciones", default=False)
     is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, related="general_cycle_id.is_pilot", store=True)
+    comment_ids = fields.One2many(
+        comodel_name='onsc.desempeno.consolidated.comment',
+        inverse_name='consolidated_id',
+        string='Comentarios generales'
+    )
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):
@@ -127,3 +131,18 @@ class ONSCDesempenoConsolidated(models.Model):
                 record.name = '%s - %s' % (record.evaluated_id.name, record.general_cycle_id.year)
             else:
                 record.name = ''
+
+
+class ONSCDesempenoConsolidatedComment(models.Model):
+    _name = 'onsc.desempeno.consolidated.comment'
+    _description = u'Consolidado-Comentarios'
+    _order = 'sequence'
+
+    name = fields.Text(string="Comentario", required=True)
+    sequence = fields.Integer(string='Orden', required=True)
+    consolidated_id = fields.Many2one(
+        'onsc.desempeno.consolidated',
+        string='Consolidado',
+        required=True,
+        ondelete='cascade'
+    )

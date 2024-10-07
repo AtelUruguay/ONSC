@@ -60,9 +60,6 @@
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="level_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="occupation_id"
-                                   style="margin-bottom: 5px!important; min-width: 100px !important;"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                     </group>
                     <notebook>
@@ -120,6 +117,15 @@
                                     </sheet>
                                 </form>
                             </field>
+                            <label for="comment_ids" string="Comentarios generales"/>
+                            <field name="comment_ids" readonly="1" create="0" delete="0" edit="0">
+                                <tree editable="top" nolabel="1">
+                                       <field name="name"/>
+                                </tree>
+                                <form>
+                                   <field name="name"/>
+                                </form>
+                            </field>
                         </page>
                         <page string="Evaluadores">
                             <field name="evaluator_ids" nolabel="1" readonly="1"
@@ -142,8 +148,6 @@
             <search string="Evaluación de Desempeño">
                 <field name="general_cycle_id"/>
                 <field name="evaluated_id"/>
-                <field name="occupation_id"/>
-
                 <filter name="leader_evaluation_filter"
                         domain="[('collaborators', 'in', [True, False])]"
                         string="Mis colaboradores/ras"/>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Base',
-    'version': '15.0.28.0.0',
+    'version': '15.0.28.1.0',
     'summary': 'ONSC - Base',
     'sequence': 11,
     'description': """
@@ -23,8 +23,11 @@ ONSC - Base
         'fields_many2one_restrict',
         'base_restrict_access',
         'url_access_restriction',
+        'field_binary_show_filename',
         'disable_userprofile_menuitems',
-        'field_binary_show_filename'
+        'disable_mail_message_options',
+        'web_dialog_confirm_disable_button',
+        'web_prevent_close_wizard'
     ],
     'data': [
         'security/onsc_base_security.xml',

@@ -22,6 +22,7 @@ class ONSCCVIntitution(models.Model):
     is_advanced_formation = fields.Boolean(string=u'Formación avanzada', tracking=True)
     is_basic_formation = fields.Boolean(string=u'Formación básica', tracking=True)
     is_default = fields.Boolean(string=u'¿Usar por defecto?', tracking=True)
+    is_without_academic_program = fields.Boolean(string=u'¿Sin programa académico?', tracking=True)
 
     @api.depends('name', 'country_id')
     def _compute_name_country_id(self):
@@ -37,8 +38,13 @@ class ONSCCVIntitution(models.Model):
             if record.is_default and self.search_count(
                     [('is_default', '=', True), ('country_id', '=', record.country_id.id),
                      ('id', '!=', record.id)]):
-                raise ValidationError(u"La Institución por defecto debe ser única para el país")
+                raise ValidationError(_(u"La Institución por defecto debe ser única para el país"))
 
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s, País: %s" % (self.name,
                                                                        self.country_id.display_name))
+
+    @api.constrains('name_upper')
+    def _check_name_upper(self):
+        if not self.is_default:
+            super(ONSCCVIntitution, self)._check_name_upper()
