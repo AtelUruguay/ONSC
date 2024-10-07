@@ -373,6 +373,13 @@ class ONSCLegajoStagingWS7(models.Model):
             new_contract = self._get_contract_copy(contract, second_movement, new_contract_status)
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
+            if record.mov == 'ASCENSO':
+                causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
+            elif record.mov == 'TRANSFORMA':
+                causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
+            else:
+                causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
+
             # DESACTIVA EL CONTRATO SALIENTE (A)
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
                 second_movement.fecha_vig + datetime.timedelta(days=-1),
@@ -387,13 +394,9 @@ class ONSCLegajoStagingWS7(models.Model):
                     legajo_state='baja',
                     eff_date=fields.Date.today()
                 )
-
-            if record.mov == 'ASCENSO':
-                causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
-            elif record.mov == 'TRANSFORMA':
-                causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
-            else:
-                causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
+                incoming_contract.write({
+                    'causes_discharge_id': causes_discharge.id,
+                })
 
             contract.write({
                 'causes_discharge_id': causes_discharge.id,
