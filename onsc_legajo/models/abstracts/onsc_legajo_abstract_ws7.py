@@ -40,15 +40,14 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                 paFechaHasta = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
                 paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
                 paFechaHastawithTz = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
-                paFechaHastawithTz += datetime.timedelta(hours=int(tz_delta))
             else:
                 paFechaHasta = fecha_hasta
                 paFechaHastawithTz = fecha_hasta
                 paFechaHasta += datetime.timedelta(hours=int(tz_delta))
-                paFechaHastawithTz += datetime.timedelta(hours=int(tz_delta))
         else:
             paFechaHasta = fields.Datetime.now()
             paFechaHastawithTz = fields.Datetime.now()
+            paFechaHasta += datetime.timedelta(hours=int(tz_delta))
             paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
         if not self._context.get('wizard'):
             paFechaDesde -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)

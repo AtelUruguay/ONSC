@@ -13,12 +13,12 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            is_legajo_id_in_base_args = False
-            for arg in args:
-                if (isinstance(arg, tuple) or isinstance(arg, list)) and len(arg) and arg[0] == 'legajo_id':
-                    is_legajo_id_in_base_args = True
-            if not is_legajo_id_in_base_args:
-                args = self._get_domain(args)
+            # is_legajo_id_in_base_args = False
+            # for arg in args:
+            #     if (isinstance(arg, tuple) or isinstance(arg, list)) and len(arg) and arg[0] == 'legajo_id':
+            #         is_legajo_id_in_base_args = True
+            # if not is_legajo_id_in_base_args:
+            args = self._get_domain(args)
         return super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True))._search(args, offset=offset,
                                                                                             limit=limit, order=order,
                                                                                             count=count,

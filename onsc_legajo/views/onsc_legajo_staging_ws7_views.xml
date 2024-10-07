@@ -156,10 +156,9 @@
                             <label for="sexo"/>
                             <div>
                                 <field name="sexo" readonly="1" class="oe_inline" style="width:20%!important"/>
-                                <field name="gender_id"
+                                <field name="cv_sex"
                                        style="width:80%!important"
-                                       class="oe_inline"
-                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                       class="oe_inline"/>
                             </div>
                             <label for="codigoEstadoCivil"/>
                             <div>
