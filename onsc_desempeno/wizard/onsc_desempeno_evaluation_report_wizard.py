@@ -202,4 +202,5 @@ class ONSCOrganizationalWizard(models.TransientModel):
         cr.execute("DELETE FROM onsc_desempeno_evaluation_report WHERE user_id = '%s'" % self.env.user.id)
         cr.execute(_query)
         action = self.env.ref('onsc_desempeno.action_onsc_desempeno_evaluation_report').suspend_security().read()[0]
+        action['target'] = 'main'
         return action
