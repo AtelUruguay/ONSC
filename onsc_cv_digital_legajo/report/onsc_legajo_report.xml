@@ -151,7 +151,8 @@
                             <!--INFORMACION FUNCIONAL-->
                             <t id="funcional_info" t-if="'funcional_info_contracts' in env.context.get('seccions', True) or
                              'funcional_info_personal' in env.context.get('seccions', True) or 'funcional_info_merit' in env.context.get('seccions', True) or
-                             'funcional_info_demerit' in env.context.get('seccions', True)" t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
+                             'funcional_info_demerit' in env.context.get('seccions', True) or
+                             'funcional_other_info' in env.context.get('seccions', True)" t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
 
                             <!--FORMACION-->
                             <t t-if="'formation' in env.context.get('seccions', True)">
