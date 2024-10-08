@@ -10,9 +10,13 @@
             <field name="seccion">Vínculos</field>
             <field name="internal_field">funcional_info_contracts</field>
         </record>
-         <record id="onsc_legajo_report_config_funcional_info_personal" model="onsc.legajo.report.config.seccion">
+        <record id="onsc_legajo_report_config_funcional_info_personal" model="onsc.legajo.report.config.seccion">
             <field name="seccion">Información personal en la función pública</field>
             <field name="internal_field">funcional_info_personal</field>
+        </record>
+        <record id="onsc_legajo_report_config_other_info" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Otra información del funcionario</field>
+            <field name="internal_field">funcional_other_info</field>
         </record>
         <record id="onsc_legajo_report_config_funcional_info_merit" model="onsc.legajo.report.config.seccion">
             <field name="seccion">Méritos</field>

@@ -80,7 +80,7 @@
              <t t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional_contracts"/>
         </t>
         <!--INFORMACIÓN PERSONAL EN LA FUNCIÓN PÚBLICA-->
-         <t t-if="'funcional_info_personal' in env.context.get('seccions', True)" >
+        <t t-if="'funcional_info_personal' in env.context.get('seccions', True)" >
 
             <h4 t-if="o.juramento_bandera_date" class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
                 Información personal en la función pública
@@ -125,18 +125,20 @@
             <!--Antecedentes judiciales -->
             <t t-value="o.judicial_antecedents_ids" t-set="judicial_antecedents_ids"/>
             <t t-if="len(judicial_antecedents_ids) > 0">
-            <ul style="list-style:none; font-size: 1.5rem;">
-                <li>
-                    <u style="list-style:none; font-size: 1.5rem;font-weight:bold;">Antecedentes judiciales</u>
-                </li>
-                <t t-foreach="judicial_antecedents_ids" t-as="judicial_antecedents_id">
-                <li class="ml-4">Fecha del documento: <span t-field="judicial_antecedents_id.document_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
-                </t>
-            </ul>
-            </t>
-
-            <!--Otra información del funcionario-->
-            <t t-value="o.other_information_ids" t-set="other_information_ids"/>
+                <ul style="list-style:none; font-size: 1.5rem;">
+                    <li>
+                        <u style="list-style:none; font-size: 1.5rem;font-weight:bold;">Antecedentes judiciales</u>
+                    </li>
+                    <t t-foreach="judicial_antecedents_ids" t-as="judicial_antecedents_id">
+                    <li class="ml-4">Fecha del documento: <span t-field="judicial_antecedents_id.document_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                    </t>
+                </ul>
+             </t>
+         </t>
+        <t t-if="'funcional_other_info' in env.context.get('seccions', True)">
+            <strong>INFORrtrtrttrtrtrMACIÓN FUNCIONAL</strong>
+         <!--Otra información del funcionario-->
+         <t t-value="o.other_information_ids" t-set="other_information_ids"/>
             <t t-if="len(other_information_ids) > 0">
             <ul style="list-style:none; font-size: 1.5rem;">
                 <li style="list-style:none;">
