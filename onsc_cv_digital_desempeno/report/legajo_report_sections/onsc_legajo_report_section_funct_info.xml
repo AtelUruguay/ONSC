@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="legajo_section_informacion_funcional" inherit_id="onsc_cv_digital_legajo.legajo_section_informacion_funcional">
+        <xpath expr="." position="inside">
+            <t t-if="'funcional_info_score' in env.context.get('seccions', True)" >
+                  <!--Puntajes-->
+                <t t-value="o.score_ids" t-set="score_ids"/>
+                <t t-if="len(score_ids) > 0">
+                    <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+                        Ciclo de evaluación 360º
+                    </h4>
+                    <ul style="list-style:none; font-size: 1.5rem;">
+                        <t t-foreach="score_ids" t-as="score_id">
+                        <li>Año del ciclo de evaluación: <span t-field="score_id.year" t-options="{'widget': 'text'}"/> - Puntaje total del ciclo: <span t-esc="round(score_id.score,2)"/></li>
+                        </t>
+                    </ul>
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>

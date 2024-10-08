@@ -6,9 +6,21 @@
             <field name="internal_field">personal_data</field>
         </record>
 
-        <record id="onsc_legajo_report_config_funcional_info" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Información Funcional</field>
-            <field name="internal_field">funcional_info</field>
+        <record id="onsc_legajo_report_config_funcional_info_contracts" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Vínculos</field>
+            <field name="internal_field">funcional_info_contracts</field>
+        </record>
+         <record id="onsc_legajo_report_config_funcional_info_personal" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Información personal en la función pública</field>
+            <field name="internal_field">funcional_info_personal</field>
+        </record>
+        <record id="onsc_legajo_report_config_funcional_info_merit" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Méritos</field>
+            <field name="internal_field">funcional_info_merit</field>
+        </record>
+        <record id="onsc_legajo_report_config_funcional_info_demerit" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Deméritos</field>
+            <field name="internal_field">funcional_info_demerit</field>
         </record>
 
         <record id="onsc_legajo_report_config_formation" model="onsc.legajo.report.config.seccion">
@@ -21,58 +33,9 @@
             <field name="internal_field">work_experience</field>
         </record>
 
-        <record id="onsc_legajo_report_config_work_teaching" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Docencia</field>
-            <field name="internal_field">work_teaching</field>
+        <record id="onsc_legajo_report_other_experience_cvd" model="onsc.legajo.report.config.seccion">
+            <field name="seccion">Otra experiencia del CVD</field>
+            <field name="internal_field">other_experience_cvd</field>
         </record>
-
-        <record id="onsc_legajo_report_config_investigation" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Investigación</field>
-            <field name="internal_field">investigation</field>
-        </record>
-
-        <record id="onsc_legajo_report_config_volunteering" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Voluntariado</field>
-            <field name="internal_field">volunteering</field>
-        </record>
-
-        <record id="onsc_legajo_report_config_ppe" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Publicaciones, producciones y evaluaciones</field>
-            <field name="internal_field">ppe</field>
-        </record>
-
-        <record id="onsc_legajo_report_config_tos" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Tutorías, orientaciones, supervisiones</field>
-            <field name="internal_field">tos</field>
-        </record>
-
-        <record id="onsc_legajo_report_config_events" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Participación en eventos</field>
-            <field name="internal_field">events</field>
-        </record>
-
-        <record id="onsc_legajo_report_config_other_info" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Otra información relevante</field>
-            <field name="internal_field">other_info</field>
-        </record>
-
-
-
-<!--        <record id="onsc_legajo_report_config_course_certificates" model="onsc.legajo.report.config.seccion">-->
-<!--            <field name="seccion">Cursos y certificados</field>-->
-<!--            <field name="internal_field">course_certificates</field>-->
-<!--        </record>-->
-<!--        <record id="onsc_legajo_report_config_language" model="onsc.legajo.report.config.seccion">-->
-<!--            <field name="seccion">Idiomas</field>-->
-<!--            <field name="internal_field">language</field>-->
-<!--        </record>-->
-<!--        <record id="onsc_legajo_report_config_disabilitie" model="onsc.legajo.report.config.seccion">-->
-<!--            <field name="seccion">Discapacidad</field>-->
-<!--            <field name="internal_field">disabilitie</field>-->
-<!--        </record>-->
-<!--        <record id="onsc_legajo_report_config_references" model="onsc.legajo.report.config.seccion">-->
-<!--            <field name="seccion">Referencias</field>-->
-<!--            <field name="internal_field">references</field>-->
-<!--        </record>-->
     </data>
 </odoo>

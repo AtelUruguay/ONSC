@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="onsc_legajo_document" inherit_id="onsc_cv_digital_legajo.onsc_legajo_document">
+         <xpath expr='//t[@t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"]' position="replace">
+              <t id="funcional_info" t-if="'funcional_info_contracts' in env.context.get('seccions', True) or 'funcional_info_score' in env.context.get('seccions', True) or
+                             'funcional_info_personal' in env.context.get('seccions', True) or 'funcional_info_merit' in env.context.get('seccions', True) or
+                             'funcional_info_demerit' in env.context.get('seccions', True)" t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
+         </xpath>
+    </template>
+</odoo>

@@ -27,11 +27,11 @@
                 <li style="list-style:none;" t-if="object.volunteering_task_ids">Tareas clave:</li>
                 <t t-foreach="object.volunteering_task_ids" t-as="line">
                     <ul>
-                        <li><span t-field="line.key_task_id.name"/>/<span t-esc="line.area_id.name"/> </li>
+                        <li><span t-field="line.key_task_id.name"/>/<span t-esc="line.area_id.name"/></li>
                     </ul>
                 </t>
             </ul>
-            <br></br>
+            <br/>
         </t>
     </template>
 </odoo>
