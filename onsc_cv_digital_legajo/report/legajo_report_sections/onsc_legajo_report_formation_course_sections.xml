@@ -113,7 +113,7 @@
         <t t-foreach="objects" t-as="object">
             <ul style="font-size: 1.5rem;">
                 <li style="font-weight:bold;">
-                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>-
+                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
                     <t t-if="object.state!='completed'"><span>Actualidad</span></t>
                     <t t-else=""><span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/></t>:
                     <span t-field="object.institution_id.name_country"/>
@@ -135,7 +135,7 @@
          <t t-foreach="objects" t-as="object">
             <ul style="font-size: 1.5rem;">
                 <li style="font-weight:bold;">
-                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
                     <t t-if="object.state!='completed'">
                         <span>Actualidad</span>
                     </t>

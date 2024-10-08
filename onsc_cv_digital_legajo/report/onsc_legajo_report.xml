@@ -17,16 +17,6 @@
             </t>
         </t>
 
-<!--        <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">-->
-<!--            <div class="row zero_min_height">-->
-<!--                <div class="col-12 text-center">-->
-<!--                    <h4>-->
-<!--                        LEGAJO-->
-<!--                    </h4>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
 
         <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout {{  'o_layout_background' if company.layout_background in ['Geometric', 'Custom']  else  '' }}"
              t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % company.layout_background_image.decode('utf-8') if company.layout_background_image and company.layout_background == 'Custom' else '/base/static/img/bg_background_template.jpg' if company.layout_background == 'Geometric' else ''}});"
@@ -159,7 +149,9 @@
                                 </t>
                             </t>
                             <!--INFORMACION FUNCIONAL-->
-                            <t t-if="'funcional_info' in env.context.get('seccions', True)" t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
+                            <t id="funcional_info" t-if="'funcional_info_contracts' in env.context.get('seccions', True) or
+                             'funcional_info_personal' in env.context.get('seccions', True) or 'funcional_info_merit' in env.context.get('seccions', True) or
+                             'funcional_info_demerit' in env.context.get('seccions', True)" t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
 
                             <!--FORMACION-->
                             <t t-if="'formation' in env.context.get('seccions', True)">
@@ -170,124 +162,105 @@
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_formation">
                                     <t t-set="values" t-value="values"/>
                                 </t>
-                               <br></br>
+                               <br/>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_formation_basic">
                                     <t t-set="name_section" t-value="'SECUNDARIA'"/>
                                     <t t-set="objects" t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level =='secondary')"/>
                                 </t>
-                                <br></br>
+                                <br/>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_formation_basic">
                                     <t t-set="name_section" t-value="'PRIMARIA'"/>
                                     <t t-set="objects" t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level !='secondary')"/>
                                 </t>
-                                <br></br>
+                                <br/>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_course_workshop">
                                     <t t-set="name_section" t-value="'CURSOS'"/>
                                     <t t-set="objects" t-value="o.course_ids.filtered(lambda tx: tx.course_type =='course')"/>
                                 </t>
-                                <br></br>
+                                <br/>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_course_workshop">
                                     <t t-set="name_section" t-value="'TALLERES'"/>
                                     <t t-set="objects" t-value="o.course_ids.filtered(lambda tx: tx.course_type =='workshop')"/>
                                 </t>
-                                <br></br>
+                                <br/>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_course_workshop">
                                     <t t-set="name_section" t-value="'OTRA CAPACITACION'"/>
                                     <t t-set="objects" t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
                                 </t>
-                               <br></br>
+                               <br/>
                             </t>
                            <t t-if="'work_experience' in env.context.get('seccions', True)">
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_work">
                                     <t t-set="name_section" t-value="'EXPERIENCIA LABORAL'"/>
                                     <t t-set="objects" t-value="o.work_experience_ids"/>
                                 </t>
-                                <br></br>
-                            </t>
-                             <t t-if="'work_teaching' in env.context.get('seccions', True)">
-                                 <!--Docencia-->
-                                <t t-call="onsc_cv_digital_legajo.legajo_section_teaching">
+                                <br/>
+                           </t>
+                           <t t-if="'other_experience_cvd' in env.context.get('seccions', True)">
+                               <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+                                   <strong>OTRA EXPERIENCIA DEL CVD</strong>
+                               </h3>
+                               <!--Docencia-->
+                               <t t-call="onsc_cv_digital_legajo.legajo_section_teaching">
                                     <t t-set="name_section" t-value="'DOCENCIA'"/>
                                     <t t-set="objects" t-value="o.work_teaching_ids"/>
-                                </t>
-                                <br></br>
-                            </t>
-                            <t t-if="'investigation' in env.context.get('seccions', True)">
-                                 <!--INVESTIGACIONES-->
-                                <t t-call="onsc_cv_digital_legajo.legajo_section_investigation">
+                               </t>
+                               <br/>
+                               <!--INVESTIGACIONES-->
+                               <t t-call="onsc_cv_digital_legajo.legajo_section_investigation">
                                     <t t-set="name_section" t-value="'INVESTIGACIONES'"/>
-                                    <t t-set="objects"
-                                       t-value="o.work_investigation_ids"/>
-                                </t>
-                                <br></br>
-                            </t>
-                            <t t-if="'volunteering' in env.context.get('seccions', True)">
-                                <!--VOLUNTARIADO-->
-                                <t t-call="onsc_cv_digital_legajo.legajo_section_volunteering">
-                                    <t t-set="name_section" t-value="'VOLUNTARIADO'"/>
-                                    <t t-set="objects" t-value="o.volunteering_ids"/>
-                                </t>
-                                <br></br>
-                            </t>
-                            <t t-if="'ppe' in env.context.get('seccions', True)">
-                                <br></br>
-                                <!--PUBLICACIONES-->
+                                    <t t-set="objects" t-value="o.work_investigation_ids"/>
+                               </t>
+                               <br/>
+                               <!--VOLUNTARIADO-->
+                               <t t-call="onsc_cv_digital_legajo.legajo_section_volunteering">
+                                   <t t-set="name_section" t-value="'VOLUNTARIADO'"/>
+                                   <t t-set="objects" t-value="o.volunteering_ids"/>
+                               </t>
+                               <br/>
+                               <!--PUBLICACIONES-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
-                                    <t t-set="name_section"
-                                       t-value="'PUBLICACIONES'"/>
-                                    <t t-set="objects"
-                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='publication')"/>
+                                    <t t-set="name_section" t-value="'PUBLICACIONES'"/>
+                                    <t t-set="objects" t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='publication')"/>
                                 </t>
-                                <br></br>
+                                <br/>
                                 <!--PRODUCCIONES-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
-                                    <t t-set="name_section"
-                                       t-value="'PRODUCCIONES'"/>
-                                    <t t-set="objects"
-                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='productions')"/>
+                                    <t t-set="name_section" t-value="'PRODUCCIONES'"/>
+                                    <t t-set="objects" t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='productions')"/>
                                 </t>
-                                <br></br>
+                                <br/>
                                 <!--EVALUACIONES-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
-                                    <t t-set="name_section"
-                                       t-value="'EVALUACIONES'"/>
-                                    <t t-set="objects"
-                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='evaluation')"/>
+                                    <t t-set="name_section" t-value="'EVALUACIONES'"/>
+                                    <t t-set="objects" t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='evaluation')"/>
                                 </t>
+                                <br/>
                                 <!--PUBLICACIONES OTRO-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
-                                    <t t-set="name_section"
-                                       t-value="'OTRO'"/>
-                                    <t t-set="objects"
-                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='other')"/>
+                                    <t t-set="name_section" t-value="'OTRO'"/>
+                                    <t t-set="objects" t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='other')"/>
                                 </t>
+                               <br/>
+                               <!--Tutorias-->
+                               <t t-call="onsc_cv_digital_legajo.legajo_section_supervision">
+                                   <t t-set="name_section" t-value="'TUTORÍAS, ORIENTACIONES, SUPERVISIONES'"/>
+                                   <t t-set="objects" t-value="o.tutoring_orientation_supervision_ids"/>
+                               </t>
+                               <br/>
+                               <!--PARTICIPACIÓN EN EVENTOS-->
+                               <t t-call="onsc_cv_digital_legajo.legajo_section_event">
+                                   <t t-set="name_section" t-value="'PARTICIPACIÓN EN EVENTOS'"/>
+                                   <t t-set="objects" t-value="o.participation_event_ids"/>
+                               </t>
+                               <br/>
+                               <!--Otra información relevante-->
+                               <t t-call="onsc_cv_digital_legajo.legajo_section_other_relevant_information">
+                                   <t t-set="name_section" t-value="'OTRA INFORMACIÓN RELEVANTE'"/>
+                                   <t t-set="objects" t-value="o.other_relevant_information_ids"/>
+                               </t>
+                               <br/>
                             </t>
-                            <br></br>
-                            <t t-if="'tos' in env.context.get('seccions', True)">
-                                <!--Tutorias-->
-                                <t t-call="onsc_cv_digital_legajo.legajo_section_supervision">
-                                    <t t-set="name_section" t-value="'TUTORÍAS, ORIENTACIONES, SUPERVISIONES'"/>
-                                    <t t-set="objects" t-value="o.tutoring_orientation_supervision_ids"/>
-                                </t>
-                                <br></br>
-                            </t>
-                            <t t-if="'events' in env.context.get('seccions', True)">
-                                <!--PARTICIPACIÓN EN EVENTOS-->
-                                <t t-call="onsc_cv_digital_legajo.legajo_section_event">
-                                    <t t-set="name_section" t-value="'PARTICIPACIÓN EN EVENTOS'"/>
-                                    <t t-set="objects" t-value="o.participation_event_ids"/>
-                                </t>
-                                <br></br>
-                            </t>
-                            <t t-if="'other_info' in env.context.get('seccions', True)">
-                                <!--Otra información relevante-->
-                                <t t-call="onsc_cv_digital_legajo.legajo_section_other_relevant_information">
-                                    <t t-set="name_section" t-value="'OTRA INFORMACIÓN RELEVANTE'"/>
-                                    <t t-set="objects" t-value="o.other_relevant_information_ids"/>
-                                </t>
-                                <br></br>
-                            </t>
-
                         </div>
                     </div>
                 </div>
