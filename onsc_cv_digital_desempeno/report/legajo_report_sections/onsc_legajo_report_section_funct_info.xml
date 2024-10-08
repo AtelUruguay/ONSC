@@ -11,7 +11,7 @@
                     </h4>
                     <ul style="list-style:none; font-size: 1.5rem;">
                         <t t-foreach="score_ids" t-as="score_id">
-                        <li>Año del ciclo de evaluación: <span t-field="score_id.year" t-options="{'widget': 'text'}"/> - Puntaje total del ciclo: <span t-field="score_id.score"/></li>
+                        <li>Año del ciclo de evaluación: <span t-field="score_id.year" t-options="{'widget': 'text'}"/> - Puntaje total del ciclo: <span t-esc="round(score_id.score,2)"/></li>
                         </t>
                     </ul>
                 </t>

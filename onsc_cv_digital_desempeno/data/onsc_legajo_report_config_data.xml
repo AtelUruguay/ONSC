@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
        <record id="onsc_legajo_report_config_funcional_info_score" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Información Funcional-Puntaje</field>
+            <field name="seccion">Gestión del desempeño</field>
             <field name="internal_field">funcional_info_score</field>
         </record>
     </data>

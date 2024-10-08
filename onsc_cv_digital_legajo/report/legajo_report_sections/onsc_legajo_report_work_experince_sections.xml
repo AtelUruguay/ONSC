@@ -21,7 +21,7 @@
                 <li style="list-style:none;" t-if="object.position">Cargo: <span t-field="object.position"/></li>
                 <li style="list-style:none;" t-if="object.unit_name">Área/Unidad: <span t-field="object.unit_name"/></li>
                 <li style="list-style:none;" t-if="object.entry_institution_id">Rubro: <span t-field="object.entry_institution_id.name"/></li>
-                <li style="list-style:none;">Nivel jerárquico/toma decisiones:
+                <li style="list-style:none;">Nivel jerárquico/Toma decisiones:
                     <span t-if="object.hierarchical_level_id" t-field="object.hierarchical_level_id.name"/>
                     <t t-if="object.take_decisions">/<span t-field="object.take_decisions"/></t>
                 </li>
