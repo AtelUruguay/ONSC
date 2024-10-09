@@ -15,9 +15,9 @@
                 </li>
                 <li style="list-style:none;" t-if="object.investigation_type">Tipo de investigación: <span t-field="object.investigation_type"/></li>
                 <li style="list-style:none;" t-if="object.description">Descripción de la investigación: <span t-field="object.description"/></li>
-                <li style="list-style:none;" t-if="object.institution_id">Institución / Subinstitución:
+                <li style="list-style:none;" t-if="object.institution_id">Institución/Subinstitución:
                     <span t-field="object.institution_id.name_country"/>
-                    <t t-if="object.institution_id.id!=object.subinstitution_id.id"> / <span t-field="object.subinstitution_id.name"/></t>
+                    <t t-if="object.institution_id.id!=object.subinstitution_id.id">/<span t-field="object.subinstitution_id.name"/></t>
                 </li>
                 <li style="list-style:none;" t-if="object.position">Cargo: <span t-field="object.position"/></li>
                 <li style="list-style:none;" t-if="object.participation_type">Tipo de participación: <span t-field="object.participation_type"/></li>

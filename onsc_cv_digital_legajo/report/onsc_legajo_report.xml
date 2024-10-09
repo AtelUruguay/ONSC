@@ -199,7 +199,7 @@
                            </t>
                            <t t-if="'other_experience_cvd' in env.context.get('seccions', True)">
                                <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
-                                   <strong>OTRA EXPERIENCIA DEL CVD</strong>
+                                   <strong>OTRAS EXPERIENCIAS</strong>
                                </h3>
                                <!--Docencia-->
                                <t t-call="onsc_cv_digital_legajo.legajo_section_teaching">

@@ -136,7 +136,6 @@
              </t>
          </t>
         <t t-if="'funcional_other_info' in env.context.get('seccions', True)">
-            <strong>INFORrtrtrttrtrtrMACIÓN FUNCIONAL</strong>
          <!--Otra información del funcionario-->
          <t t-value="o.other_information_ids" t-set="other_information_ids"/>
             <t t-if="len(other_information_ids) > 0">
