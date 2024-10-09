@@ -60,10 +60,12 @@
                                    force_save="1"
                                    attrs="{'readonly': [('record_type', '=', 'certificate')],'required': [('record_type', '!=', 'certificate')]}"/>
                             <field name="start_date"
+                                   string="Fecha de inicio estimada"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="certificate_start_date"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"/>
                             <field name="end_date" states="completed"
+                                   string="Fecha de fin estimada"
                                    attrs="{'invisible': ['|',('record_type', '!=', 'course')],'required': [('record_type', '!=', 'certificate'),('state', '=', 'completed')]}"/>
                             <field name="induction_type"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>

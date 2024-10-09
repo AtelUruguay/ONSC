@@ -58,10 +58,12 @@
                         <group>
                             <field name="state"/>
                             <field name="start_date"
+                                   string="Fecha de inicio estimada"
                                    attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
                             <field name="certificate_start_date"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')]}"/>
                             <field name="end_date" states="completed"
+                                   string="Fecha de fin estimada"
                                    attrs="{'invisible': ['|',('record_type', '!=', 'course')]}"/>
                             <field name="induction_type"
                                    attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
