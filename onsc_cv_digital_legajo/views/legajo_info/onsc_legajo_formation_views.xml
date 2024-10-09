@@ -123,6 +123,8 @@
                                    attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
                             <field name="country_code" invisible="1"/>
                             <field name="scholarship"/>
+                            <field name="scolarship_certificate_file" filename="revalidated_certificate_filename"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="max_scholarship"
                                    attrs="{'invisible': [('scholarship', 'in', [0.00,''])],'required': [('scholarship', 'not in', [0.00,''])]}"/>
                             <field name="credits_far"
@@ -150,6 +152,7 @@
                             <field name="revalidated_certificate_filename" invisible="1"/>
                             <field name="homologated_certificate_filename" invisible="1"/>
                             <field name="apostille_filename" invisible="1"/>
+                            <field name="scolarship_certificate_filename" invisible="1"/>
                         </group>
                     </group>
                     <br/>

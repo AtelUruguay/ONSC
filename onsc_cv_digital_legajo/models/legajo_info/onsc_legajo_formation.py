@@ -197,6 +197,7 @@ class ONSCLegajoAdvancedFormationHistory(models.Model):
 
     history_apostille_file = fields.Binary(string="Apostilla")
     history_revalidated_certificate_file = fields.Binary(string="Certificado de reválida de título")
-    history_egress_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad")
+    history_egress_certificate_file = fields.Binary(string="Certificado de egreso / título")
+    scolarship_certificate_file = fields.Binary(string="Escolaridad")
     history_homologated_certificate_file = fields.Binary(string="Certificado de homologación")
     history_study_certificate_file = fields.Binary(string="Certificado de estudio")
