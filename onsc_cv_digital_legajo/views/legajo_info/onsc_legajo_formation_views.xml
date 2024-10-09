@@ -24,8 +24,9 @@
                         </group>
                         <group>
                             <field name="state"/>
-                            <field name="start_date"/>
+                            <field name="start_date" string="Fecha de inicio estimada"/>
                             <field name="end_date"
+                                   string="Fecha de fin estimada"
                                    attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                             <field name="coursed_years"
                                    attrs="{'invisible': [('state', 'not in', ['in_progress','incomplete'])]}"/>
@@ -98,7 +99,7 @@
                             <field name="apostilled_date"
                                    attrs="{'invisible': [('apostilled_title', '!=', 'yes')]}"/>
                             <field name="state" />
-                            <field name="start_date"/>
+                            <field name="start_date" string="Fecha de inicio estimada"/>
                             <field name="egress_date"
                                    attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                             <field name="issue_title_date"

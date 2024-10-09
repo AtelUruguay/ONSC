@@ -15,7 +15,7 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="internal_course" />
                             <field name="internal_course_name" attrs="{'invisible': [('internal_course', '=', False)]}"/>
-                         <field name="institution_id"
+                            <field name="institution_id"
                                    domain="institution_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
                                    context="{'default_is_unformal_education': True,'default_country_id': country_id, 'is_readonly': True}"/>
@@ -46,8 +46,8 @@
                         <group>
                             <field name="state"
                                    force_save="1"/>
-                            <field name="start_date"/>
-                            <field name="end_date" states="completed"/>
+                            <field name="start_date" string="Fecha de inicio estimada"/>
+                            <field name="end_date" states="completed" string="Fecha de fin estimada"/>
                             <field name="induction_type"/>
                             <field name="dictation_mode"/>
                             <field name="hours_total"/>
