@@ -55,6 +55,9 @@ ADVANCED_HISTORY_COLUMNS = [
     'credits_training',
     'apostille_file',
     'apostille_filename',
+    # FIXME 28.8.3 PS07 13857
+    'scolarship_certificate_file',
+    'scolarship_certificate_filename',
     'egress_certificate_file',
     'egress_certificate_filename',
     'revalidated_certificate_file',
@@ -198,6 +201,7 @@ class ONSCLegajoAdvancedFormationHistory(models.Model):
     history_apostille_file = fields.Binary(string="Apostilla")
     history_revalidated_certificate_file = fields.Binary(string="Certificado de reválida de título")
     history_egress_certificate_file = fields.Binary(string="Certificado de egreso / título")
-    scolarship_certificate_file = fields.Binary(string="Escolaridad")
+    # FIXME 28.8.3 PS07 13857
+    history_scolarship_certificate_file = fields.Binary(string="Escolaridad")
     history_homologated_certificate_file = fields.Binary(string="Certificado de homologación")
     history_study_certificate_file = fields.Binary(string="Certificado de estudio")
