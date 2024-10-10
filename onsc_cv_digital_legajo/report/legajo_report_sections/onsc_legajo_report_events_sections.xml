@@ -10,7 +10,7 @@
                 <li style="font-weight:bold;">
                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
                         <span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/>:
-                        <span t-field="object.name_event"/> / <span t-field="object.type_event_id.name"/>
+                        <span t-field="object.name_event"/>/<span t-field="object.type_event_id.name"/>
                 </li>
                 <li style="list-style:none;" t-if="object.description_event">Descripción del evento: <span t-field="object.description_event"/></li>
                 <li style="list-style:none;" t-if="object.name_institution">Nombre de la institución organizadora: <span t-field="object.name_institution"/></li>
@@ -26,7 +26,7 @@
                 <li style="list-style:none;" t-if="object.knowledge_acquired_ids">Conocimientos claves abordados: <t t-set="emp_count" t-value="0"/>
                     <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
                         <t t-set="emp_count" t-value="emp_count + 1"/>
-                        <t t-if="emp_count!=1"> / </t>
+                        <t t-if="emp_count!=1">/</t>
                         <span t-field="knowledge.name"/>
                     </t>
                 </li>
@@ -34,8 +34,7 @@
                 <t t-foreach="object.activity_area_ids" t-as="line">
                     <ul>
                         <li>
-                            <span t-field="line.educational_area_id.name"/> / <span t-esc="line.educational_subarea_id.name"/> /
-                            <span t-field="line.discipline_educational_id.name"/> / <span t-field="line.speciality"/>
+                            <span t-field="line.educational_area_id.name"/>/<span t-esc="line.educational_subarea_id.name"/>/<span t-field="line.discipline_educational_id.name"/>/<span t-field="line.speciality"/>
                         </li>
                     </ul>
                 </t>

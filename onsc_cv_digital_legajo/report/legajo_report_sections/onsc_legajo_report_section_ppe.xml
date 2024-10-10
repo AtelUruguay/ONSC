@@ -47,7 +47,7 @@
                 <ul>
                 <t t-foreach="object.activity_area_ids" t-as="line">
                     <li>
-                    <span t-field="line.educational_area_id.name"/> / <span t-field="line.educational_subarea_id.name"/> / <span t-field="line.discipline_educational_id.name"/> / <span t-field="line.speciality"/>
+                    <span t-field="line.educational_area_id.name"/>/<span t-field="line.educational_subarea_id.name"/>/<span t-field="line.discipline_educational_id.name"/>/<span t-field="line.speciality"/>
                     </li>
                 </t>
                 </ul>

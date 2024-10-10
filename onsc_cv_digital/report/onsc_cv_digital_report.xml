@@ -1474,7 +1474,7 @@
                     </h4>
                 </li>
                 <h4 t-if="object.institution_id">
-                    Institución / Subinstitucion:
+                    Institución/Subinstitucion:
                     <span t-field="object.institution_id.name_country"/>
                     <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
                         <span t-field="object.subinstitution_id.name"/>

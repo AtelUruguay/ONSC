@@ -78,7 +78,7 @@
                 <t t-foreach="object.area_related_education_ids" t-as="line">
                     <ul style="font-size: 1.5rem;">
                         <li class="ml-4">
-                            <span t-field="line.educational_area_id.name"/> / <span t-esc="line.educational_subarea_id.name"/> / <span t-field="line.discipline_educational_id.name"/>
+                            <span t-field="line.educational_area_id.name"/>/<span t-esc="line.educational_subarea_id.name"/>/<span t-field="line.discipline_educational_id.name"/>
                         </li>
                     </ul>
                 </t>
@@ -93,7 +93,7 @@
                     <li class="ml-4"  t-if="object.knowledge_thesis_ids">Conocimientos aplicados: <t t-set="emp_count" t-value="0"/>
                         <t t-foreach="object.knowledge_thesis_ids" t-as="knowledge">
                             <t t-set="emp_count" t-value="emp_count + 1"/>
-                            <t t-if="emp_count!=1"> / </t>
+                            <t t-if="emp_count!=1">/</t>
                             <span t-field="knowledge.name"/>
                         </t>
                     </li>
@@ -117,7 +117,7 @@
                     <t t-if="object.state!='completed'"><span>Actualidad</span></t>
                     <t t-else=""><span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/></t>:
                     <span t-field="object.institution_id.name_country"/>
-                    <t t-if="object.institution_id.id!=object.subinstitution_id.id"> / <span t-field="object.subinstitution_id.name"/></t>
+                    <t t-if="object.institution_id.id!=object.subinstitution_id.id">/<span t-field="object.subinstitution_id.name"/></t>
                 </li>
                 <li style="list-style:none;" t-if="object.state">Estado: <span t-field="object.state"/></li>
                 <li style="list-style:none;" t-if="object.coursed_years">Años cursados: <span t-field="object.coursed_years"/></li>
@@ -147,7 +147,7 @@
                 </li>
                 <li style="list-style:none;" t-if="object.institution_id">
                     <span t-field="object.institution_id.name_country"/>
-                    <t t-if="object.institution_id.id!=object.subinstitution_id.id"> / <span t-field="object.subinstitution_id.name"/></t>
+                    <t t-if="object.institution_id.id!=object.subinstitution_id.id">/<span t-field="object.subinstitution_id.name"/></t>
                 </li>
                 <t t-else="">
                   <li style="list-style:none;" t-if="object.institution_cert_id">
@@ -171,7 +171,7 @@
                     <t t-set="emp_count" t-value="0"/>
                     <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
                         <t t-set="emp_count" t-value="emp_count + 1"/>
-                        <t t-if="emp_count!=1"> / </t>
+                        <t t-if="emp_count!=1">/</t>
                         <span t-field="knowledge.name"/>
                     </t>
                 </li>
@@ -179,7 +179,7 @@
                 <t t-foreach="object.line_ids" t-as="line">
                     <ul style="font-size: 1.5rem;">
                         <li class="ml-4">
-                            <span t-field="line.educational_area_id.name"/> / <span t-esc="line.educational_subarea_id.name"/> / <span t-field="line.discipline_educational_id.name"/>
+                            <span t-field="line.educational_area_id.name"/>/<span t-esc="line.educational_subarea_id.name"/>/<span t-field="line.discipline_educational_id.name"/>
                         </li>
                     </ul>
                 </t>

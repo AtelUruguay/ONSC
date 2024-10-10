@@ -39,7 +39,7 @@
             <li t-if="employee_id.cv_address_zip">CP: <span t-field="employee_id.cv_address_zip"/></li>
             <li>
                 <span t-if="employee_id.cv_address_state_id" t-esc="employee_id.cv_address_state_id.name"/>
-                <t t-if="employee_id.cv_address_location_id"> / <span t-esc="employee_id.cv_address_location_id.name"/> - </t><span t-if="employee_id.country_id" t-esc="employee_id.country_id.name"/>
+                <t t-if="employee_id.cv_address_location_id">/<span t-esc="employee_id.cv_address_location_id.name"/> - </t><span t-if="employee_id.country_id" t-esc="employee_id.country_id.name"/>
             </li>
             <li t-if="employee_id.cv_address_amplification">
                 Aclaraciones: <span t-field="employee_id.cv_address_amplification"/>
@@ -64,7 +64,7 @@
                 <t t-if="employee_id.cv_race_ids">Identidad étnico-racial:
                     <t t-set="emp_count" t-value="0"/>
                     <t t-foreach="employee_id.cv_race_ids" t-as="race">
-                        <t t-set="emp_count" t-value="emp_count + 1"/><t t-if="emp_count!=1"> / </t><span t-field="race.name"/>
+                        <t t-set="emp_count" t-value="emp_count + 1"/><t t-if="emp_count!=1">/</t><span t-field="race.name"/>
                     </t>
                 </t>
             </li>
@@ -201,7 +201,7 @@
                     <h4>Tipos de apoyo:
                         <t t-set="emp_count" t-value="0"/>
                         <t t-foreach="object.type_support_ids" t-as="type_support">
-                            <t t-set="emp_count" t-value="emp_count + 1"/><t t-if="emp_count!=1"> / </t><span t-field="type_support.name"/>
+                            <t t-set="emp_count" t-value="emp_count + 1"/><t t-if="emp_count!=1">/</t><span t-field="type_support.name"/>
                         </t>
                     </h4>
                 </li>
