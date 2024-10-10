@@ -38,7 +38,7 @@
                     <t t-set="emp_count" t-value="0"/>
                     <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
                         <t t-set="emp_count" t-value="emp_count + 1"/>
-                        <t t-if="emp_count!=1"> / </t>
+                        <t t-if="emp_count!=1">/</t>
                         <span t-field="knowledge.name"/>
                     </t>
                 </li>
