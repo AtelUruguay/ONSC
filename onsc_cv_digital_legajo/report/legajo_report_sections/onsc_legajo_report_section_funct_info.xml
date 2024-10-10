@@ -78,17 +78,18 @@
         </h3>
         <t t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional_contracts"/>
 
+        <!--FIXME 28.8.3 PS07 13857-->
         <!--INFORMACIÓN PERSONAL EN LA FUNCIÓN PÚBLICA-->
-        <h4 t-if="o.juramento_bandera_date" class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
-            Información personal en la función pública
-        </h4>
-        <ul style="list-style:none; font-size: 1.5rem;">
-            <li t-if="o.juramento_bandera_date">
-                <u style="list-style:none; font-size: 1.5rem;font-weight:bold;">Jura de la bandera</u>
-            </li>
-            <li class="ml-4" t-if="o.juramento_bandera_date">Fecha de jura de la bandera: <span t-field="o.juramento_bandera_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
-            <li class="ml-4" t-if="o.juramento_bandera_presentacion_date">Fecha de presentación de juramento: <span t-field="o.juramento_bandera_presentacion_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
-        </ul>
+<!--        <h4 t-if="o.juramento_bandera_date" class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">-->
+<!--            Información personal en la función pública-->
+<!--        </h4>-->
+<!--        <ul style="list-style:none; font-size: 1.5rem;">-->
+<!--            <li t-if="o.juramento_bandera_date">-->
+<!--                <u style="list-style:none; font-size: 1.5rem;font-weight:bold;">Jura de la bandera</u>-->
+<!--            </li>-->
+<!--            <li class="ml-4" t-if="o.juramento_bandera_date">Fecha de jura de la bandera: <span t-field="o.juramento_bandera_date" t-options='{"format": "dd/MM/yyyy"}'/></li>-->
+<!--            <li class="ml-4" t-if="o.juramento_bandera_presentacion_date">Fecha de presentación de juramento: <span t-field="o.juramento_bandera_presentacion_date" t-options='{"format": "dd/MM/yyyy"}'/></li>-->
+<!--        </ul>-->
         <!--CONTROL DE VOTOS-->
         <t t-value="o._get_vote_registry_details()" t-set="vote_registry_details"/>
         <t t-if="len(vote_registry_details) > 0">
@@ -119,18 +120,19 @@
         </ul>
         </t>
 
+        <!--FIXME 28.8.3 PS07 13857-->
         <!--Antecedentes judiciales -->
-        <t t-value="o.judicial_antecedents_ids" t-set="judicial_antecedents_ids"/>
-        <t t-if="len(judicial_antecedents_ids) > 0">
-        <ul style="list-style:none; font-size: 1.5rem;">
-            <li>
-                <u style="list-style:none; font-size: 1.5rem;font-weight:bold;">Antecedentes judiciales</u>
-            </li>
-            <t t-foreach="judicial_antecedents_ids" t-as="judicial_antecedents_id">
-            <li class="ml-4">Fecha del documento: <span t-field="judicial_antecedents_id.document_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
-            </t>
-        </ul>
-        </t>
+<!--        <t t-value="o.judicial_antecedents_ids" t-set="judicial_antecedents_ids"/>-->
+<!--        <t t-if="len(judicial_antecedents_ids) > 0">-->
+<!--        <ul style="list-style:none; font-size: 1.5rem;">-->
+<!--            <li>-->
+<!--                <u style="list-style:none; font-size: 1.5rem;font-weight:bold;">Antecedentes judiciales</u>-->
+<!--            </li>-->
+<!--            <t t-foreach="judicial_antecedents_ids" t-as="judicial_antecedents_id">-->
+<!--            <li class="ml-4">Fecha del documento: <span t-field="judicial_antecedents_id.document_date" t-options='{"format": "dd/MM/yyyy"}'/></li>-->
+<!--            </t>-->
+<!--        </ul>-->
+<!--        </t>-->
 
         <!--Otra información del funcionario-->
         <t t-value="o.other_information_ids" t-set="other_information_ids"/>
