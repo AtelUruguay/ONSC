@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields
+from odoo import models, fields, _
 
 
 class HrJob(models.Model):
@@ -14,6 +14,8 @@ class HrJob(models.Model):
                     res[field]['selectable'] = False
                     res[field]['searchable'] = False
                     res[field]['sortable'] = False
+                if field == 'department_id':
+                    res[field]['string'] = _('Unidad organizativa')
             res.pop('evaluation_list_line_ids')
         return res
 
