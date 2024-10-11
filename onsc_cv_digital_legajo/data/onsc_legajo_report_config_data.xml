@@ -38,7 +38,7 @@
         </record>
 
         <record id="onsc_legajo_report_other_experience_cvd" model="onsc.legajo.report.config.seccion">
-            <field name="seccion">Otra experiencia del CVD</field>
+            <field name="seccion">Otras experiencias del CVD</field>
             <field name="internal_field">other_experience_cvd</field>
         </record>
     </data>
