@@ -12,6 +12,8 @@ class HrJob(models.Model):
             for field in res:
                 res[field]['selectable'] = False
                 res[field]['searchable'] = False
+                res[field]['sortable'] = False
+            res.pop('evaluation_list_line_ids')
         return res
 
     evaluation_list_line_ids = fields.Many2many(
