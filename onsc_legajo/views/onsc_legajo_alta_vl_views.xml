@@ -122,6 +122,7 @@
                                         <field name="legajo_state_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="security_job_id_domain" invisible="1"/>
+                                        <field name="regime_is_legajo" invisible="1"/>
                                     </group>
                                 </group>
                                 <group name="group7">
@@ -165,21 +166,22 @@
                                         <field name="resolution_type" colspan="4"/>
                                     </group>
                                 </group>
-                                <group name="jurament_bandera" string="Juramento de fidelidad a la bandera"
-                                       attrs="{'invisible': [('regime_is_legajo', '=', False)]}">
-                                    <group>
-                                        <field name="juramento_bandera_date"/>
-                                        <field name="juramento_bandera_presentacion_date"/>
-                                        <field name="juramento_bandera_file"
-                                               widget="binary"
-                                               options="{'accepted_file_extensions': '.pdf'}"
-                                               filename="juramento_bandera_filename"/>
-                                        <field name="juramento_bandera_filename" invisible="1"/>
-                                        <field name="regime_is_legajo" invisible="1"/>
-                                    </group>
-                                    <group>
-                                    </group>
-                                </group>
+                                <!--FIXME 28.8.3 PS07 13857-->
+<!--                                <group name="jurament_bandera" string="Juramento de fidelidad a la bandera"-->
+<!--                                       attrs="{'invisible': [('regime_is_legajo', '=', False)]}">-->
+<!--                                    <group>-->
+<!--                                        <field name="juramento_bandera_date"/>-->
+<!--                                        <field name="juramento_bandera_presentacion_date"/>-->
+<!--                                        <field name="juramento_bandera_file"-->
+<!--                                               widget="binary"-->
+<!--                                               options="{'accepted_file_extensions': '.pdf'}"-->
+<!--                                               filename="juramento_bandera_filename"/>-->
+<!--                                        <field name="juramento_bandera_filename" invisible="1"/>-->
+<!--                                        -->
+<!--                                    </group>-->
+<!--                                    <group>-->
+<!--                                    </group>-->
+<!--                                </group>-->
                                 <group name="documentacion" string="Documentación">
                                     <field name="attached_document_ids" nolabel="1">
                                         <tree>
@@ -212,25 +214,26 @@
                                            placeholder="Información Adicional"/>
                                 </group>
                             </page>
-                            <page name="antecedentes_judiciales" string="Antecedentes judiciales" attrs="{'invisible': [('regime_is_legajo', '=', False)]}">
-                                <field name="judicial_antecedents_ids">
-                                    <tree>
-                                        <field name="document_date"/>
-                                        <field name="digital_filename"/>
-                                    </tree>
-                                    <form>
-                                        <group>
-                                            <field name="document_date" required="1"/>
-                                            <field name="digital_file"
-                                                   required="1"
-                                                   widget="binary"
-                                                   filename="digital_filename"
-                                                   options="{'accepted_file_extensions': '.pdf'}"/>
-                                            <field name="digital_filename" invisible="1"/>
-                                        </group>
-                                    </form>
-                                </field>
-                            </page>
+                            <!--FIXME 28.8.3 PS07 13857-->
+<!--                            <page name="antecedentes_judiciales" string="Antecedentes judiciales" attrs="{'invisible': [('regime_is_legajo', '=', False)]}">-->
+<!--                                <field name="judicial_antecedents_ids">-->
+<!--                                    <tree>-->
+<!--                                        <field name="document_date"/>-->
+<!--                                        <field name="digital_filename"/>-->
+<!--                                    </tree>-->
+<!--                                    <form>-->
+<!--                                        <group>-->
+<!--                                            <field name="document_date" required="1"/>-->
+<!--                                            <field name="digital_file"-->
+<!--                                                   required="1"-->
+<!--                                                   widget="binary"-->
+<!--                                                   filename="digital_filename"-->
+<!--                                                   options="{'accepted_file_extensions': '.pdf'}"/>-->
+<!--                                            <field name="digital_filename" invisible="1"/>-->
+<!--                                        </group>-->
+<!--                                    </form>-->
+<!--                                </field>-->
+<!--                            </page>-->
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
