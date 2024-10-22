@@ -80,7 +80,7 @@
                             context="{'default_evaluation_id': active_id}"
                             confirm="¿Está seguro de que desea cancelar el formulario?"
                             invisible="context.get('readonly_evaluation', False) is True"
-                            attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', True),('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
+                            attrs="{'invisible': ['|',('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
                             type="action"
                             icon="fa-lock"/>`
                     <button name="button_cancel_gap_deal"
@@ -88,7 +88,7 @@
                             string="Cancelar"
                             confirm="¿Está seguro de que desea cancelar el formulario?"
                             invisible="context.get('readonly_evaluation', False) is True"
-                            attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', False),('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
+                            attrs="{'invisible': ['|',('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
                             type="object"
                             icon="fa-lock"/>`
                     <button name="button_go_back"
@@ -274,13 +274,11 @@
                             </field>
                         </page>
                         <page string="Evaluación de Competencias"
-                              attrs="{'invisible': [('evaluation_type', '!=', 'gap_deal')],'readonly':['|',('gap_deal_state', '!=', 'no_deal'),('is_exonerated_evaluation', '=', True)]}">
+                              attrs="{'invisible': [('evaluation_type', '!=', 'gap_deal')],'readonly':[('gap_deal_state', '!=', 'no_deal')]}">
                             <field name="gap_deal_competency_ids" nolabel="1"
-                                   attrs="{'readonly':[('is_exonerated_evaluation', '=', True)]}"
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">
                                     <field name="state" invisible="1"/>
-                                    <field name="is_exonerated_evaluation" invisible="1"/>
                                     <field name="evaluation_form_edit" invisible="1"/>
                                     <field name="evaluation_id" invisible="1"/>
                                     <field name="skill_id"
@@ -351,10 +349,6 @@
                     <group name="general_comments" string="Comentarios Generales"
                            attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
                         <field name="general_comments" nolabel="1" placeholder="Comentarios Generales"/>
-                    </group>
-                    <group name="block">
-                        <field name="is_exonerated_evaluation"
-                               attrs="{'invisible': [('evaluation_type', '!=',  'gap_deal')], 'readonly':[('state_gap_deal', '!=', 'in_process')]}"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
