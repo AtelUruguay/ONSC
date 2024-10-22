@@ -61,7 +61,7 @@ class ONSCCVFormationAdvanced(models.Model):
     apostilled_title = fields.Selection(string=u'¿Su título está apostillado?',
                                         selection=[('yes', u'Si'), ('no', u'No')])
     apostilled_date = fields.Date(string="Fecha de apostillado")
-    egress_date = fields.Date(string="Fecha de egreso")
+    egress_date = fields.Date(string="Fecha de egreso estimada")
     issue_title_date = fields.Date(string="Fecha de expedición título")
     is_require_thesis = fields.Boolean(string="¿Su estudio requiere o requirió tesis?")
     state_thesis = fields.Selection(string=u'Estado de la tesis',
@@ -83,8 +83,13 @@ class ONSCCVFormationAdvanced(models.Model):
     area_related_education_ids = fields.One2many('onsc.cv.area.related.education', 'advanced_formation_id',
                                                  string=u'Áreas relacionadas con esta educación', copy=True)
     other_relevant_information = fields.Text(string="Otra información relevante")
-    egress_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad")
+    egress_certificate_file = fields.Binary(string="Certificado de egreso / título")
     egress_certificate_filename = fields.Char('Nombre del documento digital')
+
+    # FIXME 28.8.3 PS07 13857
+    scolarship_certificate_file = fields.Binary(string="Escolaridad")
+    scolarship_certificate_filename = fields.Char('Nombre del documento digital')
+
     revalidated_certificate_file = fields.Binary(string="Certificado de reválida de título",
                                                  help="Certificado de reválida de título / Resolución de reválida de título / Titulo revalidado")
     revalidated_certificate_filename = fields.Char('Nombre del documento digital')
