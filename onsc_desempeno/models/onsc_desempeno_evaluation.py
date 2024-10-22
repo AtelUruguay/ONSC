@@ -738,6 +738,8 @@ class ONSCDesempenoEvaluation(models.Model):
         self.write({'state': 'in_process'})
 
     def button_reopen_deal(self):
+        if self.filtered(lambda x: x.state_gap_deal != 'in_process'):
+            raise ValidationError(_("Esta evaluación ha sido modificada. Por favor, vuelva al menú y acceda nuevamente a la misma"))
         self.write({'gap_deal_state': 'no_deal', 'state_gap_deal': 'in_process'})
 
     def button_agree_evaluation_leader(self):

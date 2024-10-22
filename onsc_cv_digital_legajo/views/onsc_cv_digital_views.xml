@@ -116,8 +116,10 @@
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                    attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             <separator string="Otros datos" style="font-size: 12px"></separator>
-                            <field name="blood_type"
-                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>
+                            <!--FIXME 28.8.3 PS07 13857-->
+                            <field name="blood_type"/>
+<!--                            <field name="blood_type"-->
+<!--                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>-->
                         </group>
                         <group string="Información de contacto">
                             <field name="information_contact_ids" nolabel="1">
