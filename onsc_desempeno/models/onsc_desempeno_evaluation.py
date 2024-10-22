@@ -826,7 +826,7 @@ class ONSCDesempenoEvaluation(models.Model):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
         for rec in self:
-            random_environment_ids = []
+            selected_random_environment = self.env['hr.employee']
             if len(rec.full_environment_ids) <= self.env.user.company_id.random_environment_evaluation_forms:
                 random_environments = rec.full_environment_ids
             else:
@@ -847,7 +847,7 @@ class ONSCDesempenoEvaluation(models.Model):
             if not skills:
                 raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
             for random_environment in random_environments:
-                random_environment_ids.append(random_environment.employee_id.id)
+                selected_random_environment.append(random_environment.employee_id)
                 evaluation = self.suspend_security().create({
                     'current_job_id': rec.current_job_id.id,
                     'evaluator_current_job_id': random_environment.id,
@@ -869,7 +869,11 @@ class ONSCDesempenoEvaluation(models.Model):
                                        'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
                                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                        })
-            rec.write({'environment_evaluation_ids': [(6, 0, random_environment_ids)]})
+            email_template_id = self.env.ref('onsc_desempeno.email_template_evaluacion_entorno')
+            email_template_id.with_context(date_end=rec.evaluation_end_date).send_mail(
+                email_values={'email_to': selected_random_environment.mappend('partner_id').get_onsc_mails()}
+            )
+            rec.write({'environment_evaluation_ids': [(6, 0, selected_random_environment.ids)]})
 
     def _check_complete_evaluation(self):
         if self.evaluation_type != 'environment_definition' and not self.general_comments:
