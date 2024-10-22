@@ -870,7 +870,7 @@ class ONSCDesempenoEvaluation(models.Model):
                                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                        })
             email_template_id = self.env.ref('onsc_desempeno.email_template_evaluacion_entorno')
-            email_template_id.with_context(date_end=rec.evaluation_end_date).send_mail(
+            email_template_id.with_context(date_end=rec.evaluation_stage_id.end_date).send_mail(
                 email_values={'email_to': selected_random_environment.mappend('partner_id').get_onsc_mails()}
             )
             rec.write({'environment_evaluation_ids': [(6, 0, selected_random_environment.ids)]})
