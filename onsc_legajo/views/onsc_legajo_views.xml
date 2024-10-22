@@ -147,7 +147,8 @@
                             <field name="public_admin_entry_date" readonly="1"/>
                             <field name="public_admin_inactivity_years_qty" readonly="1"/>
                         </group>
-                        <group>
+                        <!--FIXME 28.8.3 PS07 13857-->
+                        <group invisible="1">
                             <field name="juramento_bandera_date"
                                    attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_info', '=', False)], 'readonly': [('is_mi_legajo', '=', True)]}"/>
                             <field name="juramento_bandera_presentacion_date"
@@ -206,8 +207,10 @@
                                 </form>
                             </field>
                         </page>
+                        <!--FIXME 28.8.3 PS07 13857-->
                         <page name="page_judicial_antecedents" string="Antecedentes judiciales"
-                              attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_info', '=', False)]}">
+                              invisible="1">
+<!--                              attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_info', '=', False)]}">-->
                             <field name="judicial_antecedents_ids"
                                 attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
                                 <tree delete="0">
