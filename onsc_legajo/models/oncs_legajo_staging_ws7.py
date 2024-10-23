@@ -255,7 +255,7 @@ class ONSCLegajoStagingWS7(models.Model):
             descriptor4_id = self.descriptor4_id.id
         vals.update({'descriptor4_id': descriptor4_id})
         if self.sexo and not self.cv_sex:
-            cv_sex = self.sexo == '1' and 'feminine' or 'male'
+            cv_sex = self.sexo == '2' and 'feminine' or 'male'
         else:
             cv_sex = self.cv_sex
         vals.update({'cv_sex': cv_sex})
