@@ -134,10 +134,24 @@ class ONSCDesempenoEvaluationList(models.Model):
         compute='_compute_is_line_availables'
     )
 
+    search_employee_inlines = fields.Many2one(
+        "hr.employee",
+        string='¿Está el funcionario en la lista?',
+        search='_search_employee_inlines',
+        store=False)
+
     _sql_constraints = [
         ('recordset_uniq', 'unique(department_id,evaluation_stage_id)',
          u'Ya existe una lista de evaluación para esta unidad organizativa y ciclo de evaluación.'),
     ]
+
+    def _search_employee_inlines(self, operator, operand):
+        if isinstance(operand, int):
+            args = [('employee_id', operator, operand)]
+        else:
+            args = [('employee_id.name', operator, operand)]
+        lines = self.env['onsc.desempeno.evaluation.list.line'].with_context(active_test=False).search(args)
+        return [('id', 'in', lines.mapped('evaluation_list_id').ids)]
 
     @api.depends('evaluation_stage_id', 'department_id')
     def _compute_name(self):
