@@ -86,6 +86,24 @@
             <field name="lang">{{object.create_uid.partner_id.lang}}</field>
             <field name="auto_delete" eval="True"/>
         </record>
+
+        <record id="email_template_evaluacion_entorno" model="mail.template">
+            <field name="name">Gestión del desempeño - Evaluación de entorno</field>
+            <field name="model_id" ref="onsc_desempeno.model_onsc_desempeno_evaluation"/>
+            <field name="email_from"></field>
+            <field name="email_to"></field>
+            <field name="subject">Gestión del desempeño - Evaluación de entorno</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Usted ha sido designado/a para realizar una evaluación de entorno. El próximo <t t-out="ctx.get('date_end')"/> es la fecha fin para realizar la evaluación.
+                        Luego de esa fecha no se podrán realizar modificaciones.
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{object.create_uid.partner_id.lang}}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
     </data>
 
 

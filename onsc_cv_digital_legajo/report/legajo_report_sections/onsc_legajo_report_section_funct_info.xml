@@ -136,7 +136,7 @@
 <!--                    </t>-->
 <!--                </ul>-->
 <!--             </t>-->
-         </t>
+         <!--         </t>-->
         <t t-if="'funcional_other_info' in env.context.get('seccions', True)">
          <!--Otra información del funcionario-->
          <t t-value="o.other_information_ids" t-set="other_information_ids"/>
