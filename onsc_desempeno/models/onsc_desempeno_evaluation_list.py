@@ -136,7 +136,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     search_employee_inlines = fields.Many2one(
         "hr.employee",
-        string='¿Está el funcionario en la lista?',
+        string='Evaluado',
         search='_search_employee_inlines',
         store=False)
 
@@ -199,7 +199,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                 manager = evaluation_list.department_id.get_first_department_withmanager_in_tree().manager_id
             if isinstance(value, int) and manager.id == value:
                 evaluation_list_filtered |= evaluation_list
-            elif isinstance(value, str) and value.lower() in manager.display_name.lower():
+            elif manager and isinstance(value, str) and value.lower() in manager.display_name.lower():
                 evaluation_list_filtered |= evaluation_list
         return [('id', 'in', evaluation_list_filtered.ids)]
 

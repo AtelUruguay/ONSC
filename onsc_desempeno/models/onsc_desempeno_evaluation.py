@@ -847,7 +847,7 @@ class ONSCDesempenoEvaluation(models.Model):
             if not skills:
                 raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
             for random_environment in random_environments:
-                selected_random_environment.append(random_environment.employee_id)
+                selected_random_environment |= random_environment.employee_id
                 evaluation = self.suspend_security().create({
                     'current_job_id': rec.current_job_id.id,
                     'evaluator_current_job_id': random_environment.id,
@@ -870,8 +870,9 @@ class ONSCDesempenoEvaluation(models.Model):
                                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                        })
             email_template_id = self.env.ref('onsc_desempeno.email_template_evaluacion_entorno')
-            email_template_id.with_context(date_end=rec.evaluation_stage_id.end_date).send_mail(
-                email_values={'email_to': selected_random_environment.mappend('partner_id').get_onsc_mails()}
+            email_template_id.with_context(date_end=rec.sudo().evaluation_stage_id.end_date).send_mail(
+                rec.id,
+                email_values={'email_to': selected_random_environment.mapped('partner_id').get_onsc_mails()}
             )
             rec.write({'environment_evaluation_ids': [(6, 0, selected_random_environment.ids)]})
 

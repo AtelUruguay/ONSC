@@ -863,6 +863,15 @@ class ONSCCVDigital(models.Model):
             str(last_cv_digital.id))
         _logger.info("PROCESO DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION: FIN, ULTIMO ID: %s" % (str(last_cv_digital.id)))
 
+    def activate_docket(self):
+        """
+        ACTIVA LEGAJO AL CV Y A LOS LLAMADOS ABIERTOS. ESTO SIRVE ADEMAS PARA DISPARAR EL CALCULO DEL ENLACE AL FUNCIONARIO
+        """
+        self.write({'is_docket': True})
+        CVCall = self.env['onsc.cv.digital.call'].sudo()
+        CVCall.search([('is_zip', '=', False), ('cv_digital_origin_id', 'in', self.ids)]).write({'is_docket': True})
+        return True
+
 
 class ONSCCVInformationContact(models.Model):
     _name = 'onsc.cv.information.contact'

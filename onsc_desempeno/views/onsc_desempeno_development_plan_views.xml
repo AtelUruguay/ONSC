@@ -100,7 +100,7 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Finalizar Seguimiento"
-                            confirm="¿Está seguro que desea finalizar el Seguimiento del Plan?"
+                            confirm="¿Está seguro que desea finalizar el Seguimiento del Plan? RECUERDE QUE SOLAMENTE DEBE FINALIZAR UNA VEZ QUE SE HAYA CARGADO LA ACTUALIZACIÓN DEL ÚLTIMO AVANCE ALCANZADO."
                             attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state', '!=', 'in_process'),('evaluation_type', '!=', 'tracing_plan'),('evaluation_form_edit', '=', False)]}"
                             name="button_finish_evaluation"
                             invisible="context.get('readonly_evaluation', False) is True"
