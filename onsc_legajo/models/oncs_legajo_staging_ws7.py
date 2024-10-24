@@ -359,6 +359,8 @@ class ONSCLegajoStagingWS7(models.Model):
             ('cs_contract_id', '=', contract.id),
             ('legajo_state', '=', 'incoming_commission')], limit=1)
 
+        state_square_id = self.env.ref('onsc_legajo.onsc_legajo_o')
+
         if contract.legajo_state == 'outgoing_commission' and incoming_contract:
             # A (saliente): contract
             # B (entrante): incoming_contract
@@ -369,8 +371,13 @@ class ONSCLegajoStagingWS7(models.Model):
                       second_movement.operating_unit_id.id == incoming_contract.operating_unit_id.id
 
             # GENERA NUEVO CONTRATO (C)
+
             new_contract_status = same_ue and 'active' or 'outgoing_commission'
-            new_contract = self._get_contract_copy(contract, second_movement, new_contract_status)
+            new_contract = self._get_contract_copy(
+                contract,
+                second_movement, new_contract_status,
+                state_square_id=state_square_id.id
+            )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
             if record.mov == 'ASCENSO':
@@ -409,7 +416,11 @@ class ONSCLegajoStagingWS7(models.Model):
                     'cs_contract_id': new_contract.id
                 })
         else:
-            new_contract = self._get_contract_copy(contract, second_movement)
+            new_contract = self._get_contract_copy(
+                contract,
+                second_movement,
+                state_square_id=state_square_id.id
+            )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
             if new_contract.operating_unit_id != contract.operating_unit_id:
@@ -701,7 +712,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return Contract.search_count(args)
         return Contract.search(args, limit=1)
 
-    def _get_contract_copy(self, contract, record, legajo_state='active', link_tocontract=False):
+    def _get_contract_copy(self, contract, record, legajo_state='active', link_tocontract=False, state_square_id=False):
         """
         Duplica el contrato aplicando los cambios de la operacion
         :param contract: Recordset de contrato
@@ -744,10 +755,14 @@ class ONSCLegajoStagingWS7(models.Model):
             'sec_position': str(record.secPlaza),
             'program': str(record.programa),
             'project': str(record.proyecto),
-            'state_square_id': contract.state_square_id.id,
+            # 'state_square_id': contract.state_square_id.id,
             'legajo_state_id': contract.legajo_state_id.id,
             'wage': contract.wage
         }
+        if state_square_id:
+            vals['state_square_id'] = state_square_id
+        else:
+            vals['state_square_id'] = contract.state_square_id.id
         if link_tocontract:
             vals['cs_contract_id'] = contract.id
         new_contract = self.env['hr.contract'].suspend_security().create(vals)
