@@ -324,8 +324,10 @@ class ONSCLegajoStagingWS7(models.Model):
             use_simple_search=True,
             use_search_count=True
         )
+        vals = {'checked_bysystem': True}
         if not exist_contract:
-            record.write({'checked_bysystem': True, 'log': _('Contrato no encontrado')})
+            vals['log'] = _('Contrato no encontrado')
+        record.write(vals)
 
     def set_asc_transf_reest(self, Contract, record):
         records = record
