@@ -14,6 +14,8 @@ REQUIRED_FIELDS = [
     'norm_id',
     'resolution_description',
     'regime_commission_id',
+    'resolution_date',
+    'resolution_type',
 ]
 
 
