@@ -285,7 +285,8 @@ class ONSCLegajoStagingWS7(models.Model):
                         return
                     if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
                         self._check_movement(Contract, record)
-                    elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA'] and record.tipo_mov == 'BAJA':
+                    elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA',
+                                        'TRANSFORMA_REDUE'] and record.tipo_mov == 'BAJA':
                         self.set_asc_transf_reest(Contract, record)
                     elif record.mov in ['RESERVA'] and record.tipo_mov == 'ALTA':
                         self.set_reserva(Contract, record)
