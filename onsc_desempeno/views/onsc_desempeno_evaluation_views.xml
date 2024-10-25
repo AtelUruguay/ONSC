@@ -120,7 +120,7 @@
                             attrs="{'invisible': [('is_agree_button_gh_available', '=', False)]}"
                             invisible="context.get('readonly_evaluation', False) is True"
                             name="button_agree_gh"
-                            confirm="¿Está seguro que desea confirmar?"
+                            confirm="¿Está seguro que desea confirmar? RECUERDE QUE SOLAMENTE DEBE FINALIZAR UNA VEZ QUE SE HAYA CARGADO LA ACTUALIZACIÓN DEL ÚLTIMO AVANCE ALCANZADO."
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-secundary"

@@ -13,7 +13,7 @@ class HrJob(models.Model):
                 if field not in ['inciso_id', 'operating_unit_id', 'department_id']:
                     res[field]['selectable'] = False
                     res[field]['searchable'] = False
-                    res[field]['sortable'] = False
+                    # res[field]['sortable'] = False
                 if field == 'department_id':
                     res[field]['string'] = _('Unidad organizativa')
             res.pop('evaluation_list_line_ids')

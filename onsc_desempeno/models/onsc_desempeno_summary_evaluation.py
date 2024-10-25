@@ -232,8 +232,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, 'onsc_desempeno_summary_evaluation')
-        self.env.cr.execute('''CREATE OR REPLACE VIEW onsc_desempeno_summary_evaluation AS ( SELECT
-            row_number() OVER(ORDER BY type,order_type,order_state,evaluation_id) AS id, *
+        self.env.cr.execute('''CREATE OR REPLACE VIEW onsc_desempeno_summary_evaluation AS ( SELECT *
         FROM(
         SELECT evaluation_type,
                 general_cycle_id,
@@ -266,7 +265,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id,
                'system' AS type,
-               write_date
+               write_date,
+               id * 10 + CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+                END AS id
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state != 'finished' and
         evaluation_type not in ('gap_deal','development_plan')
@@ -302,7 +311,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id,
                'system' AS type,
-               write_date
+               write_date,
+               id * 10 + CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+                END AS id
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and
          state_gap_deal != 'finished' and evaluation_type in ('gap_deal','development_plan')
@@ -338,7 +357,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id,
                'joker' AS type,
-               write_date
+               write_date,
+               id * 10 + CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+                END
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and
         state_gap_deal = 'finished' and evaluation_type in ('gap_deal','development_plan')
@@ -374,7 +403,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id,
                'joker' AS type,
-               write_date
+               write_date,
+               id * 10 + CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+                END
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state = 'finished' and
         evaluation_type not in ('gap_deal','development_plan')) as main_query)''')
