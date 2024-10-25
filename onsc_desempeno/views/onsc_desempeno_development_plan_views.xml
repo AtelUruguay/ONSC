@@ -56,11 +56,11 @@
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
-                            string="Acordar GH. RECUERDE QUE SOLAMENTE DEBE FINALIZAR UNA VEZ QUE SE HAYA CARGADO LA ACTUALIZACIÓN DEL ÚLTIMO AVANCE ALCANZADO."
+                            string="Acordar GH"
                             attrs="{'invisible': [('is_agree_button_gh_available', '=', False)]}"
                             name="button_agree_gh"
                             invisible="context.get('readonly_evaluation', False) is True"
-                            confirm="¿Está seguro que desea confirmar?"
+                            confirm="¿Está seguro que desea confirmar? RECUERDE QUE SOLAMENTE DEBE FINALIZAR UNA VEZ QUE SE HAYA CARGADO LA ACTUALIZACIÓN DEL ÚLTIMO AVANCE ALCANZADO."
                             icon="fa-lock"/>
 
                     <button type="object"
