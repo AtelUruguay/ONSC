@@ -384,7 +384,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                     WHEN evaluation_type = 'gap_deal' THEN 6
                     WHEN evaluation_type = 'development_plan' THEN 7
                     WHEN evaluation_type = 'tracing_plan' THEN 8
-                END
+                END as id
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and
         state_gap_deal = 'finished' and evaluation_type in ('gap_deal','development_plan')
@@ -430,7 +430,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                     WHEN evaluation_type = 'gap_deal' THEN 6
                     WHEN evaluation_type = 'development_plan' THEN 7
                     WHEN evaluation_type = 'tracing_plan' THEN 8
-                END
+                END as id
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state = 'finished' and
         evaluation_type not in ('gap_deal','development_plan')) as main_query)''')
