@@ -288,7 +288,8 @@ class ONSCLegajoStagingWS7(models.Model):
                         return
                     if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
                         self._check_movement(Contract, record)
-                    elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA'] and record.tipo_mov == 'BAJA':
+                    elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA',
+                                        'TRANSFORMA_REDUE'] and record.tipo_mov == 'BAJA':
                         self.set_asc_transf_reest(Contract, record)
                     elif record.mov in ['RESERVA'] and record.tipo_mov == 'ALTA':
                         self.set_reserva(Contract, record)
@@ -327,8 +328,10 @@ class ONSCLegajoStagingWS7(models.Model):
             use_simple_search=True,
             use_search_count=True
         )
+        vals = {'checked_bysystem': True}
         if not exist_contract:
-            record.write({'checked_bysystem': True, 'log': _('Contrato no encontrado')})
+            vals['log'] = _('Contrato no encontrado')
+        record.write(vals)
 
     def set_asc_transf_reest(self, Contract, record):
         records = record
