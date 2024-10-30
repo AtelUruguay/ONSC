@@ -481,8 +481,8 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato de baja no encontrado')})
             return
-        self._check_valid_eff_date(baja_contract, second_movement.fecha_aud.date())
-        self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
+        self._check_valid_eff_date(baja_contract, fields.Date.today())
+        self._check_valid_eff_date(active_contract, fields.Date.today())
         baja_end_date = baja_contract.date_end
         active_start_date = active_contract.date_start
         baja_contract.write({
@@ -518,7 +518,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
+        self._check_valid_eff_date(active_contract, fields.Date.today())
         active_start_date = active_contract.date_start
         active_contract.write({
             'date_start': second_movement.fecha_vig,
@@ -545,7 +545,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(contract, second_movement.fecha_aud.date())
+        self._check_valid_eff_date(contract, fields.Date.today())
         contract.write({
             'date_end': second_movement.fecha_vig,
             'eff_date': fields.Date.today(),
@@ -594,7 +594,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(contract, record.fecha_aud.date())
+        self._check_valid_eff_date(contract, fields.Date.today())
         contract.write({
             'contract_expiration_date': record.fecha_vig,
             'eff_date': fields.Date.today(),
@@ -609,7 +609,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(contract, record.fecha_vig)
+        self._check_valid_eff_date(contract, fields.Date.today())
         contract.write({
             'retributive_day_id': record.retributive_day_id.id,
             'eff_date': fields.Date.today(),
@@ -632,7 +632,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'public_admin_inactivity_years_qty': int(record.aniosInactividad),
             'public_admin_entry_date': record.fecha_ing_adm,
         })
-        self._check_valid_eff_date(contract, record.fecha_aud.date())
+        self._check_valid_eff_date(contract, fields.Date.today())
         if record.fechaGraduacion:
             contract.suspend_security().write({
                 'eff_date': fields.Date.today(),
