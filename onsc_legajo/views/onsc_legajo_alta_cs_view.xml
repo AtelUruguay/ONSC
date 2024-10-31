@@ -141,7 +141,7 @@
                             <field name="type_commission_selection"/>
                             <field name="is_edit_destination" invisible="1"/>
                             <field name="program_project_destination_id" context="{'show_project_program':True}"
-                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"
+                                   attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="date_start_commission"
                                    attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
