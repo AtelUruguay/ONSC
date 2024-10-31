@@ -324,6 +324,15 @@ class ONSCLegajoBajaCS(models.Model):
         self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': '', })
         return True
 
+    def button_open_contract(self):
+        self.ensure_one()
+        if self.contract_id:
+            action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_hr_contract_action')
+            action.update({'res_id': self.contract_id.id})
+            return action
+        else:
+            return True
+
     def _get_employee_contracts(self):
         Contract = self.env['hr.contract']
         args = self._get_domain_contract([], self.employee_id.id)
