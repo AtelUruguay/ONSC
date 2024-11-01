@@ -165,6 +165,9 @@ class ONSCLegajoAltaVL(models.Model):
         # legajo.update_all_legajo_sections()
         return legajo
 
+    def button_update_cv_info(self):
+        self._update_altavl_info()
+
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         self._empty_fieldsVL()

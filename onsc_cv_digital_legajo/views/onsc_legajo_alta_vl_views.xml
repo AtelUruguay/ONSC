@@ -122,6 +122,10 @@
                 </group>
                 <xpath expr="//notebook" position="inside">
                     <page string="Datos personales">
+                        <button name="button_update_cv_info" type="object" string="Actualizar datos"
+                                icon="fa-refresh"
+                                class="oe_highlight"
+                                attrs="{'invisible': [('state', 'not in', ['borrador', 'error_sgh'])]}"/>
                         <group>
                             <field name="address_receipt_file" filename="address_receipt_file_name" readonly="1"
                                    force_save="1"
