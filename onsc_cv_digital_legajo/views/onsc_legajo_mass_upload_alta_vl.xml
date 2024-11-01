@@ -67,6 +67,9 @@
                                 <field name="is_operating_unit_readonly" invisible="1"/>
                                 <field name="document_file" filename="document_filename"/>
                                 <field name="document_filename" invisible="1"/>
+                                <field name="alta_document_file" filename="alta_document_filename"
+                                    options="{'accepted_file_extensions': '.pdf'}"/>
+                                <field name="alta_document_filename" invisible="1"/>
                                 <field name="create_date" string="Creado el"/>
                                 <field name="create_uid" string="Creado por"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
