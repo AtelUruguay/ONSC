@@ -794,13 +794,14 @@ class ONSCDesempenoEvaluation(models.Model):
                     }
         self.write(vals)
 
-    def button_cancel_gap_deal(self):
-        for record in self:
-            record.write({
-                'reason_cancel': "Exonerado de Evaluación",
-                'state_before_cancel': record.state_gap_deal,
-                'state_gap_deal': 'canceled',
-            })
+    # SE ELIMINA PORQUE YA NO ES NECESARIO
+    # def button_cancel_gap_deal(self):
+    #     for record in self:
+    #         record.write({
+    #             'reason_cancel': "Exonerado de Evaluación",
+    #             'state_before_cancel': record.state_gap_deal,
+    #             'state_gap_deal': 'canceled',
+    #         })
 
     def action_cancel(self, is_canceled_by_employee_out=False):
         for record in self:

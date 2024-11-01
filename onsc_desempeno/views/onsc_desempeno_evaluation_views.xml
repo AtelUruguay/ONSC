@@ -83,14 +83,15 @@
                             attrs="{'invisible': ['|',('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
                             type="action"
                             icon="fa-lock"/>`
-                    <button name="button_cancel_gap_deal"
-                            class="btn btn-primary"
-                            string="Cancelar"
-                            confirm="¿Está seguro de que desea cancelar el formulario?"
-                            invisible="context.get('readonly_evaluation', False) is True"
-                            attrs="{'invisible': ['|',('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
-                            type="object"
-                            icon="fa-lock"/>`
+<!--SE ELIMINA PORQUE YA NO ES NECESARIO-->
+                    <!--                    <button name="button_cancel_gap_deal"-->
+<!--                            class="btn btn-primary"-->
+<!--                            string="Cancelar"-->
+<!--                            confirm="¿Está seguro de que desea cancelar el formulario?"-->
+<!--                            invisible="context.get('readonly_evaluation', False) is True"-->
+<!--                            attrs="{'invisible': ['|',('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"-->
+<!--                            type="object"-->
+<!--                            icon="fa-lock"/>`-->
                     <button name="button_go_back"
                             class="btn btn-primary"
                             string="Volver atrás"
