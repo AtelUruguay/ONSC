@@ -93,6 +93,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
 
+    alta_document_file = fields.Binary(
+        string='Archivo para cargar en Alta de Vínculo',
+        readonly=True,
+        states={'draft': [('readonly', False)]}
+    )
+    alta_document_filename = fields.Char(string="Nombre del Archivo para cargar en Alta de Vínculo")
+
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
@@ -618,6 +625,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 })
             try:
                 alta_vl_id = AltaVL.create(data_alta_vl)
+                if self.alta_document_file:
+                    alta_vl_id.message_post(
+                        body="Adjunto agregado por Alta Masiva.",
+                        attachments=[(self.alta_document_filename, self.alta_document_file)]
+                    )
                 alta_vl_id.with_context(no_update_extra=True)._update_altavl_info()
                 line.write({'state': 'done'})
                 alta_vl_id.with_context({'not_check_attached_document': True}).check_required_fields_ws4()
