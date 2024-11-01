@@ -254,12 +254,12 @@ class ONSCDesempenoEvaluationList(models.Model):
         lists_toclose = self.search([
             ('state', '!=', 'closed'),
             ('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())])
-        lists_toclose.write({'state': 'closed'})
         for list_toclose in lists_toclose:
             list_toclose.write({
                 'fixed_manager_id': list_toclose.manager_id.id,
                 'fixed_manager_uo_id': list_toclose.manager_uo_id.id,
             })
+        lists_toclose.write({'state': 'closed'})
 
         evaluation_stages = self.env['onsc.desempeno.evaluation.stage'].search([
             ('start_date', '<=', fields.Date.today()),
