@@ -31,6 +31,7 @@
                     <field name="is_cancel_available" invisible="1"/>
                     <field name="show_button_go_back" invisible="1"/>
                     <field name="show_button_cancel" invisible="1"/>
+                    <field name="is_button_reopen_evaluation_available" invisible="1"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
@@ -65,7 +66,7 @@
                     <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir seguimiento"
-                            attrs="{'invisible': ['|','|',('state', '!=', 'completed'),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'tracing_plan')]}"
+                            attrs="{'invisible': ['|','|','|',('state', '!=', 'finished'),('evaluation_form_edit', '=', False),('is_button_reopen_evaluation_available', '=', False),('evaluation_type', '!=', 'tracing_plan')]}"
                             invisible="context.get('readonly_evaluation', False) is True"
                             name="button_reopen_evaluation"
                             icon="fa-unlock"
