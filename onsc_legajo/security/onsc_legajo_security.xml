@@ -119,9 +119,16 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
+
         <record id="group_legajo_show_legajo_info" model="res.groups">
-            <field name="name">Legajos - Ver información del legajo</field>
-            <field name="comment">Legajos - Ver información del legajo</field>
+            <field name="name">Legajos - Ver información del legajo - régimen</field>
+            <field name="comment">Legajos - Ver información del legajo - régimen</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+        </record>
+
+        <record id="group_legajo_show_basic_legajo_info" model="res.groups">
+            <field name="name">Legajos - Ver información básica del legajo</field>
+            <field name="comment">Legajos - Ver información básica del legajo</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
         </record>
 

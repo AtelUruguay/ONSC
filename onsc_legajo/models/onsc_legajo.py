@@ -63,6 +63,7 @@ class ONSCLegajo(models.Model):
     is_any_regime_legajo = fields.Boolean(string=u'¿Algún Régimen de los Contratos tiene la marca Legajo?',
                                           compute='_compute_is_any_regime_legajo')
     show_legajo_info = fields.Boolean(string=u'¿Ver información de legajo?', compute='_compute_show_legajo_info')
+    show_legajo_basic_info = fields.Boolean(string=u'¿Ver información de legajo?', compute='_compute_show_legajo_info')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_is_mi_legajo')
     should_hidde_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
@@ -213,8 +214,10 @@ class ONSCLegajo(models.Model):
 
     def _compute_show_legajo_info(self):
         is_user_valid = self.user_has_groups('onsc_legajo.group_legajo_show_legajo_info')
+        is_user_basic_valid = self.user_has_groups('onsc_legajo.group_legajo_show_basic_legajo_info')
         for rec in self:
             rec.show_legajo_info = is_user_valid or rec.employee_id.user_id.id == self.env.user.id
+            rec.show_legajo_basic_info = is_user_basic_valid or rec.employee_id.user_id.id == self.env.user.id
 
     def button_open_employee(self):
         self.ensure_one()

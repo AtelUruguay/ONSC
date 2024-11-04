@@ -22,7 +22,8 @@
                            groups="onsc_legajo.group_legajo_configurador"/>
                 </field>
                 <xpath expr="//page[@name='page_vote_control']" position="before">
-                    <page name="formation" string="Formación personal">
+                    <page name="formation" string="Formación personal"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <div>
                             <h4>Formación básica</h4>
                         </div>
@@ -35,7 +36,8 @@
                         <field name="advanced_formation_ids" readonly="1"
                                context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
-                    <page name="course_certificate" string="Cursos y certificados">
+                    <page name="course_certificate" string="Cursos y certificados"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <div>
                             <h4>Cursos, talleres y otras capacitaciones</h4>
                         </div>
@@ -49,28 +51,36 @@
 <!--                               readonly="1"-->
 <!--                               context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>-->
                     </page>
-                    <page name="work_experience" string="Experiencia laboral">
+                    <page name="work_experience" string="Experiencia laboral"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <field name="work_experience_ids" readonly="1" context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
-                     <page name="work_teaching" string="Docencia">
+                     <page name="work_teaching" string="Docencia"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                          <field name="work_teaching_ids" readonly="1" context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                      </page>
-                    <page name="work_investigation" string="Investigación">
+                    <page name="work_investigation" string="Investigación"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <field name="work_investigation_ids" readonly="1" context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
-                    <page name="volunteering" string="Voluntariado">
+                    <page name="volunteering" string="Voluntariado"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <field name="volunteering_ids" readonly="1" context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
-                    <page name="publication_production_evaluations" string="Publicación, Producción y Evaluación">
+                    <page name="publication_production_evaluations" string="Publicación, Producción y Evaluación"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <field name="publication_production_evaluation_ids" readonly="1" context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
-                    <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
+                    <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <field name="tutoring_orientation_supervision_ids" readonly="1" context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
-                    <page name="participation_event" string="Participación en eventos">
+                    <page name="participation_event" string="Participación en eventos"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <field name="participation_event_ids" readonly="1" context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
-                    <page name="onsc_legajo_relevant_information" string="Otra información relevante">
+                    <page name="onsc_legajo_relevant_information" string="Otra información relevante"
+                        attrs="{'invisible': [('show_legajo_basic_info', '=', False)]}">
                         <field name="other_relevant_information_ids" readonly="1" context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
                 </xpath>
