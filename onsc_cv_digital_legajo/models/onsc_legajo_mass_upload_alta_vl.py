@@ -9,6 +9,7 @@ from odoo import fields, models, api, _, tools
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+from odoo import Command
 from ...onsc_cv_digital.models.onsc_cv_useful_tools import is_valid_phone
 
 _logger = logging.getLogger(__name__)
@@ -99,6 +100,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         states={'draft': [('readonly', False)]}
     )
     alta_document_filename = fields.Char(string="Nombre del Archivo para cargar en Alta de Vínculo")
+    alta_document_description = fields.Char(string="Descripción del adjunto")
+    alta_document_type_id = fields.Many2one('onsc.legajo.document.type', 'Tipo de documento')
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -152,6 +155,14 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     @api.onchange('document_file')
     def onchange_document_file(self):
         self.line_ids = False
+
+    @api.onchange('alta_document_file')
+    def onchange_alta_document_file(self):
+        if self.alta_document_file is False:
+            self.alta_document_filename = False
+            self.alta_document_description = False
+            self.alta_document_type_id = False
+            self.alta_document_type_id = False
 
     def action_view_lines(self):
         return {
@@ -623,13 +634,23 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 data_alta_vl.update({
                     'vacante_ids': [(0, 0, vacante_value)],
                 })
+                if self.alta_document_file:
+                    data_alta_vl.update({
+                        'attached_document_ids': [(Command.create({
+                            'name': self.alta_document_description,
+                            'document_type_id': self.alta_document_type_id.id,
+                            'document_file': self.alta_document_file,
+                            'document_file_name': self.alta_document_filename,
+                            'type': 'discharge',
+                        }))]
+                    })
             try:
                 alta_vl_id = AltaVL.create(data_alta_vl)
-                if self.alta_document_file:
-                    alta_vl_id.message_post(
-                        body="Adjunto agregado por Alta Masiva.",
-                        attachments=[(self.alta_document_filename, self.alta_document_file)]
-                    )
+                # if self.alta_document_file:
+                    # alta_vl_id.message_post(
+                    #     body="Adjunto agregado por Alta Masiva.",
+                    #     attachments=[(self.alta_document_filename, self.alta_document_file)]
+                    # )
                 alta_vl_id.with_context(no_update_extra=True)._update_altavl_info()
                 line.write({'state': 'done'})
                 alta_vl_id.with_context({'not_check_attached_document': True}).check_required_fields_ws4()
