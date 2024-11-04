@@ -466,6 +466,9 @@ class ONSCDesempenoEvaluation(models.Model):
     show_button_cancel = fields.Boolean('Ver botón cancelar atras', compute='_compute_show_button_cancel')
     evaluations = fields.Boolean(string="Mis evaluaciones", default=False)
     is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, related="general_cycle_id.is_pilot", store=True)
+    is_button_reopen_evaluation_available = fields.Boolean(
+        string='¿Está el botón de Reabrir seguimiento visible?',
+        compute='_compute_is_button_reopen_evaluation_available')
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -684,6 +687,12 @@ class ONSCDesempenoEvaluation(models.Model):
             else:
                 condition = _states or record.evaluator_id.id != user_employee_id or record.locked
             record.is_edit_general_comments = condition
+
+    @api.depends('state')
+    def _compute_is_button_reopen_evaluation_available(self):
+        _today = fields.Date.today()
+        for record in self:
+            record.is_button_reopen_evaluation_available = record.general_cycle_id.end_date > _today
 
     @api.depends('state', 'gap_deal_state')
     def _compute_show_button_go_back(self):
