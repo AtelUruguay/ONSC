@@ -49,7 +49,8 @@
                             states="borrador,error_sgh"/>
                 </header>
                 <header position="after">
-                    <div class="alert alert-info" role="alert" attrs="{'invisible': [('state', '!=', 'borrador')]}">
+                    <div class="alert alert-info" role="alert"
+                         attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}">
                         <p class="mb-0">
                             <field name="is_cv_validation_ok"/>
                             <strong>
