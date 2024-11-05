@@ -167,6 +167,8 @@ class ONSCLegajoAltaVL(models.Model):
 
     def button_update_cv_info(self):
         self._update_altavl_info()
+        self.is_cv_validation_ok = False
+
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
