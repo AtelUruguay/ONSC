@@ -10,8 +10,7 @@ TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
 INDUCTION_TYPES = [('yes', 'Sí'), ('no', 'No')]
 APPROBATION_MODES = [('by_assistance', 'Por asistencia'), ('by_evaluation', 'Por evaluación')]
-COURSE_FIELDS = ['course_title', 'institution_id', 'subinstitution_id', 'country_id',
-                 'induction_type', 'hours_total', 'end_date']
+COURSE_FIELDS = ['induction_type', 'hours_total', 'end_date']
 CERTIFICATE_FIELDS = ['institution_cert_id', 'subinstitution_cert_id']
 COURSE_TYPES = [('course', 'Curso'), ('workshop', 'Taller'), ('other', 'Otra capacitación')]
 
@@ -67,6 +66,11 @@ class ONSCCVCourseCertificate(models.Model):
         if self.certificate_start_date and self.certificate_start_date > fields.Date.today():
             self.start_date = False
             return cv_warning(_(u"La fecha de inicio debe ser menor que la fecha actual"))
+
+    @api.onchange('course_type')
+    def onchange_course_type(self):
+        if self.record_type == 'certificate':
+            self.record_type = 'course'
 
     @api.depends('course_title', 'certificate_id', 'record_type')
     def _compute_name(self):

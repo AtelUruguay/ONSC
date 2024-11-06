@@ -484,13 +484,8 @@
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
                             <field name="course_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False), 'is_legajo':True}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree','form_view_ref': 'onsc_cv_digital.onsc_cv_course_readonly_form', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False), 'is_legajo':True}"/>
                             <br/>
-                            <div>
-                                <h4>Certificados</h4>
-                            </div>
-                            <field name="certificate_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False), 'is_legajo':True}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
                             <field name="work_experience_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>

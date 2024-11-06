@@ -452,6 +452,10 @@ class ONSCCVDigital(models.Model):
             'default_res_id': len(self.ids) == 1 and self.id or 0,
             'is_documentary_reject': True
         })
+        if ctx.get('tree_view_ref'):
+            ctx.pop('tree_view_ref')
+        if ctx.get('form_view_ref'):
+            ctx.pop('form_view_ref')
         return {
             'name': _('Rechazo de validación documental'),
             'view_mode': 'form',
