@@ -176,7 +176,7 @@
                                 <br/>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_course_workshop">
                                     <t t-set="name_section" t-value="'CURSOS'"/>
-                                    <t t-set="objects" t-value="o.course_ids.filtered(lambda tx: tx.course_type =='course')"/>
+                                    <t t-set="objects" t-value="o.course_ids.filtered(lambda tx: tx.course_type == 'course' or tx.record_type == 'certificate')"/>
                                 </t>
                                 <br/>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_course_workshop">

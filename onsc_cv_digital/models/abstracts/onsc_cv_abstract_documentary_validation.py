@@ -204,6 +204,10 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'default_res_id': self.id,
             'is_documentary_reject': True
         })
+        if ctx.get('tree_view_ref'):
+            ctx.pop('tree_view_ref')
+        if ctx.get('form_view_ref'):
+            ctx.pop('form_view_ref')
         return {
             'name': _('Rechazo de %s' % self._description),
             'view_mode': 'form',

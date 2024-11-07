@@ -439,7 +439,7 @@
                                 <t t-call="onsc_cv_digital.cv_digital_section_certification">
                                     <t t-set="name_section" t-value="'CURSOS'"/>
                                     <t t-set="objects"
-                                       t-value="o.course_ids.filtered(lambda tx: tx.course_type =='course')"/>
+                                       t-value="o.course_ids.filtered(lambda tx: tx.course_type == 'course' or tx.record_type == 'certificate')"/>
                                 </t>
                                 <br></br>
                                 <br></br>
@@ -454,14 +454,6 @@
                                     <t t-set="name_section" t-value="'OTRA CAPACITACION'"/>
                                     <t t-set="objects"
                                        t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
-                                </t>
-
-                                <br></br>
-                                <br></br>
-                                <t t-call="onsc_cv_digital.cv_digital_section_certification">
-                                    <t t-set="name_section" t-value="'CERTIFICADOS'"/>
-                                    <t t-set="objects"
-                                       t-value="o.certificate_ids.filtered(lambda tx: tx.record_type =='certificate')"/>
                                 </t>
                                 <br></br>
                             </t>
@@ -859,8 +851,6 @@
                 <li>
                     <h4 style="font-weight:bold;">
                         <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>
-                        <t t-if="not object.certificate_id">
-                            -
                             <t t-if="object.state!='completed'">
                                 <span>Actualidad</span>
                             </t>
@@ -869,12 +859,7 @@
                             </t>
                             :
                             <span t-field="object.course_title"/>
-                        </t>
-                        <t t-else="">
-                            :
-                            <span t-field="object.certificate_id.name"/>
-                        </t>
-                    </h4>
+                        </h4>
                 </li>
                 <h4 t-if="object.institution_id">
                     <span t-field="object.institution_id.name_country"/>
@@ -882,12 +867,14 @@
                         <span t-field="object.subinstitution_id.name"/>
                     </t>
                 </h4>
-                <h4 t-if="object.institution_cert_id and name_section=='CERTIFICADOS'">
-                    <span t-field="object.institution_cert_id.name"/>
-                    <t t-if="object.institution_cert_id.id!=object.subinstitution_cert_id.id">/
-                        <span t-field="object.subinstitution_cert_id.name"/>
-                    </t>
-                </h4>
+                <t t-else="">
+                  <h4 t-if="object.institution_cert_id">
+                      <span t-field="object.institution_cert_id.name"/>
+                      <t t-if="object.institution_cert_id.id!=object.subinstitution_cert_id.id">/
+                          <span t-field="object.subinstitution_cert_id.name"/>
+                      </t>
+                  </h4>
+                </t>
                 <h4 t-if="object.internal_course_name">Nombre de la empresa/organismo/institución:
                     <span t-field="object.internal_course_name"/>
                 </h4>
@@ -902,10 +889,10 @@
                 <h4 t-if="object.approbation_mode and name_section!='CERTIFICADOS'">Modalidad de aprobación:
                     <span t-field="object.approbation_mode"/>
                 </h4>
-                <h4 t-if="object.evaluation_str">Nota obtenida:
+                <h4 t-if="object.evaluation_str and object.approbation_mode == 'by_evaluation'">Nota obtenida:
                     <span t-field="object.evaluation_str"/>
                 </h4>
-                <h4 t-if="object.evaluation_number">Representación numérica de nota obtenida:
+                <h4 t-if="object.evaluation_number and object.approbation_mode == 'by_evaluation'">Representación numérica de nota obtenida:
                     <span t-field="object.evaluation_number"/>
                 </h4>
                 <h4 t-if="object.evaluation_max_str">Nota máxima posible:
@@ -914,7 +901,7 @@
                 <h4 t-if="object.evaluation_max_number">Representación numérica de nota máxima posible:
                     <span t-field="object.evaluation_max_number"/>
                 </h4>
-                <h4 t-if="object.induction_type and name_section!='CERTIFICADOS'">Programa de inducción al Organismo:
+                <h4 t-if="object.induction_type and object.course_type and name_section!='CERTIFICADOS'">Programa de inducción al Organismo:
                     <span t-field="object.induction_type"/>
                 </h4>
                 <h4 t-if="object.dictation_mode  and name_section!='CERTIFICADOS'">Modalidad de dictado:
