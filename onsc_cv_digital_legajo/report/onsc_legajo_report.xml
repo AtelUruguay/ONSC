@@ -199,7 +199,7 @@
                                 <br/>
                            </t>
                            <t t-set="is_other_experience" t-value="o.work_teaching_ids or o.work_investigation_ids or o.volunteering_ids or o.publication_production_evaluation_ids or o.tutoring_orientation_supervision_ids or o.participation_event_ids or o.other_relevant_information_ids"/>
-                           <t t-if="'other_experience_cvd in env.context.get('seccions', True) and is_other_experience'">
+                           <t t-if="'other_experience_cvd' in env.context.get('seccions', True) and is_other_experience">
                                <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
                                    <strong>OTRAS EXPERIENCIAS</strong>
                                </h3>
