@@ -288,7 +288,8 @@ class ONSCLegajoStagingWS7(models.Model):
                         return
                     if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
                         self._check_movement(Contract, record)
-                    elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA'] and record.tipo_mov == 'BAJA':
+                    elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA',
+                                        'TRANSFORMA_REDUE'] and record.tipo_mov == 'BAJA':
                         self.set_asc_transf_reest(Contract, record)
                     elif record.mov in ['RESERVA'] and record.tipo_mov == 'ALTA':
                         self.set_reserva(Contract, record)
@@ -327,8 +328,10 @@ class ONSCLegajoStagingWS7(models.Model):
             use_simple_search=True,
             use_search_count=True
         )
+        vals = {'checked_bysystem': True}
         if not exist_contract:
-            record.write({'checked_bysystem': True, 'log': _('Contrato no encontrado')})
+            vals['log'] = _('Contrato no encontrado')
+        record.write(vals)
 
     def set_asc_transf_reest(self, Contract, record):
         records = record
@@ -359,6 +362,8 @@ class ONSCLegajoStagingWS7(models.Model):
             ('cs_contract_id', '=', contract.id),
             ('legajo_state', '=', 'incoming_commission')], limit=1)
 
+        state_square_id = self.env.ref('onsc_legajo.onsc_legajo_o')
+
         if contract.legajo_state == 'outgoing_commission' and incoming_contract:
             # A (saliente): contract
             # B (entrante): incoming_contract
@@ -369,8 +374,13 @@ class ONSCLegajoStagingWS7(models.Model):
                       second_movement.operating_unit_id.id == incoming_contract.operating_unit_id.id
 
             # GENERA NUEVO CONTRATO (C)
+
             new_contract_status = same_ue and 'active' or 'outgoing_commission'
-            new_contract = self._get_contract_copy(contract, second_movement, new_contract_status)
+            new_contract = self._get_contract_copy(
+                contract,
+                second_movement, new_contract_status,
+                state_square_id=state_square_id.id
+            )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
             if record.mov == 'ASCENSO':
@@ -409,7 +419,11 @@ class ONSCLegajoStagingWS7(models.Model):
                     'cs_contract_id': new_contract.id
                 })
         else:
-            new_contract = self._get_contract_copy(contract, second_movement)
+            new_contract = self._get_contract_copy(
+                contract,
+                second_movement,
+                state_square_id=state_square_id.id
+            )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
             if new_contract.operating_unit_id != contract.operating_unit_id:
@@ -481,8 +495,8 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato de baja no encontrado')})
             return
-        self._check_valid_eff_date(baja_contract, second_movement.fecha_aud.date())
-        self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
+        self._check_valid_eff_date(baja_contract, fields.Date.today())
+        self._check_valid_eff_date(active_contract, fields.Date.today())
         baja_end_date = baja_contract.date_end
         active_start_date = active_contract.date_start
         baja_contract.write({
@@ -518,7 +532,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
+        self._check_valid_eff_date(active_contract, fields.Date.today())
         active_start_date = active_contract.date_start
         active_contract.write({
             'date_start': second_movement.fecha_vig,
@@ -545,7 +559,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(contract, second_movement.fecha_aud.date())
+        self._check_valid_eff_date(contract, fields.Date.today())
         contract.write({
             'date_end': second_movement.fecha_vig,
             'eff_date': fields.Date.today(),
@@ -594,7 +608,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(contract, record.fecha_aud.date())
+        self._check_valid_eff_date(contract, fields.Date.today())
         contract.write({
             'contract_expiration_date': record.fecha_vig,
             'eff_date': fields.Date.today(),
@@ -609,7 +623,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(contract, record.fecha_vig)
+        self._check_valid_eff_date(contract, fields.Date.today())
         contract.write({
             'retributive_day_id': record.retributive_day_id.id,
             'eff_date': fields.Date.today(),
@@ -632,7 +646,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'public_admin_inactivity_years_qty': int(record.aniosInactividad),
             'public_admin_entry_date': record.fecha_ing_adm,
         })
-        self._check_valid_eff_date(contract, record.fecha_aud.date())
+        self._check_valid_eff_date(contract, fields.Date.today())
         if record.fechaGraduacion:
             contract.suspend_security().write({
                 'eff_date': fields.Date.today(),
@@ -701,7 +715,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return Contract.search_count(args)
         return Contract.search(args, limit=1)
 
-    def _get_contract_copy(self, contract, record, legajo_state='active', link_tocontract=False):
+    def _get_contract_copy(self, contract, record, legajo_state='active', link_tocontract=False, state_square_id=False):
         """
         Duplica el contrato aplicando los cambios de la operacion
         :param contract: Recordset de contrato
@@ -744,10 +758,14 @@ class ONSCLegajoStagingWS7(models.Model):
             'sec_position': str(record.secPlaza),
             'program': str(record.programa),
             'project': str(record.proyecto),
-            'state_square_id': contract.state_square_id.id,
+            # 'state_square_id': contract.state_square_id.id,
             'legajo_state_id': contract.legajo_state_id.id,
             'wage': contract.wage
         }
+        if state_square_id:
+            vals['state_square_id'] = state_square_id
+        else:
+            vals['state_square_id'] = contract.state_square_id.id
         if link_tocontract:
             vals['cs_contract_id'] = contract.id
         new_contract = self.env['hr.contract'].suspend_security().create(vals)

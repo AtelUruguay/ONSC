@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <menuitem id="onsc_catalog_root_menu"
-              name="Catálogos"
+              name="Estructuras"
               web_icon="onsc_catalog,static/description/icon.png"
               sequence="3"/>
 

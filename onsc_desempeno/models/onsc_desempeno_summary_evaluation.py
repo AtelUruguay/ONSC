@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, tools, api
+from odoo import fields, models, tools, api, _
 from odoo.osv import expression
+from odoo.exceptions import RedirectWarning
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -200,14 +201,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         if self.evaluation_type == 'development_plan':
             ctx.update({'develop_plan': True})
             # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
-            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
+            action = self.env["ir.actions.actions"]._for_xml_id(
+                "onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         elif self.evaluation_type == 'tracing_plan':
             ctx.update({'tracing_plan': True})
             # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
-            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
+            action = self.env["ir.actions.actions"]._for_xml_id(
+                "onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         else:
             # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
-            action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_readonly_action")
+            action = self.env["ir.actions.actions"]._for_xml_id(
+                "onsc_desempeno.onsc_desempeno_evaluation_readonly_action")
         # action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
 
         # TEST SECOND WAY
@@ -221,19 +225,31 @@ class ONSCLegajoSummaryEvaluation(models.Model):
             _logger.info('RECORD EVALUATION: %s' % _evaluation_id)
         _logger.info(
             '**** context_evaluation_id: %s, evaluation_id: %s, summary_evaluation_type: %s, evaluation_evaluation_type: %s, user_id: %s ***********,' %
-            (self._context.get('evaluation_id'), self.evaluation_id.id, self.evaluation_type, self.evaluation_id.evaluation_type, self.env.user.id))
+            (self._context.get('evaluation_id'), self.evaluation_id.id, self.evaluation_type,
+             self.evaluation_id.evaluation_type, self.env.user.id))
         _logger.info('**** SELF: %s ***********,' % (self.read()))
         _logger.info('**** CONTEXT: %s ***********,' % (self._context))
-        action["res_id"] = self.evaluation_id.id
+
+        self._is_valid_evaluation(_evaluation_id)
+        action["res_id"] = _evaluation_id
         action["context"] = ctx
         _logger.info(action)
         _logger.info('********************* END OF SUMMARY EVALUATION LINK ****************************')
         return action
 
+    def _is_valid_evaluation(self, evaluation_id):
+        if not self.env['onsc.desempeno.evaluation'].with_context(is_from_menu=True).search_count([
+            ('id', '=', evaluation_id)
+        ]):
+            action = self.env.ref('onsc_desempeno.onsc_desempeno_summary_evaluation_finished_action')
+            msg = _(
+                "El registro seleccionado no está disponible en este momento, seleccione el botón 'Actualizar' para acceder nuevamente.")
+            raise RedirectWarning(msg, action.id, _("Actualizar"))
+        return True
+
     def init(self):
         tools.drop_view_if_exists(self.env.cr, 'onsc_desempeno_summary_evaluation')
-        self.env.cr.execute('''CREATE OR REPLACE VIEW onsc_desempeno_summary_evaluation AS ( SELECT
-            row_number() OVER(ORDER BY type,order_type,order_state,evaluation_id) AS id, *
+        self.env.cr.execute('''CREATE OR REPLACE VIEW onsc_desempeno_summary_evaluation AS ( SELECT *
         FROM(
         SELECT evaluation_type,
                 general_cycle_id,
@@ -266,7 +282,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id,
                'system' AS type,
-               write_date
+               write_date,
+               id * 10 + CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+                END AS id
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state != 'finished' and
         evaluation_type not in ('gap_deal','development_plan')
@@ -302,7 +328,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id,
                'system' AS type,
-               write_date
+               write_date,
+               id * 10 + CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+                END AS id
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and
          state_gap_deal != 'finished' and evaluation_type in ('gap_deal','development_plan')
@@ -338,7 +374,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id,
                'joker' AS type,
-               write_date
+               write_date,
+               id * 10 + CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+                END as id
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and
         state_gap_deal = 'finished' and evaluation_type in ('gap_deal','development_plan')
@@ -374,7 +420,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id,
                'joker' AS type,
-               write_date
+               write_date,
+               id * 10 + CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+                END as id
         FROM onsc_desempeno_evaluation
         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state = 'finished' and
         evaluation_type not in ('gap_deal','development_plan')) as main_query)''')

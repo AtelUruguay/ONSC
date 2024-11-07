@@ -13,7 +13,7 @@ class HrJob(models.Model):
                 if field not in ['inciso_id', 'operating_unit_id', 'department_id']:
                     res[field]['selectable'] = False
                     res[field]['searchable'] = False
-                    res[field]['sortable'] = False
+                    # res[field]['sortable'] = False
                 if field == 'department_id':
                     res[field]['string'] = _('Unidad organizativa')
             res.pop('evaluation_list_line_ids')
@@ -170,7 +170,6 @@ class HrJob(models.Model):
              ['gap_deal', 'development_plan', 'tracing_plan', 'self_evaluation', 'environment_definition']),
             ('evaluated_id', '=', job_employee.id),
             ('current_job_id', '=', self.id),
-            ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
 
@@ -179,14 +178,12 @@ class HrJob(models.Model):
             ('evaluated_id', '=', job_employee.id),
             ('current_job_id', '=', self.id),
             ('state', 'in', ['draft', 'in_process', 'completed', 'finished']),
-            ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
 
         Consolidated.with_context(ignore_security_rules=True).search([
             ('evaluated_id', '=', job_employee.id),
             ('current_job_id', '=', self.id),
-            ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).write({'active': False})
 
@@ -195,7 +192,6 @@ class HrJob(models.Model):
             ('evaluation_type', '=', 'environment_evaluation'),
             ('evaluated_id', '=', job_employee.id),
             ('current_job_id', '=', self.id),
-            ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
 
@@ -204,14 +200,12 @@ class HrJob(models.Model):
             ('evaluator_id', '=', job_employee.id),
             ('state', 'in', ['draft', 'in_process']),
             ('current_job_id', '=', self.id),
-            ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
         # FIN EVALUACION DE ENTORNO
         Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', '=', 'collaborator'),
             ('current_job_id', '=', self.id),
-            ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
             '|', ('evaluated_id', '=', job_employee.id), ('evaluator_id', '=', job_employee.id),
         ]).action_cancel(is_canceled_by_employee_out=True)

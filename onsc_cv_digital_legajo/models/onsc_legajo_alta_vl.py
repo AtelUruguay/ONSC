@@ -165,12 +165,16 @@ class ONSCLegajoAltaVL(models.Model):
         # legajo.update_all_legajo_sections()
         return legajo
 
+    def button_update_cv_info(self):
+        self._update_altavl_info(update_legajo_info=False)
+        self.is_cv_validation_ok = False
+
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         self._empty_fieldsVL()
         self._update_altavl_info()
 
-    def _update_altavl_info(self):
+    def _update_altavl_info(self, update_legajo_info=True):
         Employee = self.env['hr.employee'].sudo()
         CVDigital = self.env['onsc.cv.digital'].sudo()
         Legajo = self.env['onsc.legajo'].sudo()
@@ -196,22 +200,23 @@ class ONSCLegajoAltaVL(models.Model):
                     record.cv_sex = cv_digital_id.cv_sex
 
                 legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
-                record.juramento_bandera_file = legajo.with_context(bin_size=True).juramento_bandera_file
-                record.juramento_bandera_filename = legajo.juramento_bandera_filename
-                if legajo and record.regime_is_legajo:
-                    record.date_income_public_administration = legajo.public_admin_entry_date
-                    record.inactivity_years = legajo.public_admin_inactivity_years_qty
-                    record.juramento_bandera_date = legajo.juramento_bandera_date
-                    record.juramento_bandera_presentacion_date = legajo.juramento_bandera_presentacion_date
-                    # record.juramento_bandera_file = legajo.with_context(bin_size=False).juramento_bandera_file
-                    # record.juramento_bandera_filename = legajo.juramento_bandera_filename
-                elif not self._context.get('no_update_extra'):
-                    record.date_income_public_administration = False
-                    record.inactivity_years = False
-                    record.juramento_bandera_date = False
-                    record.juramento_bandera_presentacion_date = False
-                    record.juramento_bandera_file = False
-                    record.juramento_bandera_filename = False
+                if update_legajo_info:
+                    record.juramento_bandera_file = legajo.with_context(bin_size=True).juramento_bandera_file
+                    record.juramento_bandera_filename = legajo.juramento_bandera_filename
+                    if legajo and record.regime_is_legajo:
+                        record.date_income_public_administration = legajo.public_admin_entry_date
+                        record.inactivity_years = legajo.public_admin_inactivity_years_qty
+                        record.juramento_bandera_date = legajo.juramento_bandera_date
+                        record.juramento_bandera_presentacion_date = legajo.juramento_bandera_presentacion_date
+                        # record.juramento_bandera_file = legajo.with_context(bin_size=False).juramento_bandera_file
+                        # record.juramento_bandera_filename = legajo.juramento_bandera_filename
+                    elif not self._context.get('no_update_extra'):
+                        record.date_income_public_administration = False
+                        record.inactivity_years = False
+                        record.juramento_bandera_date = False
+                        record.juramento_bandera_presentacion_date = False
+                        record.juramento_bandera_file = False
+                        record.juramento_bandera_filename = False
 
                 record.cv_digital_id = cv_digital_id
                 record.country_code = cv_digital_id.country_id.code
@@ -375,7 +380,7 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fields_ws4()
-        if self.state == 'borrador' and not self.is_cv_validation_ok:
+        if not self.is_cv_validation_ok:
             raise ValidationError(
                 _("Para continuar debe indicar que está aprobando los datos pendiente de validación del CV"))
         if not self.codigoJornadaFormal and self.retributive_day_id:
@@ -589,7 +594,7 @@ class ONSCLegajoAltaVL(models.Model):
                 cv.with_context(user_id=self.ws4_user_id.id,
                                 documentary_validation='nro_doc').button_documentary_approve()
         employee.write(vals)
-        cv.write({'is_docket': True})
+        cv.activate_docket()
         return employee
 
     # MAIL TEMPLATE UTILS

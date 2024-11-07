@@ -466,6 +466,9 @@ class ONSCDesempenoEvaluation(models.Model):
     show_button_cancel = fields.Boolean('Ver botón cancelar atras', compute='_compute_show_button_cancel')
     evaluations = fields.Boolean(string="Mis evaluaciones", default=False)
     is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, related="general_cycle_id.is_pilot", store=True)
+    is_button_reopen_evaluation_available = fields.Boolean(
+        string='¿Está el botón de Reabrir seguimiento visible?',
+        compute='_compute_is_button_reopen_evaluation_available')
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -685,6 +688,12 @@ class ONSCDesempenoEvaluation(models.Model):
                 condition = _states or record.evaluator_id.id != user_employee_id or record.locked
             record.is_edit_general_comments = condition
 
+    @api.depends('state')
+    def _compute_is_button_reopen_evaluation_available(self):
+        _today = fields.Date.today()
+        for record in self:
+            record.is_button_reopen_evaluation_available = record.general_cycle_id.end_date > _today
+
     @api.depends('state', 'gap_deal_state')
     def _compute_show_button_go_back(self):
         for record in self:
@@ -794,13 +803,14 @@ class ONSCDesempenoEvaluation(models.Model):
                     }
         self.write(vals)
 
-    def button_cancel_gap_deal(self):
-        for record in self:
-            record.write({
-                'reason_cancel': "Exonerado de Evaluación",
-                'state_before_cancel': record.state_gap_deal,
-                'state_gap_deal': 'canceled',
-            })
+    # SE ELIMINA PORQUE YA NO ES NECESARIO
+    # def button_cancel_gap_deal(self):
+    #     for record in self:
+    #         record.write({
+    #             'reason_cancel': "Exonerado de Evaluación",
+    #             'state_before_cancel': record.state_gap_deal,
+    #             'state_gap_deal': 'canceled',
+    #         })
 
     def action_cancel(self, is_canceled_by_employee_out=False):
         for record in self:
@@ -847,7 +857,7 @@ class ONSCDesempenoEvaluation(models.Model):
             if not skills:
                 raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
             for random_environment in random_environments:
-                selected_random_environment.append(random_environment.employee_id)
+                selected_random_environment |= random_environment.employee_id
                 evaluation = self.suspend_security().create({
                     'current_job_id': rec.current_job_id.id,
                     'evaluator_current_job_id': random_environment.id,
@@ -870,9 +880,11 @@ class ONSCDesempenoEvaluation(models.Model):
                                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                        })
             email_template_id = self.env.ref('onsc_desempeno.email_template_evaluacion_entorno')
-            email_template_id.with_context(date_end=rec.evaluation_stage_id.end_date).send_mail(
-                email_values={'email_to': selected_random_environment.mappend('partner_id').get_onsc_mails()}
-            )
+            for partner in selected_random_environment.mapped('partner_id'):
+                email_template_id.with_context(date_end=rec.sudo().evaluation_stage_id.end_date.strftime('%d-%m-%Y')).send_mail(
+                    rec.id,
+                    email_values={'email_to': partner.get_onsc_mails()}
+                )
             rec.write({'environment_evaluation_ids': [(6, 0, selected_random_environment.ids)]})
 
     def _check_complete_evaluation(self):

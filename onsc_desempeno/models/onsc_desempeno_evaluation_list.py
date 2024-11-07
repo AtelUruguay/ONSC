@@ -136,7 +136,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     search_employee_inlines = fields.Many2one(
         "hr.employee",
-        string='¿Está el funcionario en la lista?',
+        string='Evaluado',
         search='_search_employee_inlines',
         store=False)
 
@@ -199,7 +199,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                 manager = evaluation_list.department_id.get_first_department_withmanager_in_tree().manager_id
             if isinstance(value, int) and manager.id == value:
                 evaluation_list_filtered |= evaluation_list
-            elif isinstance(value, str) and value.lower() in manager.display_name.lower():
+            elif manager and isinstance(value, str) and value.lower() in manager.display_name.lower():
                 evaluation_list_filtered |= evaluation_list
         return [('id', 'in', evaluation_list_filtered.ids)]
 
@@ -254,12 +254,12 @@ class ONSCDesempenoEvaluationList(models.Model):
         lists_toclose = self.search([
             ('state', '!=', 'closed'),
             ('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())])
-        lists_toclose.write({'state': 'closed'})
         for list_toclose in lists_toclose:
             list_toclose.write({
                 'fixed_manager_id': list_toclose.manager_id.id,
                 'fixed_manager_uo_id': list_toclose.manager_uo_id.id,
             })
+        lists_toclose.write({'state': 'closed'})
 
         evaluation_stages = self.env['onsc.desempeno.evaluation.stage'].search([
             ('start_date', '<=', fields.Date.today()),

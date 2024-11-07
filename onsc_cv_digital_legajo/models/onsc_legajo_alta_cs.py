@@ -82,5 +82,5 @@ class ONSCLegajoAltaCS(models.Model):
         if employee.cv_sex != self.cv_sex:
             vals.update({'cv_sex': self.cv_sex})
         employee.suspend_security().write(vals)
-        cv.write({'is_docket': True})
+        cv.activate_docket()
         return employee

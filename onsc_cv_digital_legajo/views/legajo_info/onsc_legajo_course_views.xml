@@ -56,7 +56,7 @@
                             <field name="country_id_domain" invisible="1"/>
                        </group>
                         <group>
-                            <field name="state"/>
+                            <field name="state" force_save="1"/>
                             <field name="start_date"
                                    string="Fecha de inicio estimada"
                                    attrs="{'invisible': [('record_type', '!=', 'course')]}"/>

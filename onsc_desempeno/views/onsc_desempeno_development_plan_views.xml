@@ -31,6 +31,7 @@
                     <field name="is_cancel_available" invisible="1"/>
                     <field name="show_button_go_back" invisible="1"/>
                     <field name="show_button_cancel" invisible="1"/>
+                    <field name="is_button_reopen_evaluation_available" invisible="1"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
@@ -60,8 +61,16 @@
                             attrs="{'invisible': [('is_agree_button_gh_available', '=', False)]}"
                             name="button_agree_gh"
                             invisible="context.get('readonly_evaluation', False) is True"
-                            confirm="¿Está seguro que desea confirmar?"
+                            confirm="¿Está seguro que desea confirmar? RECUERDE QUE SOLAMENTE DEBE FINALIZAR UNA VEZ QUE SE HAYA CARGADO LA ACTUALIZACIÓN DEL ÚLTIMO AVANCE ALCANZADO."
                             icon="fa-lock"/>
+                    <button type="object"
+                            class="btn btn-secundary"
+                            string="Reabrir seguimiento"
+                            attrs="{'invisible': ['|','|','|',('state', '!=', 'finished'),('evaluation_form_edit', '=', False),('is_button_reopen_evaluation_available', '=', False),('evaluation_type', '!=', 'tracing_plan')]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
+                            name="button_reopen_evaluation"
+                            icon="fa-unlock"
+                            confirm="¿Está seguro de que desea reabrir la evaluación?"/>
 
                     <button type="object"
                             class="btn btn-secundary"
@@ -100,7 +109,7 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Finalizar Seguimiento"
-                            confirm="¿Está seguro que desea finalizar el Seguimiento del Plan?"
+                            confirm="¿Está seguro que desea finalizar el Seguimiento del Plan? RECUERDE QUE SOLAMENTE DEBE FINALIZAR UNA VEZ QUE SE HAYA CARGADO LA ACTUALIZACIÓN DEL ÚLTIMO AVANCE ALCANZADO."
                             attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state', '!=', 'in_process'),('evaluation_type', '!=', 'tracing_plan'),('evaluation_form_edit', '=', False)]}"
                             name="button_finish_evaluation"
                             invisible="context.get('readonly_evaluation', False) is True"
@@ -152,7 +161,6 @@
 
                     <group>
                         <group style="min-width: 100px !important;">
-                            <field name="evaluation_type" nolabel="1" invisible="1"/>
                             <field name="evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="original_evaluator_id"
