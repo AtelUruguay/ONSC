@@ -23,6 +23,7 @@
                     <span t-field="employee_id.cv_address_apto"/>
                 </t>
                 <t t-if="employee_id.cv_address_street2_id">
+                    <br/>
                     Entre: <span t-field="employee_id.cv_address_street2_id.street"/>
                     <t t-if="employee_id.cv_address_street3_id"> y <span t-field="employee_id.cv_address_street3_id.street"/></t>
                 </t>
