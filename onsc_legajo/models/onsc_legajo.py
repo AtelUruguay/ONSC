@@ -130,6 +130,8 @@ class ONSCLegajo(models.Model):
             electoral_act_ids = ElectoralAct.search([
                 ('date_since_entry_control', '<=', fields.Date.today()),
                 ('date_until_entry_control', '>=', fields.Date.today())])
+        else:
+            electoral_act_ids = ElectoralAct
         for rec in self:
             if self._context.get('restrict_period'):
                 rec.electoral_act_ids_domain = json.dumps([

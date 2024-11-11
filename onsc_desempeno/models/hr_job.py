@@ -10,12 +10,14 @@ class HrJob(models.Model):
         res = super(HrJob, self).fields_get(allfields, attributes)
         if self._context.get('hide_custom_filters'):
             for field in res:
-                if field not in ['inciso_id', 'operating_unit_id', 'department_id']:
+                if field not in ['inciso_id', 'operating_unit_id', 'department_id', 'employee_id']:
                     res[field]['selectable'] = False
                     res[field]['searchable'] = False
-                    # res[field]['sortable'] = False
+                    res[field]['sortable'] = False
                 if field == 'department_id':
                     res[field]['string'] = _('Unidad organizativa')
+                elif field == 'employee_id':
+                    res[field]['string'] = _('Funcionario')
             res.pop('evaluation_list_line_ids')
         return res
 
