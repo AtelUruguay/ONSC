@@ -50,7 +50,8 @@
 
     <!--   INFORMACIÓN DE SALUD     -->
     <template id="legajo_section_sens_data">
-        <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+        <t t-set="show_section_sens_data" t-value="employee_id.is_cv_race_public == True or employee_id.is_cv_race_public == True"/>
+        <h4 t-if="show_section_sens_data" class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
             Datos sensibles
         </h4>
         <ul style="list-style:none; font-size: 1.5rem;">
