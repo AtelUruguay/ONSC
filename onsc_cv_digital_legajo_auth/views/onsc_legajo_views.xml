@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_legajo_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.form.auth</field>
+            <field name="model">onsc.legajo</field>
+            <field name="inherit_id" ref="onsc_legajo.onsc_legajo_form"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" name="button_actualizar_dnic"
+                                groups="onsc_cv_digital_legajo_auth.group_legajo_update_dnic"
+                                string="Actualizar datos con DNIC"
+                                type="object" icon="fa-link"/>
+                </div>
+            </field>
+    </record>
+</odoo>
