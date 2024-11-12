@@ -421,9 +421,12 @@ class ONSCCVDigital(models.Model):
 
             for key, value in values_filtered.items():
                 if key in EMPLOYEE_MODIFIED_FIELDS:
-                    employee_values_to_write[key] = value
+                    if key == 'cv_full_name':
+                        employee_values_to_write['full_name'] = value
+                    else:
+                        employee_values_to_write[key] = value
                 if key == 'is_cv_gender_public':
-                    employee_values_to_write['gender_public_visualization_date'] = fields.Date.today()
+                    employee_values_to_write['gender_public_visualization_date'] = fields.Date.today()                
             if len(employee_values_to_write.keys()):
                 record.employee_id.suspend_security().write(employee_values_to_write)
         employees.suspend_security().write({'notify_sgh': True})
