@@ -9,10 +9,13 @@ class ONSCLegajo(models.Model):
     _inherit = "onsc.legajo"
 
     def button_actualizar_dnic(self):
-        self.cv_digital_id.button_actualizar_dnic()
+        self.suspend_security()._update_dnic_info()
+        return True
+
+    def _update_dnic_info(self):
+        self.suspend_security().cv_digital_id.button_actualizar_dnic()
         self.cv_digital_id.cv_full_name = self.cv_digital_id.partner_id.cv_full_name
         self.cv_digital_id.cv_birthdate = self.cv_digital_id.partner_id.cv_birthdate
         self.employee_id.full_name = self.cv_digital_id.cv_full_name
         self.employee_id.cv_birthdate = self.cv_digital_id.partner_id.cv_birthdate
         self.employee_id.cv_sex = self.cv_digital_id.partner_id.cv_sex
-        return True
