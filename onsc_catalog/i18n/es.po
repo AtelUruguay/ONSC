@@ -702,3 +702,18 @@ msgstr "¡El identificador de la unidad ejecutora debe ser único por inciso!"
 #: model:ir.model.constraint,message:operating_unit.constraint_operating_unit_name_company_uniq
 msgid "The name of the operating unit must be unique per company!"
 msgstr "¡El nombre de la unidad ejecutora debe ser único por inciso!"
+
+#. module: operating_unit
+#: model:ir.model.fields,field_description:operating_unit.field_operating_unit__code
+msgid "Code"
+msgstr "Código"
+
+#. module: operating_unit
+#: model:ir.model.fields,field_description:operating_unit.field_operating_unit__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: operating_unit
+#: model:ir.model.fields,field_description:operating_unit.field_operating_unit__name
+msgid "company_id"
+msgstr "Empresa (no usar en filtros)"

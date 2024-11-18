@@ -17,7 +17,7 @@ class ONSCCVFormationBasic(models.Model):
                                                         ('secondary', u'Secundaria')], required=True)
     coursed_years = fields.Text(string="Años cursados")
     study_certificate_file = fields.Binary(string="Certificado de estudio")
-    study_certificate_filename = fields.Char('Nombre del documento digital')
+    study_certificate_filename = fields.Char('Nombre del documento digital - Certificado de estudio')
 
     @api.onchange('state')
     def onchange_state(self):
@@ -84,19 +84,19 @@ class ONSCCVFormationAdvanced(models.Model):
                                                  string=u'Áreas relacionadas con esta educación', copy=True)
     other_relevant_information = fields.Text(string="Otra información relevante")
     egress_certificate_file = fields.Binary(string="Certificado de egreso / título")
-    egress_certificate_filename = fields.Char('Nombre del documento digital')
+    egress_certificate_filename = fields.Char('Nombre del documento digital - Certificado de egreso / título')
 
     # FIXME 28.8.3 PS07 13857
     scolarship_certificate_file = fields.Binary(string="Escolaridad")
-    scolarship_certificate_filename = fields.Char('Nombre del documento digital')
+    scolarship_certificate_filename = fields.Char('Nombre del documento digital - Escolaridad')
 
     revalidated_certificate_file = fields.Binary(string="Certificado de reválida de título",
                                                  help="Certificado de reválida de título / Resolución de reválida de título / Titulo revalidado")
-    revalidated_certificate_filename = fields.Char('Nombre del documento digital')
+    revalidated_certificate_filename = fields.Char('Nombre del documento digital - Certificado de reválida de título')
     homologated_certificate_file = fields.Binary(string="Certificado de homologación")
-    homologated_certificate_filename = fields.Char('Nombre del documento digital')
+    homologated_certificate_filename = fields.Char('Nombre del documento digital - Certificado de homologación')
     apostille_file = fields.Binary(string="Apostilla")
-    apostille_filename = fields.Char('Nombre del documento digital')
+    apostille_filename = fields.Char('Nombre del documento digital - Apostilla')
 
     country_code = fields.Char(related="country_id.code")
 

@@ -44,4 +44,4 @@ msgstr "Estado"
 #: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital__cv_address_street
 #: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital_call__cv_address_street
 msgid "Street"
-msgstr "Calle"
+msgstr "Calle (Exterior)"

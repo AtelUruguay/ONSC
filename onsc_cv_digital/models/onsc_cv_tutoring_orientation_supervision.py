@@ -49,7 +49,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
                                               copy=True)
     is_orientation_type_pie = fields.Boolean(compute='_compute_is_orientation_type_pie')
     receipt_file = fields.Binary("Comprobante")
-    receipt_filename = fields.Char('Nombre del documento digital')
+    receipt_filename = fields.Char('Nombre del documento digital - Comprobante')
     show_generic_academic_program = fields.Boolean('Ver programa academico genrico',
                                                    compute='_compute_show_generic_academic_program')
     name_generic_academic_program = fields.Char('Nombre específico del programa académico')

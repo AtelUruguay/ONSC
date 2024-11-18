@@ -109,10 +109,10 @@
                             <label for="preselected" invisible="context.get('is_mypostulations', False)"/><field name="preselected" class="oe_inline" invisible="context.get('is_mypostulations', False)"/>
                         </div>
                         <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)">
-                          <label for="is_trans"/><field name="is_trans"/>
-                          <label for="is_afro"/><field name="is_afro"/>
-                          <label for="is_disabilitie"/><field name="is_disabilitie"/>
-                          <label for="is_victim"/><field name="is_victim"/>
+                          <label for="is_trans" string="Personas Trans (Art.12 Ley N° 19.684)"/><field name="is_trans"/>
+                          <label for="is_afro" string="Afrodescendientes (Art.4 Ley N° 19122)"/><field name="is_afro"/>
+                          <label for="is_disabilitie" string="Persona con Discapacidad (Art. 49 Ley N° 18.651)"/><field name="is_disabilitie"/>
+                          <label for="is_victim" string="Personas víctimas de delitos violentos (Art. 105 Ley N° 19.889)"/><field name="is_victim"/>
                         </div>
                     </div>
                     <group style="padding-top:40px">
