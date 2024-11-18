@@ -516,7 +516,7 @@ class ONSCLegajoDriverLicense(models.Model):
     validation_date = fields.Date("Fecha de vencimiento", required=True)
     category_id = fields.Many2one("onsc.cv.drivers.license.categories", "Categoría", required=True)
     license_file = fields.Binary("Documento digitalizado licencia de conducir")
-    license_filename = fields.Char('Nombre del documento digital')
+    license_filename = fields.Char('Nombre del documento digital - Licencia de conducir')
 
 
 class ONSCCVDigitalDriverLicense(models.Model):

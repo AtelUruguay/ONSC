@@ -47,7 +47,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
             return 'to_validate'
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
-    company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company',string="Empresa", required=True, default=lambda self: self.env.company)
     code = fields.Char(string=u'Código', size=5)
     state = fields.Selection(string="Estado",
                              selection=STATES,
@@ -55,7 +55,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                              copy=True,
                              default=_default_state)
     reject_reason = fields.Text(string=u'Motivo de rechazo', tracking=True)
-    create_uid = fields.Many2one('res.users', index=True, tracking=True)
+    create_uid = fields.Many2one('res.users',string="Creado por", index=True, tracking=True)
 
     @api.constrains(lambda self: ['%s' % x for x in self._fields_2check_unicity])
     def _check_conditional_unicity(self):

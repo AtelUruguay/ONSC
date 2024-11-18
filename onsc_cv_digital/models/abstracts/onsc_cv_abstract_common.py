@@ -29,7 +29,7 @@ class ONSCCVCommonData(models.AbstractModel):
     _description = 'Modelo abstracto común para los datos de tipo CV'
 
     document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad", copy=False)
-    document_identity_filename = fields.Char('Nombre del documento digital', copy=False)
+    document_identity_filename = fields.Char('Nombre del documento digital - Documento digitalizado del documento de identidad', copy=False)
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", copy=False)
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", copy=False)
     uy_citizenship = fields.Selection(string="Ciudadanía uruguaya", copy=False,
@@ -38,7 +38,7 @@ class ONSCCVCommonData(models.AbstractModel):
     crendencial_serie = fields.Char(string="Serie de la credencial", size=3, copy=False)
     credential_number = fields.Char(string="Numero de la credencial", size=6, copy=False)
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica", copy=False)
-    civical_credential_filename = fields.Char('Nombre del documento digital', copy=False)
+    civical_credential_filename = fields.Char('Nombre del documento digital - Documento digitalizado credencial cívica', copy=False)
     cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU", copy=False)
     professional_resume = fields.Text(string="Resumen profesional", copy=False)
     user_linkedIn = fields.Char(string="Usuario en LinkedIn", copy=False)
@@ -52,7 +52,7 @@ class ONSCCVCommonData(models.AbstractModel):
         store=True)
     cv_gender2 = fields.Char(string=u"Otro género", copy=False)
     cv_gender_record_file = fields.Binary(string="Constancia de identidad de género", copy=False)
-    cv_gender_record_filename = fields.Char('Nombre del documento digital', copy=False)
+    cv_gender_record_filename = fields.Char('Nombre del documento digital - Constancia de identidad de género', copy=False)
     is_cv_gender_public = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?", copy=False)
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
@@ -66,14 +66,14 @@ class ONSCCVCommonData(models.AbstractModel):
     is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)", copy=False)
     afro_descendants_file = fields.Binary(
         string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"', copy=False)
-    afro_descendants_filename = fields.Char('Nombre del documento digital', copy=False)
+    afro_descendants_filename = fields.Char('Nombre del documento digital - "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"', copy=False)
 
     # SALUD LABORAL
     is_occupational_health_card = fields.Boolean(string="¿Tiene carné de salud laboral?", copy=False)
     occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral", copy=False)
     occupational_health_card_file = fields.Binary(
         string="Documento digitalizado del carné de salud laboral", copy=False)
-    occupational_health_card_filename = fields.Char('Nombre del documento digital', copy=False)
+    occupational_health_card_filename = fields.Char('Nombre del documento digital - Carné de salud laboral', copy=False)
 
     is_medical_aptitude_certificate_status = fields.Boolean(
         string="¿Tiene certificado de aptitud médico-deportiva?", copy=False)
@@ -81,7 +81,7 @@ class ONSCCVCommonData(models.AbstractModel):
         string="Fecha de vencimiento del certificado de aptitud médico-deportiva", copy=False)
     medical_aptitude_certificate_file = fields.Binary(
         string="Documento digitalizado del certificado de aptitud médico-deportiva", copy=False)
-    medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital', copy=False)
+    medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital - Certificado de aptitud médico-deportiva', copy=False)
 
     # Víctima de delitos violentos
     is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)",
@@ -89,12 +89,12 @@ class ONSCCVCommonData(models.AbstractModel):
     relationship_victim_violent_file = fields.Binary(
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento",
         copy=False)
-    relationship_victim_violent_filename = fields.Char('Nombre del documento digital', copy=False)
+    relationship_victim_violent_filename = fields.Char('Nombre del documento digital - Comprobante de parentesco con persona víctima de delito violento', copy=False)
     is_public_information_victim_violent = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?", copy=False)
 
     # Domicilio
-    cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle", copy=False)
+    cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle (Nacional)", copy=False)
     cv_address_street2_id = fields.Many2one('onsc.cv.street', string="Entre calle", copy=False)
     cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle', copy=False)
 
@@ -108,7 +108,7 @@ class ONSCCVCommonData(models.AbstractModel):
         string=u'Documento digitalizado constancia de inscripción en el RNPcD',
         copy=False
     )
-    document_certificate_filename = fields.Char('Nombre del documento Digitalizado', copy=False)
+    document_certificate_filename = fields.Char('Nombre del documento Digitalizado - Constancia de inscripción en el RNPcD', copy=False)
     certificate_date = fields.Date(string=u'Fecha de certificado', copy=False)
     to_date = fields.Date(string=u'Fecha hasta', copy=False)
     see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes', copy=False)

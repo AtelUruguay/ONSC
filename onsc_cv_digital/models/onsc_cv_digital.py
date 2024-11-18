@@ -18,6 +18,11 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
                             href="%s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
 
+HIDE_FIELDS_INSEARCH = [
+    'cv_address_amplification',
+    ''
+]
+
 
 def diff_month(d1, d2):
     return (d1.year - d2.year) * 12 + d1.month - d2.month
@@ -33,6 +38,7 @@ class ONSCCVDigital(models.Model):
     _description = 'Currículum digital'
     _rec_name = 'cv_full_name'
     _inherit = ['onsc.cv.abstract.phone.validated', 'onsc.cv.common.data']
+    _hide_fields_insearch = HIDE_FIELDS_INSEARCH
 
     @property
     def prefix_by_phones(self):
@@ -114,20 +120,6 @@ class ONSCCVDigital(models.Model):
     last_modification_date = fields.Date(string=u'Fecha última modificación', store=True,
                                          compute='_compute_last_modification_date', readonly=True)
 
-    # INFORMACION GENERAL---<Page>
-    # Genero
-    # cv_gender_id = fields.Many2one("onsc.cv.gender", string=u"Género", required=True, )
-    # is_cv_gender_option_other_enable = fields.Boolean(
-    #     u'¿Permitir opción otra/o?',
-    #     related='cv_gender_id.is_option_other_enable',
-    #     store=True)
-    # cv_gender2 = fields.Char(string=u"Otro género")
-    # cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
-    # cv_gender_record_filename = fields.Char('Nombre del documento digital')
-    # is_cv_gender_public = fields.Boolean(
-    #     string="¿Desea que esta información se incluya en la versión impresa de su CV?")
-    # is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
-
     # Raza
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial",
                                    domain="[('race_type','in',['race','both'])]")
@@ -157,7 +149,7 @@ class ONSCCVDigital(models.Model):
     # cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle')
     cv_address_nro_door = fields.Char('Número', size=5)
     cv_address_apto = fields.Char(string="Apto", size=4)
-    cv_address_street = fields.Char("Calle")
+    cv_address_street = fields.Char("Calle(Extranjero)")
     cv_address_zip = fields.Char('C.P', size=6)
     cv_address_is_cv_bis = fields.Boolean("BIS")
     cv_address_amplification = fields.Text("Aclaraciones")
@@ -233,61 +225,76 @@ class ONSCCVDigital(models.Model):
 
     # Help online
     cv_help_general_info = fields.Html(
+        string="Botón de ayuda de Información general",
         compute=lambda s: s._get_help('cv_help_general_info'),
         default=lambda s: s._get_help('cv_help_general_info', True))
     cv_help_address = fields.Html(
+        string="Botón de ayuda de Domicilio",
         compute=lambda s: s._get_help('cv_help_address'),
         default=lambda s: s._get_help('cv_help_address', True)
     )
     cv_help_work_experience = fields.Html(
+        string="Botón de ayuda de Experiencia laboral",
         compute=lambda s: s._get_help('cv_help_work_experience'),
         default=lambda s: s._get_help('cv_help_work_experience', True)
     )
     cv_help_work_teaching = fields.Html(
+        string="Botón de ayuda de Docencia",
         compute=lambda s: s._get_help('cv_help_work_teaching'),
         default=lambda s: s._get_help('cv_help_work_teaching', True)
     )
     cv_help_work_investigation = fields.Html(
+        string="Botón de ayuda de Investigación",
         compute=lambda s: s._get_help('cv_help_work_investigation'),
         default=lambda s: s._get_help('cv_help_work_investigation', True)
     )
     cv_help_formation = fields.Html(
+        string="Botón de ayuda de Formación",
         compute=lambda s: s._get_help('cv_help_formation'),
         default=lambda s: s._get_help('cv_help_formation', True)
     )
     cv_help_course_certificate = fields.Html(
+        string="Botón de ayuda de Cursos y Certificados",
         compute=lambda s: s._get_help('cv_help_course_certificate'),
         default=lambda s: s._get_help('cv_help_course_certificate', True)
     )
     cv_help_volunteering = fields.Html(
+        string="Botón de ayuda de Voluntariado",
         compute=lambda s: s._get_help('cv_help_volunteering'),
         default=lambda s: s._get_help('cv_help_volunteering', True)
     )
     cv_help_language_level = fields.Html(
+        string="Botón de ayuda de Idiomas",
         compute=lambda s: s._get_help('cv_help_language_level'),
         default=lambda s: s._get_help('cv_help_language_level', True)
     )
     cv_help_publications_productions_evaluations = fields.Html(
+        string="Botón de ayuda de Publicaciones, producciones y evaluaciones",
         compute=lambda s: s._get_help('cv_help_publications_productions_evaluations'),
         default=lambda s: s._get_help('cv_help_publications_productions_evaluations', True)
     )
     cv_help_tutoring_orientation_supervision = fields.Html(
+        string="Botón de ayuda de Tutorias, orientaciones, supervisiones",
         compute=lambda s: s._get_help('cv_help_tutoring_orientation_supervision'),
         default=lambda s: s._get_help('cv_help_tutoring_orientation_supervision', True)
     )
     cv_help_disability = fields.Html(
+        string="Botón de ayuda de Discapacidad",
         compute=lambda s: s._get_help('cv_help_disability'),
         default=lambda s: s._get_help('cv_help_disability', True)
     )
     cv_help_participation_event = fields.Html(
+        string="Botón de ayuda de Participación en eventos",
         compute=lambda s: s._get_help('cv_help_participation_event'),
         default=lambda s: s._get_help('cv_help_participation_event', True)
     )
     cv_help_other_relevant_information = fields.Html(
+        string="Botón de ayuda de Otra información relevante",
         compute=lambda s: s._get_help('cv_help_other_relevant_information'),
         default=lambda s: s._get_help('cv_help_other_relevant_information', True)
     )
     cv_help_reference = fields.Html(
+        string="Botón de ayuda de Referencias",
         compute=lambda s: s._get_help('cv_help_reference'),
         default=lambda s: s._get_help('cv_help_reference', True)
     )
@@ -312,29 +319,29 @@ class ONSCCVDigital(models.Model):
     # VALIDACION DOCUMENTAL
     # DISCAPACIDAD
     disabilitie_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
+        string="Estado de validación documental(Discapacidad)",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
-    disabilitie_write_date = fields.Datetime('Fecha de última modificación',
+    disabilitie_write_date = fields.Datetime('Fecha de última modificación(Discapacidad)',
                                              index=True,
                                              default=lambda *a: fields.Datetime.now())
-    disabilitie_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
+    disabilitie_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental(Discapacidad)',
                                                         tracking=True)
-    disabilitie_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
-    disabilitie_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
+    disabilitie_documentary_validation_date = fields.Date(u'Fecha validación documental(Discapacidad)', tracking=True)
+    disabilitie_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental(Documento)",
                                                       tracking=True)
 
     # NRO DOC
     nro_doc_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
+        string="Estado de validación documental(Documento)",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
-    nro_doc_write_date = fields.Datetime('Fecha de última modificación',
+    nro_doc_write_date = fields.Datetime('Fecha de última modificación(Documento)',
                                          index=True,
                                          default=lambda *a: fields.Datetime.now())
-    nro_doc_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental', tracking=True)
-    nro_doc_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
-    nro_doc_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
+    nro_doc_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental(Documento)', tracking=True)
+    nro_doc_documentary_validation_date = fields.Date(u'Fecha validación documental(Documento)', tracking=True)
+    nro_doc_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental(Documento)",
                                                   tracking=True)
     # CREDENCIAL CIVICA
     is_civical_credential_populated = fields.Boolean(
@@ -342,17 +349,17 @@ class ONSCCVDigital(models.Model):
         compute='_compute_is_civical_credential_populated'
     )
     civical_credential_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
+        string="Estado de validación documental(Credencial cívica)",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
-    civical_credential_write_date = fields.Datetime('Fecha de última modificación',
+    civical_credential_write_date = fields.Datetime('Fecha de última modificación(Credencial cívica)',
                                                     index=True,
                                                     default=lambda *a: fields.Datetime.now())
-    civical_credential_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
+    civical_credential_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental(Credencial cívica)',
                                                                tracking=True)
-    civical_credential_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    civical_credential_documentary_validation_date = fields.Date(u'Fecha validación documental(Credencial cívica)', tracking=True)
     civical_credential_documentary_user_id = fields.Many2one(comodel_name="res.users",
-                                                             string="Usuario validación documental",
+                                                             string="Usuario validación documental(Credencial cívica)",
                                                              tracking=True)
 
     def _get_help(self, help_field='', is_default=False):

@@ -75,7 +75,7 @@ class ONSCCVDigitalCall(models.Model):
 
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de actualización", required=True, index=True)
-    postulation_date_str = fields.Char(string=u"Fecha de actualización",
+    postulation_date_str = fields.Char(string=u"Fecha de actualización (Texto)",
                                        compute='_compute_postulation_date_str',
                                        store=True)
     postulation_number = fields.Char(string=u"Número de postulación", required=True, index=True)
@@ -83,10 +83,10 @@ class ONSCCVDigitalCall(models.Model):
     is_json_sent = fields.Boolean(string="Copia enviada", default=False)
     is_cancel = fields.Boolean(string="Cancelado")
     is_zip = fields.Boolean(string="ZIP generado")
-    is_trans = fields.Boolean(string=u"Personas Trans (Art.12 Ley N° 19.684)")
-    is_afro = fields.Boolean(string=u"Afrodescendientes (Art.4 Ley N° 19122)")
-    is_disabilitie = fields.Boolean(string=u"Persona con Discapacidad (Art. 49 Ley N° 18.651)")
-    is_victim = fields.Boolean(string=u"Personas víctimas de delitos violentos (Art. 105 Ley N° 19.889)")
+    is_trans = fields.Boolean(string=u"Personas Trans (Art.12 Ley N° 19.684) Cupo")
+    is_afro = fields.Boolean(string=u"Afrodescendientes (Art.4 Ley N° 19122) Cupo")
+    is_disabilitie = fields.Boolean(string=u"Persona con Discapacidad (Art. 49 Ley N° 18.651) Cupo")
+    is_victim = fields.Boolean(string=u"Personas víctimas de delitos violentos (Art. 105 Ley N° 19.889) Cupo")
     preselected = fields.Selection(string="Preseleccionado", selection=[('yes', 'Si'), ('no', 'No')])
 
     call_conditional_state = fields.Selection(
@@ -96,7 +96,7 @@ class ONSCCVDigitalCall(models.Model):
 
     gral_info_documentary_validation_state = fields.Selection(
         selection=DOCUMENTARY_VALIDATION_STATES,
-        string="Estado de validación documental",
+        string="Estado de validación documental general",
         compute='_compute_gral_info_documentary_validation_state',
         store=True
     )
@@ -107,9 +107,9 @@ class ONSCCVDigitalCall(models.Model):
         store=True
     )
 
-    show_victim_info = fields.Boolean(compute='_compute_show_victim_info')
-    show_race_info = fields.Boolean(compute='_compute_show_race_info')
-    show_disabilitie_info = fields.Boolean(compute='_compute_show_disabilitie_info')
+    show_victim_info = fields.Boolean(string="Mostrar la información de víctimas de delitos violentos", compute='_compute_show_victim_info')
+    show_race_info = fields.Boolean(string="Mostrar la información de raza", compute='_compute_show_race_info')
+    show_disabilitie_info = fields.Boolean(string="Mostrar la información de discapacidad", compute='_compute_show_disabilitie_info')
     show_gender_info = fields.Boolean(compute='_compute_show_gender_info')
 
     @api.constrains("cv_digital_id", "cv_digital_id.active", "call_number", "cv_digital_origin_id")
