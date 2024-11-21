@@ -110,10 +110,11 @@ class ONSCLegajoAltaVL(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False,
                                 readonly=True,
                                 states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    regime_is_legajo = fields.Boolean(related="regime_id.is_legajo", store=True)
-    is_regime_manager = fields.Boolean(related="regime_id.is_manager", store=True)
-    is_presupuestado = fields.Boolean(related="regime_id.presupuesto", store=True)
-    is_indVencimiento = fields.Boolean(related="regime_id.indVencimiento", store=True)
+    regime_is_legajo = fields.Boolean(string="¿Régimen tiene la marca 'Legajo'?", related="regime_id.is_legajo", store=True)
+    is_regime_manager = fields.Boolean(string="¿Régimen tiene la marca 'Responsable UO'?", related="regime_id.is_manager", store=True)
+    is_presupuestado = fields.Boolean(string="¿Régimen tiene la marca 'Presupuesto'?", related="regime_id.presupuesto", store=True)
+    is_indVencimiento = fields.Boolean(string="¿Régimen tiene la marca 'Requiere indicar fecha de vencimiento'?",
+                                       related="regime_id.indVencimiento", store=True)
 
     # Datos para los Descriptores
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor 1', copy=False,
@@ -153,7 +154,7 @@ class ONSCLegajoAltaVL(models.Model):
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
                                     readonly=True,
                                     states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    is_occupation_required = fields.Boolean(compute='_compute_is_occupation_required', store=True)
+    is_occupation_required = fields.Boolean(string="¿La ocupación es obligatoria?", compute='_compute_is_occupation_required', store=True)
     date_income_public_administration = fields.Date(string="Fecha de ingreso a la administración pública", copy=False,
                                                     readonly=True, states={'borrador': [('readonly', False)],
                                                                            'error_sgh': [('readonly', False)]})
