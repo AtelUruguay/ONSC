@@ -712,8 +712,3 @@ msgstr "Código"
 #: model:ir.model.fields,field_description:operating_unit.field_operating_unit__name
 msgid "Name"
 msgstr "Nombre"
-
-#. module: operating_unit
-#: model:ir.model.fields,field_description:operating_unit.field_operating_unit__name
-msgid "company_id"
-msgstr "Empresa (no usar en filtros)"

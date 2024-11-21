@@ -93,7 +93,7 @@ class HrContract(models.Model):
          ('reserved', 'Reservado'),
          ('outgoing_commission', 'Comisión saliente'),
          ('incoming_commission', 'Comisión entrante')],
-        tracking=True, string='Estado', history=True)
+        tracking=True, string='Estado del Contrato', history=True)
     cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado', history=True)
     first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name', store=True)
     second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name', store=True)

@@ -141,11 +141,11 @@ class ONSCLegajoAltaCS(models.Model):
     program_project_origin_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto',
                                                 compute='_compute_program_project_origin_id', store=True)
     is_inciso_origin_ac = fields.Boolean(
-        "El inciso de origen es AC?",
+        "¿El inciso de origen es AC?",
         related='inciso_origin_id.is_central_administration', store=True)
-    program_origin = fields.Char(string='Programa', related='program_project_origin_id.programaDescripcion')
-    project_origin = fields.Char(string='Proyecto', related='program_project_origin_id.proyectoDescripcion')
-    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
+    program_origin = fields.Char(string='Programa (Origen)', related='program_project_origin_id.programaDescripcion')
+    project_origin = fields.Char(string='Proyecto (Origen)', related='program_project_origin_id.proyectoDescripcion')
+    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen (Origen)', related='contract_id.regime_id')
     is_regime_manager = fields.Boolean(compute='_compute_is_regime_manager', store=True)
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
@@ -171,9 +171,9 @@ class ONSCLegajoAltaCS(models.Model):
         domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
         readonly=False, states={'confirmed': [('readonly', True)],
                                 'cancelled': [('readonly', True)]})
-    program_destination = fields.Char(string='Programa',
+    program_destination = fields.Char(string='Programa (Destino)',
                                       related='program_project_destination_id.programaDescripcion')
-    project_destination = fields.Char(string='Proyecto',
+    project_destination = fields.Char(string='Proyecto (Destino)',
                                       related='program_project_destination_id.proyectoDescripcion')
     date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False,
                                         readonly=False, states={'confirmed': [('readonly', True)],
@@ -284,7 +284,7 @@ class ONSCLegajoAltaCS(models.Model):
     nroPuesto = fields.Char(string='Puesto', copy=False)
     nroPlaza = fields.Char(string='Plaza', copy=False, )
     secPlaza = fields.Char(string="Sec Plaza")
-    is_error_synchronization = fields.Boolean(copy=False)
+    is_error_synchronization = fields.Boolean(string="Error en la sincronización (interno)", copy=False)
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
     def _search_filter_destination(self, operator, value):

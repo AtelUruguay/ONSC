@@ -49,7 +49,7 @@ class ONSCActionsCommonData(models.AbstractModel):
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False, tracking=True)
     additional_information = fields.Text(string='Información adicional', copy=False)
 
-    is_error_synchronization = fields.Boolean(copy=False)
+    is_error_synchronization = fields.Boolean(string="Error en la sincronización (interno)", copy=False)
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
     @api.depends('state')
