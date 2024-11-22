@@ -390,7 +390,7 @@
                                     <field name="cv_address_nro_door"/>
                                     <field name="cv_address_is_cv_bis"/>
                                     <field name="cv_address_apto"/>
-                                    <field name="cv_address_zip" string="C.P"/>
+                                    <field name="cv_address_zip" string="C.P" size="6"/>
                                 </group>
                                 <group>
                                     <field name="cv_address_place"/>
