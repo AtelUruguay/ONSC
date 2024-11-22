@@ -36,7 +36,6 @@
                             <field name="name"/>
                             <field name="code"/>
                             <field name="phone"/>
-                            <field name="ofloat" widget="float_time"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group/>

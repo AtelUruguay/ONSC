@@ -125,7 +125,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     partner_id = fields.Many2one('res.partner', string='CI', copy=False)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
-    employee_id = fields.Many2one('hr.employee', 'Empleados', compute='_compute_employee_id', store=True)
+    employee_id = fields.Many2one('hr.employee', 'Funcionario', compute='_compute_employee_id', store=True)
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], string=u'Sexo', copy=False)
     # ORIGIN
@@ -146,7 +146,7 @@ class ONSCLegajoAltaCS(models.Model):
     program_origin = fields.Char(string='Programa (Origen)', related='program_project_origin_id.programaDescripcion')
     project_origin = fields.Char(string='Proyecto (Origen)', related='program_project_origin_id.proyectoDescripcion')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen (Origen)', related='contract_id.regime_id')
-    is_regime_manager = fields.Boolean(compute='_compute_is_regime_manager', store=True)
+    is_regime_manager = fields.Boolean(string="¿Régimen tiene la marca 'Responsable UO'?", compute='_compute_is_regime_manager', store=True)
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
