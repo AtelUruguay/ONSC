@@ -11,7 +11,6 @@ class ONSCLegajoEmergency(models.Model):
     name = fields.Char("Nombre de la emergencia", required=True)
     phone = fields.Char(u"Teléfono")
     active = fields.Boolean('Activo', default=True)
-    ofloat = fields.Float('Orden', default=0)
 
     @api.model
     def create(self, values):

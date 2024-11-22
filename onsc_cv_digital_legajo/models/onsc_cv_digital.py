@@ -99,7 +99,7 @@ class ONSCCVDigital(models.Model):
         res = super().prefix_by_phones
         return res + [('prefix_emergency_phone_id', 'emergency_service_telephone')]
 
-    employee_id = fields.Many2one("hr.employee", string="Empleado", compute='_compute_employee_id', store=True)
+    employee_id = fields.Many2one("hr.employee", string="Funcionario", compute='_compute_employee_id', store=True)
     is_docket = fields.Boolean(string="Tiene legajo")
     is_docket_active = fields.Boolean(string="Tiene legajo activo", compute='_compute_is_docket_active', store=True)
     gender_public_visualization_date = fields.Date(string="Fecha información visualización pública de género",

@@ -42,3 +42,8 @@ msgstr "Funcionarios"
 #: model_terms:ir.ui.view,arch_db:hr_contract.hr_contract_view_search
 msgid "Status"
 msgstr "Estado (interno)"
+
+#. module: hr_employee
+#: model:ir.model.fields,field_description:hr_employee.field_hr_employee__department_id
+msgid "Department"
+msgstr "Unidad organizativa"

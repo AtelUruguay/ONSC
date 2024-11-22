@@ -194,9 +194,9 @@ class ONSCLegajoAltaVL(models.Model):
     juramento_bandera_date = fields.Date(
         string='Fecha de Juramento de fidelidad a la Bandera nacional', history=True)
     juramento_bandera_presentacion_date = fields.Date(
-        string='Fecha de presentación de documento digitalizado', history=True)
-    juramento_bandera_file = fields.Binary("Documento digitalizado", history=True)
-    juramento_bandera_filename = fields.Char('Nombre del Documento digitalizado')
+        string='Fecha de presentación de documento digitalizado(Juramento a la bandera)', history=True)
+    juramento_bandera_file = fields.Binary("Documento digitalizado(Juramento a la bandera)", history=True)
+    juramento_bandera_filename = fields.Char('Nombre del Documento digitalizado(Juramento a la bandera)')
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')

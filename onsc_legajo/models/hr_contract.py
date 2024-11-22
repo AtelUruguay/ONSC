@@ -13,6 +13,11 @@ _CUSTOM_ORDER = {
     'end': 2
 }
 
+FIELDS_TO_EXLUDE = [
+    'norm_code_discharge_id',
+    'reason_discharge'
+]
+
 
 class HrContract(models.Model):
     _name = 'hr.contract'
@@ -20,6 +25,7 @@ class HrContract(models.Model):
     _inherit = ['hr.contract', 'model.history']
     _history_model = 'hr.contract.model.history'
     _history_columns = ['date_start', 'date_end']
+    _fields_to_exclude_insearch = FIELDS_TO_EXLUDE
 
     def init(self):
         self._cr.execute("""CREATE INDEX IF NOT EXISTS hr_contract_employee_id ON hr_contract (employee_id)""")

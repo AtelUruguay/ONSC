@@ -27,7 +27,7 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.cv_help_reference", readonly=False)
 
     is_rve_integrated = fields.Boolean(related="company_id.is_rve_integrated", readonly=False)
-    rve_wsdl = fields.Char(related="company_id.rve_wsdl", readonly=False)
+    rve_wsdl = fields.Char(string='URL del WSDL(RVE)', related="company_id.rve_wsdl", readonly=False)
 
     call_server_json_url = fields.Char(related="company_id.call_server_json_url", readonly=False)
     cv_zip_url = fields.Char(related="company_id.cv_zip_url", readonly=False)

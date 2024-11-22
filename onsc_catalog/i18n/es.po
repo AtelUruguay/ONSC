@@ -712,3 +712,13 @@ msgstr "Código"
 #: model:ir.model.fields,field_description:operating_unit.field_operating_unit__name
 msgid "Name"
 msgstr "Nombre"
+
+#. module: operating_unit
+#: model:ir.model.fields,field_description:operating_unit.field_operating_unit__user_ids
+msgid "Users Allowed"
+msgstr "Usuarios permitidos"
+
+#. module: hr
+#: model:ir.model.fields,field_description:hr.field_hr_department__parent_path
+msgid "Parent Path"
+msgstr "Path del parent"

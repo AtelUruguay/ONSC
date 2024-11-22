@@ -120,8 +120,8 @@ class ONSCLegajoCambioUO(models.Model):
                                               compute='_compute_should_disable_form_edit')
     full_name = fields.Char('Nombre', compute='_compute_full_name')
     contract_id = fields.Many2one('hr.contract', 'Contrato', required=True, copy=False)
-    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
-    is_regime_manager = fields.Boolean(compute='_compute_is_regime_manager', store=True)
+    contract_id_domain = fields.Char(string="Dominio Contrato (interno)", compute='_compute_contract_id_domain')
+    is_regime_manager = fields.Boolean(string="¿Régimen tiene la marca 'Responsable UO'?", compute='_compute_is_regime_manager', store=True)
     show_contract = fields.Boolean('Mostrar contrato', compute='_compute_contract_id_domain')
 
     @api.depends('employee_id')

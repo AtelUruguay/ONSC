@@ -18,8 +18,8 @@ class ONSCCVAbstractNameUpper(models.AbstractModel):
     _name = 'onsc.cv.abstract.name.upper'
 
     # Field name must be inherited by all new models. Its here for clear code
-    name = fields.Char()
-    name_upper = fields.Char(compute='_compute_name_upper', store=True)
+    name = fields.Char(string="Nombre")
+    name_upper = fields.Char(string="Nombre(Mayúsculas)", compute='_compute_name_upper', store=True)
 
     @api.constrains('name_upper')
     def _check_name_upper(self):

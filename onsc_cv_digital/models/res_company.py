@@ -34,7 +34,7 @@ class ResCompany(models.Model):
     cv_user_acceptance = fields.Text('Consentimiento al uso del CV-D')
 
     is_rve_integrated = fields.Boolean(u'Integración con RVE')
-    rve_wsdl = fields.Char('URL del WSDL')
+    rve_wsdl = fields.Char('URL del WSDL(RVE)')
 
     call_server_json_url = fields.Char(string="JSON Url")
     cv_zip_url = fields.Char(string="ZIP Directorio")
