@@ -620,6 +620,11 @@ class ONSCCVDigital(models.Model):
     def onchange_image_1920(self):
         self.photo_documentary_validation_state = 'to_validate'
 
+    @api.onchange('cv_address_zip')
+    def onchange_cv_address_zip(self):
+        if self.cv_address_zip and not (self.cv_address_zip.isnumeric()):
+            self.cv_address_zip = ''.join(filter(str.isdigit, self.cv_address_zip))
+
     def button_unlink(self):
         self.unlink()
         return self._action_open_user_cv()
