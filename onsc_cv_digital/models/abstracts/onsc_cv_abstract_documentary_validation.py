@@ -244,10 +244,22 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         if not self._fields.get('cv_digital_id', False) or len(self._get_validation_config()) == 0:
             return True
         for record in self:
-            if record.documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
+            _is_validated = record.documentary_validation_state == 'validated'
+            _base_condition = _is_validated and record._check_todisable_dynamic_fields()
+            if _base_condition or not record._can_delete_record_if_was_validated():
                 raise ValidationError(
                     _(u"No es posible eliminar el registro porque está en estado de validación documental: 'Validado' "
                       u"y tiene o tuvo vínculo con el estado"))
+        return True
+
+    def _can_delete_record_if_was_validated(self):
+        """
+        Determines if a record can be deleted if it was validated.
+        It was created to be used in inheritance of the model.
+
+        Returns:
+            bool: Always returns True, indicating that the record can be deleted if it was validated.
+        """
         return True
 
     def _check_todisable_dynamic_fields(self):

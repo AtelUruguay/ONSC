@@ -35,7 +35,7 @@ class ResPartner(models.Model):
         if self.env.company.is_dnic_integrated:
             self = self.filtered(lambda x: x.is_cv_uruguay)
             if self:
-                # Preservamos desde este punto ppor si falla el servicio
+                # Preservamos desde este punto por si falla el servicio
                 with self._cr.savepoint():
                     try:
                         client_obj = dnic_client.DNICClient(self.env.company)
