@@ -489,6 +489,19 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         except Exception as e:
             raise ValidationError(
                 _('El archivo no es válido o no tiene el formato correcto. Detalle: %s') % tools.ustr(e))
+            
+    def _update_partner_info_if_needed(self, partner):
+        if not partner:
+            return False
+        is_dnic_info_complete = partner.cv_dnic_name_1 and partner.cv_dnic_lastname_1
+        if (not partner.cv_first_name or not partner.cv_last_name_1) and is_dnic_info_complete:
+            partner.write({
+                'cv_first_name': partner.cv_dnic_name_1,
+                'cv_second_name': partner.cv_dnic_name_2,
+                'cv_last_name_1': partner.cv_dnic_lastname_1,
+                'cv_last_name_2': partner.cv_dnic_lastname_2,
+            })
+        return True
 
     def action_process(self):
         if not self.line_ids:
@@ -518,8 +531,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     }
                     partner = Partner.suspend_security().create(data_partner)
                     partner.suspend_security().update_dnic_values()
-                if not partner.cv_first_name or not partner.cv_last_name_1:
-                    raise ValidationError(_('No se creo el contacto.No se pudo obtener el nombre y apellido del DNIC'))
+                self._update_partner_info_if_needed(partner)
                 line.suspend_security().write({'first_name': partner.cv_first_name,
                                                'second_name': partner.cv_second_name,
                                                'first_surname': partner.cv_last_name_1,
