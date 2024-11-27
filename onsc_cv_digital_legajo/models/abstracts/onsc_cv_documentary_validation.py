@@ -20,6 +20,31 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         return super(ONSCCVAbstractFileValidation,
                      self)._check_todisable_dynamic_fields() or self.cv_digital_id.is_docket
 
+    def _can_delete_record_if_was_validated(self):
+        """
+        Determines if a record can be deleted if it has been validated.
+
+        This method overrides the parent class method to add additional checks
+        specific to the `ONSCCVAbstractFileValidation` model. It checks if the
+        record is part of a digital docket and if it belongs to an employee's
+        legajo (employee file). If the record is found in the legajo, it cannot
+        be deleted.
+
+        Returns:
+            bool: True if the record can be deleted, False otherwise.
+        """
+        result = super(ONSCCVAbstractFileValidation, self)._can_delete_record_if_was_validated()
+        if self.cv_digital_id.is_docket and hasattr(self, '_legajo_model'):
+            LegajoModel = self.env[self._legajo_model].suspend_security()
+            employee = self.cv_digital_id.employee_id
+            is_in_legajo = LegajoModel.search_count([
+                ('employee_id', '=', employee.id),
+                ('origin_record_id', '=', self.id),
+            ])
+            if is_in_legajo:
+                return False
+        return result
+
     @property
     def widget_call_documentary_button(self):
         if self._context.get('is_legajo') and self._context.get('show_only_status'):
