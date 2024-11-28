@@ -320,6 +320,10 @@ class ONSCCVDigitalCall(models.Model):
 
     def test_json(self):
         self.send_notification_document_validators(self.call_number)
+        
+    
+    def test_generate(self):
+        self._generate_json(self.call_number)
 
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url
