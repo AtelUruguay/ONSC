@@ -908,7 +908,7 @@
                     <span t-field="object.dictation_mode"/>
                 </h4>
                 <h4 t-if="object.hours_total  and name_section!='CERTIFICADOS'">Carga horaria total (en horas):
-                    <span t-field="object.hours_total"/>
+                    <span t-esc="object.float_to_time_repr(object.hours_total)"/>
                 </h4>
                 <h4 t-if="object.knowledge_acquired_ids">Conocimientos adquiridos:
                     <t t-set="emp_count" t-value="0"/>
@@ -1055,7 +1055,7 @@
                     <span t-field="object.country_id.name"/>
                 </h4>
                 <h4 t-if="object.hours_total">Carga horaria total del evento (en horas):
-                    <span t-field="object.hours_total"/>
+                    <span t-esc="object.float_to_time_repr(object.hours_total)"/>
                 </h4>
                 <h4 t-if="object.roll_event_id">Rol en evento:
                     <span t-field="object.roll_event_id.name"/>

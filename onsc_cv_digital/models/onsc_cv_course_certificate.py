@@ -33,7 +33,7 @@ class ONSCCVCourseCertificate(models.Model):
     certificate_id_domain = fields.Char(compute='_compute_certificate_id_domain')
     dictation_mode = fields.Selection(MODES, 'Modalidad de dictado')
     induction_type = fields.Selection(INDUCTION_TYPES, 'Programa de inducción al Organismo', default="yes")
-    hours_total = fields.Integer('Carga horaria total (en horas)')
+    hours_total = fields.Float('Carga horaria total (en horas)')
     approbation_mode = fields.Selection(APPROBATION_MODES, string='Modalidad de aprobación')
     evaluation_str = fields.Char('Nota obtenida')
     is_numeric_evaluation = fields.Boolean(compute='_compute_is_numeric_evaluation')
@@ -236,7 +236,7 @@ class ONSCCVCourseCertificate(models.Model):
             "name",
             "dictation_mode",
             "induction_type",
-            "hours_total",
+            ('hours_total', lambda rec, field_name: rec.float_to_time_repr(rec.hours_total)),
             "approbation_mode",
             "evaluation_str",
             "evaluation_number",
@@ -261,6 +261,9 @@ class ONSCCVCourseCertificate(models.Model):
             "internal_course_name",
         ])
         return json_dict
+
+    def float_to_time_repr(self, value):
+        return self.env['time.window.mixin'].sudo().float_to_time_repr(value)
 
 
 class ONSCCVEducationAreaCourse(models.Model):
