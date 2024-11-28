@@ -72,6 +72,7 @@
                             <field name="dictation_mode"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="hours_total"
+                                   widget="float_time"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"
                                 required="context.get('is_call_documentary_validation', False) is False"/>
@@ -161,6 +162,7 @@
                             <field name="dictation_mode"
                                    attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
                             <field name="hours_total"
+                                   widget="float_time"
                                    attrs="{'invisible': [('record_type', '!=', 'course')]}"/>
                             <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"
                                 required="context.get('is_call_documentary_validation', False) is False"/>
@@ -236,7 +238,7 @@
                 <field name="subinstitution_id" optional="show"/>
                 <field name="dictation_mode" optional="hide"/>
                 <field name="induction_type" optional="hide" string="¿Es inducción?"/>
-                <field name="hours_total" optional="hide"/>
+                <field name="hours_total" widget="float_time" optional="hide"/>
                 <field name="approbation_mode" optional="hide"/>
                 <field name="evaluation_str" optional="hide"/>
                 <field name="evaluation_max_str" optional="hide"/>

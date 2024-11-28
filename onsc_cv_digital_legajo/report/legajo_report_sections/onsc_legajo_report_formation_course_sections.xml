@@ -166,7 +166,7 @@
                 <li style="list-style:none;" t-if="object.evaluation_max_number">Representación numérica de nota máxima posible: <span t-field="object.evaluation_max_number"/></li>
                 <li style="list-style:none;" t-if="object.induction_type and object.course_type ">Programa de inducción al Organismo: <span t-field="object.induction_type"/></li>
                 <li style="list-style:none;" t-if="object.dictation_mode">Modalidad de dictado: <span t-field="object.dictation_mode"/></li>
-                <li style="list-style:none;" t-if="object.hours_total">Carga horaria total (en horas): <span t-field="object.hours_total"/></li>
+                <li style="list-style:none;" t-if="object.hours_total">Carga horaria total (en horas): <span t-esc="object.float_to_time_repr(object.hours_total)"/></li>
                 <li style="list-style:none;" t-if="object.knowledge_acquired_ids">Conocimientos adquiridos:
                     <t t-set="emp_count" t-value="0"/>
                     <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
