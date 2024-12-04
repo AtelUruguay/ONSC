@@ -27,7 +27,8 @@ ONSC - Base
         'disable_userprofile_menuitems',
         'disable_mail_message_options',
         'web_dialog_confirm_disable_button',
-        'web_prevent_close_wizard'
+        'web_prevent_close_wizard',
+        'custom_mail_composer_cc_bcc'
     ],
     'data': [
         'security/onsc_base_security.xml',

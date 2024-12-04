@@ -248,8 +248,8 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             _base_condition = _is_validated and record._check_todisable_dynamic_fields()
             if _base_condition or not record._can_delete_record_if_was_validated():
                 raise ValidationError(
-                    _(u"No es posible eliminar el registro porque está en estado de validación documental: 'Validado' "
-                      u"y tiene o tuvo vínculo con el estado"))
+                    _(u"No es posible eliminar el registro porque es parte de su legajo digital. "
+                      u"Puede modificarlo y de hacerlo quedará pendiente de validación."))
         return True
 
     def _can_delete_record_if_was_validated(self):
