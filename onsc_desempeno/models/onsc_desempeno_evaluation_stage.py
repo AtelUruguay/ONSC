@@ -198,11 +198,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
             if record.start_date > record.end_date_environment:
                 raise ValidationError(_(u"La Fecha fin def. entorno debe ser mayor o igual a la  Fecha inicio"))
 
-    @api.onchange('general_cycle_id')
-    def onchange_general_cycle_id(self):
-        if self.general_cycle_id:
-            self.end_date = self.general_cycle_id.end_date_max
-
     def toggle_active(self):
         self._check_toggle_active()
         return super(ONSCDesempenoEvaluationStage, self.with_context(no_check_write=True)).toggle_active()
