@@ -24,7 +24,7 @@
         <field name="name">onsc.desempeno.evaluation.form</field>
         <field name="model">onsc.desempeno.evaluation</field>
         <field name="arch" type="xml">
-            <form string="Evaluación de Desempeño" create="0" delete="0" duplicate="0">
+            <form string="Evaluación de Desempeño" create="0" delete="0" duplicate="0" edit="0">
                 <header>
                     <field name="collaborators" invisible="1"/>
                     <field name="evaluation_form_edit" invisible="1"/>
@@ -347,6 +347,11 @@
                         </page>
                     </notebook>
                     <field name="is_edit_general_comments" invisible="1"/>
+                    <button name="%(onsc_desempeno.action_onsc_desempeno_general_note)d" 
+                                string="Adicionar Comentarios Generales"
+                                context="{'default_evaluation_id': active_id}"
+                                attrs="{'invisible': ['|',('evaluation_type','in', ['environment_definition']),('is_edit_general_comments', '=', True)]}"
+                                type="action" class="btn-primary" icon="fa-comment"/>
                     <group name="general_comments" string="Comentarios Generales"
                            attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
                         <field name="general_comments" nolabel="1" placeholder="Comentarios Generales"/>
