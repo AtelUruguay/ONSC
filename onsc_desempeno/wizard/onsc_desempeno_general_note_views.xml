@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View onsc.desempeno.general.note form -->
+    <record id="view_onsc_desempeno_general_note_form" model="ir.ui.view">
+        <field name="name">view.onsc.desempeno.general.note.form</field>
+        <field name="model">onsc.desempeno.general.note</field>
+        <field name="arch" type="xml">
+            <form string="Comentarios generales">
+                <group>
+                    <field name="message"/>
+                    
+                </group>
+                <footer>
+                    <button string="Confirmar" name="action_confirm" type="object" class="oe_highlight" data-hotkey="s"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <!-- Action onsc.desempeno.general.note -->
+    <record id="action_onsc_desempeno_general_note" model="ir.actions.act_window">
+        <field name="name">Comentarios generales</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.desempeno.general.note</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

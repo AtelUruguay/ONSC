@@ -40,6 +40,7 @@
                              context="{'default_stage_id': active_id}"
                             attrs="{'invisible': ['|',('show_buttons', '=', False),('closed_stage', '=', True)]}"/>
                     <button name="action_close_stage" class="btn btn-primary" type="object" string="Cerrar etapa"
+                            confirm="¿Está seguro que desea cerrar la Etapa de evaluación 360° para esta UE?"
                             attrs="{'invisible': ['|',('show_buttons', '=', False),('closed_stage', '=', True)]}"/>
 
                 </header>

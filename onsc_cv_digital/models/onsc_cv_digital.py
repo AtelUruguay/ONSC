@@ -542,7 +542,7 @@ class ONSCCVDigital(models.Model):
             return cv_warning(_("Manzana no puden contener letras"))
         if self.cv_address_sandlot and not self.cv_address_sandlot.isdigit():
             self.cv_address_sandlot = ''.join(filter(str.isdigit, self.cv_address_sandlot))
-            return cv_warning(_("Solar no puden contener letras"))
+            return cv_warning(_("El Solar no puede contener letras"))
 
     @api.onchange('cv_address_location_id')
     def onchange_location_id(self):
@@ -624,6 +624,7 @@ class ONSCCVDigital(models.Model):
     def onchange_cv_address_zip(self):
         if self.cv_address_zip and not (self.cv_address_zip.isnumeric()):
             self.cv_address_zip = ''.join(filter(str.isdigit, self.cv_address_zip))
+            return cv_warning(_("El C.P no puede contener letras"))
 
     def button_unlink(self):
         self.unlink()
