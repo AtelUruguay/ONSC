@@ -34,7 +34,7 @@
                     <field name="is_button_reopen_evaluation_available" invisible="1"/>
                     <button type="object"
                             class="btn btn-primary"
-                            string="Comenzar Evaluación"
+                            string="Comenzar"
                             attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state_gap_deal', '!=', 'draft'),('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
                             name="button_start_evaluation"
                             invisible="context.get('readonly_evaluation', False) is True"
