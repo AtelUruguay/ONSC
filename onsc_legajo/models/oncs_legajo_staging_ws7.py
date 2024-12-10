@@ -379,7 +379,8 @@ class ONSCLegajoStagingWS7(models.Model):
             new_contract = self._get_contract_copy(
                 contract,
                 second_movement, new_contract_status,
-                state_square_id=state_square_id.id
+                state_square_id=state_square_id.id,
+                movement_description=operation_dict.get(record.mov)
             )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
@@ -422,7 +423,8 @@ class ONSCLegajoStagingWS7(models.Model):
             new_contract = self._get_contract_copy(
                 contract,
                 second_movement,
-                state_square_id=state_square_id.id
+                state_square_id=state_square_id.id,
+                movement_description=operation_dict.get(record.mov)
             )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
@@ -715,7 +717,14 @@ class ONSCLegajoStagingWS7(models.Model):
             return Contract.search_count(args)
         return Contract.search(args, limit=1)
 
-    def _get_contract_copy(self, contract, record, legajo_state='active', link_tocontract=False, state_square_id=False):
+    def _get_contract_copy(self, 
+            contract, 
+            record, 
+            legajo_state='active', 
+            link_tocontract=False, 
+            state_square_id=False,
+            movement_description=False
+        ):
         """
         Duplica el contrato aplicando los cambios de la operacion
         :param contract: Recordset de contrato
@@ -768,6 +777,8 @@ class ONSCLegajoStagingWS7(models.Model):
             vals['state_square_id'] = contract.state_square_id.id
         if link_tocontract:
             vals['cs_contract_id'] = contract.id
+        if movement_description:
+            vals['reason_description'] = 'Alta por %s' % (movement_description)
         new_contract = self.env['hr.contract'].suspend_security().create(vals)
         return new_contract
 
