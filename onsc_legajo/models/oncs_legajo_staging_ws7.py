@@ -420,11 +420,20 @@ class ONSCLegajoStagingWS7(models.Model):
                     'cs_contract_id': new_contract.id
                 })
         else:
+            if record.mov == 'ASCENSO':
+                movement_description = self.env.user.company_id.ws7_new_ascenso_reason_description
+            elif record.mov == 'TRANSFORMA':
+                movement_description = self.env.user.company_id.ws7_new_transforma_reason_description
+            elif record.mov == 'REESTRUCTURA':
+                movement_description = self.env.user.company_id.ws7_new_reestructura_reason_description
+            else:
+                movement_description = False
+            
             new_contract = self._get_contract_copy(
                 contract,
                 second_movement,
                 state_square_id=state_square_id.id,
-                movement_description=operation_dict.get(record.mov)
+                movement_description=movement_description
             )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
@@ -778,7 +787,7 @@ class ONSCLegajoStagingWS7(models.Model):
         if link_tocontract:
             vals['cs_contract_id'] = contract.id
         if movement_description:
-            vals['reason_description'] = 'Alta por %s' % (movement_description)
+            vals['reason_description'] = movement_description
         new_contract = self.env['hr.contract'].suspend_security().create(vals)
         return new_contract
 
