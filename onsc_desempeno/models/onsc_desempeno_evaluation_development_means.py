@@ -17,6 +17,8 @@ STATE = [
     ('canceled', 'Cancelado')
 ]
 
+HTML_HELP = """<a class="btn" style="padding-top:inherit!important;" target="_blank" title="%s"><i class="fa fa-question-circle-o" role="img" aria-label="Info"/></a>"""
+
 
 class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.development.competency'
@@ -131,6 +133,14 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
         compute='_compute_last_tracing_plan_id',
         store=True
     )
+
+    means_tooltip = fields.Html(compute='_get_help')
+
+    @api.depends('means_id')
+    def _get_help(self):
+        for rec in self:
+            _html2construct = HTML_HELP % (rec.suspend_security().means_id.description or '')
+            rec.means_tooltip = _html2construct
 
     @api.depends('competency_id')
     def _compute_mean_form_edit(self):
