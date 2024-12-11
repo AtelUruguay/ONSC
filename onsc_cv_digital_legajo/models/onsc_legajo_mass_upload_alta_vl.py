@@ -95,11 +95,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                               compute='_compute_should_disable_form_edit')
 
     alta_document_file = fields.Binary(
-        string='Archivo para cargar en Alta de Vínculo',
+        string='Documento adjunto',
         readonly=True,
         states={'draft': [('readonly', False)]}
     )
-    alta_document_filename = fields.Char(string="Nombre del Archivo para cargar en Alta de Vínculo")
+    alta_document_filename = fields.Char(string="Nombre del Documento adjunto")
     alta_document_description = fields.Char(string="Descripción del adjunto")
     alta_document_type_id = fields.Many2one('onsc.legajo.document.type', 'Tipo de documento')
 
