@@ -9,7 +9,6 @@
                 <field name="general_cycle_id"/>
                 <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
-                <field name="evaluation_end_date"/>
             </tree>
         </field>
     </record>
@@ -45,7 +44,6 @@
                             <field name="evaluation_type"
                                    invisible="context.get('show_evaluation_type', False) is False"/>
                             <field name="evaluation_start_date"/>
-                            <field name="evaluation_end_date"/>
                             <field name="environment_definition_end_date"/>
                             <field name="is_gap_deal_not_generated"
                                    attrs="{'invisible': [('is_gap_deal_not_generated', '=', False)]}"/>

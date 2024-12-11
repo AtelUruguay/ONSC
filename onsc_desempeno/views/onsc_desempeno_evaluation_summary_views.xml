@@ -12,7 +12,6 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
-                <field name="evaluation_end_date"/>
                 <field name="state_summary"/>
                 <field name="evaluation_id" optional="hide"/>
                 <button name="button_open_evaluation" context="{'evaluation_id': evaluation_id}"  attrs="{'invisible':[('show_button_evaluation', '=',False)]}"

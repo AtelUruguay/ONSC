@@ -9,7 +9,6 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
-                <field name="evaluation_end_date"/>
                 <field name="state" invisible="context.get('tracing_plan', False) is False"/>
                 <field name="state_gap_deal" invisible="context.get('tracing_plan', False) is True"/>
             </tree>
@@ -179,7 +178,6 @@
 
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
-                            <field name="evaluation_end_date_max"/>
                         </group>
                         <group>
                             <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
