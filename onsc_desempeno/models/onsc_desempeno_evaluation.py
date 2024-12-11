@@ -383,7 +383,7 @@ class ONSCDesempenoEvaluation(models.Model):
         related='evaluation_stage_id.start_date',
         store=True)
     evaluation_end_date = fields.Date(
-        string='Fecha fin ciclo evaluación',
+        string='Fecha fin ciclo evaluación (Ciclo 360)',
         related='evaluation_stage_id.end_date',
         store=True)
     environment_definition_end_date = fields.Date(
@@ -391,7 +391,7 @@ class ONSCDesempenoEvaluation(models.Model):
         related='evaluation_stage_id.end_date_environment',
         store=True)
     evaluation_end_date_max = fields.Date(
-        string='Fecha fin ciclo evaluación',
+        string='Fecha fin ciclo evaluación (Ciclo General)',
         related='general_cycle_id.end_date_max',
         store=True)
     evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',

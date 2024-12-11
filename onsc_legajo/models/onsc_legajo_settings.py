@@ -30,6 +30,25 @@ class ONSCCVSettings(models.TransientModel):
         readonly=False,
         related_sudo=True
     )
+
+    ws7_new_ascenso_reason_description = fields.Char(
+        string='Descripción de Alta por Ascenso',
+        related="company_id.ws7_new_ascenso_reason_description",
+        readonly=False,
+        related_sudo=True
+    )
+    ws7_new_transforma_reason_description = fields.Char(
+        string='Descripción de Altal por Transformación',
+        related="company_id.ws7_new_transforma_reason_description",
+        readonly=False,
+        related_sudo=True
+    )
+    ws7_new_reestructura_reason_description = fields.Char(
+        string='Descripción de Altal por Reestructura',
+        related="company_id.ws7_new_reestructura_reason_description",
+        readonly=False,
+        related_sudo=True
+    )
     ws7_date_from = fields.Datetime(
         string='Fecha/hora desde',
         related="company_id.ws7_date_from",

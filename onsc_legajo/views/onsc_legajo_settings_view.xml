@@ -21,6 +21,21 @@
                             <div class="col-12 col-lg-6 o_setting_box" id="legajo_help_settings">
                                 <div class="o_setting_left_pane"/>
                                 <div class="o_setting_right_pane">
+                                    <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Descripciones de Alta</h6>
+                                    <div class="content-group">
+                                        <div class="row">
+                                            <label for="ws7_new_ascenso_reason_description" string="Ascenso" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_new_ascenso_reason_description"/>
+                                        </div>
+                                        <div class="row">
+                                            <label for="ws7_new_transforma_reason_description" string="Transforma" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_new_transforma_reason_description"/>
+                                        </div>
+                                        <div class="row">
+                                            <label for="ws7_new_reestructura_reason_description" string="Reestructura" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_new_reestructura_reason_description"/>
+                                        </div>
+                                    </div>
                                     <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Causales de egreso</h6>
                                     <div class="content-group">
                                         <div class="row">

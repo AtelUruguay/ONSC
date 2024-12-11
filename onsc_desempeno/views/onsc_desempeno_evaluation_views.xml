@@ -10,8 +10,6 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
-                <field name="evaluation_end_date" invisible="context.get('gap_deal', False) is True"/>
-                <field name="evaluation_end_date_max" invisible="context.get('gap_deal', False) is False"/>
                 <field name="environment_definition_end_date"
                        invisible="context.get('environment_definition', False) is False"/>
                 <field name="state" invisible="context.get('gap_deal', False) is True"/>
@@ -194,10 +192,6 @@
                                    attrs="{'invisible': [('reason_cancel', '=', False)]}"/>
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
-                            <field name="evaluation_end_date"
-                                   attrs="{'invisible': [('evaluation_type', 'in',['gap_deal'])]}"/>
-                            <field name="evaluation_end_date_max"
-                                   attrs="{'invisible': [('evaluation_type', 'not in',['gap_deal'])]}"/>
                             <field name="environment_definition_end_date"
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
                             <field name="locked" string="Formulario bloqueado" readonly="1"

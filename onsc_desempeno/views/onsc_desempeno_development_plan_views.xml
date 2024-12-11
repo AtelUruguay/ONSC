@@ -9,7 +9,6 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
-                <field name="evaluation_end_date"/>
                 <field name="state" invisible="context.get('tracing_plan', False) is False"/>
                 <field name="state_gap_deal" invisible="context.get('tracing_plan', False) is True"/>
             </tree>
@@ -179,7 +178,6 @@
 
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
-                            <field name="evaluation_end_date_max"/>
                         </group>
                         <group>
                             <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
@@ -243,8 +241,13 @@
                 <sheet>
                     <group>
                         <group colspan="4">
-                            <field name="means_id"
-                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <label for="means_id"/>
+                            <div>
+                                <field style="width:95%" name="means_id" widget="many2one_tooltip" class="float-left" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <div class="float-left">
+                                    <field name="means_tooltip"/>  
+                                </div>
+                            </div>
                             <field name="agreed_activities"/>
                             <field name="detail_activities"/>
                             <field name="comments"/>
@@ -432,8 +435,13 @@
                                 <form string="Medios de desarrollo">
                                     <group>
                                         <group colspan="4">
-                                            <field name="means_id"
-                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                            <label for="means_id"/>
+                                            <div>
+                                                <field name="means_id" widget="many2one_tooltip" class="float-left" style="width:95%" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                                <div class="float-left">
+                                                  <field name="means_tooltip"/>  
+                                                </div>
+                                            </div>
                                             <field name="agreed_activities"/>
                                             <field name="detail_activities"/>
                                             <field name="comments"/>

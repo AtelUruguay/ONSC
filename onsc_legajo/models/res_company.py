@@ -18,6 +18,11 @@ class ResCompany(models.Model):
         "onsc.legajo.causes.discharge",
         string="Causal de egreso por Reestructura",
         ondelete='restrict')
+
+    ws7_new_ascenso_reason_description = fields.Char(string='Descripción de Alta por Ascenso') 
+    ws7_new_transforma_reason_description = fields.Char(string='Descripción de Altal por Transformación') 
+    ws7_new_reestructura_reason_description = fields.Char(string='Descripción de Altal por Reestructura') 
+
     ws7_date_from = fields.Datetime(
         string='Fecha/hora desde')
     ws7_latency_inseconds = fields.Integer(
