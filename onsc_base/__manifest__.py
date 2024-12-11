@@ -28,7 +28,8 @@ ONSC - Base
         'disable_mail_message_options',
         'web_dialog_confirm_disable_button',
         'web_prevent_close_wizard',
-        'custom_mail_composer_cc_bcc'
+        'custom_mail_composer_cc_bcc',
+        'web_disable_export_group'
     ],
     'data': [
         'security/onsc_base_security.xml',
