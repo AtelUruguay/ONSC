@@ -363,6 +363,15 @@ class ONSCLegajoStagingWS7(models.Model):
             ('legajo_state', '=', 'incoming_commission')], limit=1)
 
         state_square_id = self.env.ref('onsc_legajo.onsc_legajo_o')
+        
+        if record.mov == 'ASCENSO':
+            movement_description = self.env.user.company_id.ws7_new_ascenso_reason_description
+        elif record.mov in ['TRANSFORMA','TRANSFORMA_REDUE']:
+            movement_description = self.env.user.company_id.ws7_new_transforma_reason_description
+        elif record.mov == 'REESTRUCTURA':
+            movement_description = self.env.user.company_id.ws7_new_reestructura_reason_description
+        else:
+            movement_description = False
 
         if contract.legajo_state == 'outgoing_commission' and incoming_contract:
             # A (saliente): contract
@@ -380,7 +389,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 contract,
                 second_movement, new_contract_status,
                 state_square_id=state_square_id.id,
-                movement_description=operation_dict.get(record.mov)
+                movement_description=operation_dict.get(record.mov),
             )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
@@ -395,7 +404,7 @@ class ONSCLegajoStagingWS7(models.Model):
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
                 second_movement.fecha_vig + datetime.timedelta(days=-1),
                 legajo_state='baja',
-                eff_date=fields.Date.today()
+                eff_date=fields.Date.today(),
             )
 
             # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
@@ -420,15 +429,6 @@ class ONSCLegajoStagingWS7(models.Model):
                     'cs_contract_id': new_contract.id
                 })
         else:
-            if record.mov == 'ASCENSO':
-                movement_description = self.env.user.company_id.ws7_new_ascenso_reason_description
-            elif record.mov == 'TRANSFORMA':
-                movement_description = self.env.user.company_id.ws7_new_transforma_reason_description
-            elif record.mov == 'REESTRUCTURA':
-                movement_description = self.env.user.company_id.ws7_new_reestructura_reason_description
-            else:
-                movement_description = False
-            
             new_contract = self._get_contract_copy(
                 contract,
                 second_movement,
@@ -453,7 +453,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 )
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
-            elif record.mov == 'TRANSFORMA':
+            elif record.mov in ['TRANSFORMA', 'TRANSFORMA_REDUE']:
                 causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
             else:
                 causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
