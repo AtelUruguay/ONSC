@@ -342,10 +342,10 @@
                     </notebook>
                     <field name="is_edit_general_comments" invisible="1"/>
                     <button name="%(onsc_desempeno.action_onsc_desempeno_general_note)d" 
-                                string="Adicionar Comentarios Generales"
-                                context="{'default_evaluation_id': active_id}"
+                                string=""
+                                context="{'default_evaluation_id': active_id, 'default_message': general_comments}"
                                 attrs="{'invisible': ['|',('evaluation_type','in', ['environment_definition']),('is_edit_general_comments', '=', True)]}"
-                                type="action" class="btn-primary" icon="fa-comment"/>
+                                type="action" class="btn-primary" icon="fa-edit"/>
                     <group name="general_comments" string="Comentarios Generales"
                            attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
                         <field name="general_comments" nolabel="1" placeholder="Comentarios Generales"/>

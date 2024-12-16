@@ -426,6 +426,7 @@
                                    force_save="1">
                                 <tree nolabel="1" delete="0">
                                     <field name="show_buttons" invisible="1"/>
+                                    <field name="means_tooltip" string=" " style="width:5%"/>
                                     <field name="means_id"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="agreed_activities" optional="show"/>
@@ -456,6 +457,7 @@
                                    force_save="1">
                                 <tree nolabel="1" delete="0" create="0">
                                     <field name="show_buttons" invisible="1"/>
+                                    <field name="means_tooltip" string=" " style="width:5%"/>
                                     <field name="means_id"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="agreed_activities" optional="show"/>
