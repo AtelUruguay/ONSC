@@ -679,12 +679,13 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_is_edit_general_comments(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            _states = record.state not in ['canceled', 'in_process']
             if record.evaluation_type == 'gap_deal':
+                _states = record.state_gap_deal not in ['canceled', 'in_process']
                 _cond1 = _states or record.gap_deal_state != 'no_deal'
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             else:
+                _states = record.state not in ['canceled', 'in_process']
                 condition = _states or record.evaluator_id.id != user_employee_id or record.locked
             record.is_edit_general_comments = condition
 
