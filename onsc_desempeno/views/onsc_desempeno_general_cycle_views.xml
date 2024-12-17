@@ -39,6 +39,7 @@
                             <field name="start_date" required="1"  attrs="{'readonly': [('is_edit_start_date', '=', False)]}"/>
                             <field name="start_date_max" required="1" attrs="{'readonly': [('is_edit_start_date_max', '=', False)]}"/>
                             <field name="end_date_max" required="1" attrs="{'readonly': [('is_edit_end_date_max', '=', False)]}"/>
+                            <field name="date_limit_toextend_360"/>
                             <field name="end_date" required="1" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
                             <field name="is_pilot" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
                             <field name="active" invisible="1" />
@@ -49,7 +50,6 @@
                         </group>
                         <group/>
                     </group>
-
                 </sheet>
                  <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"/>

@@ -11,11 +11,15 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
     stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación', required=True)
     end_date = fields.Date(string=u'Fecha fin', required=True, tracking=True)
 
-    @api.constrains('end_date')
+    @api.constrains('end_date', 'stage_id')
     def _check_end_date(self):
         for record in self:
             if record.end_date < fields.Date.today():
                 raise ValidationError(_("La fecha fin debe ser mayor o igual a la fecha actual"))
+            rule1 = record.end_date and record.stage_id.general_cycle_id.date_limit_toextend_360
+            if rule1 and record.end_date > record.stage_id.general_cycle_id.date_limit_toextend_360:
+                raise ValidationError(_("La fecha fin debe ser menor o igual a la "
+                                        "Fecha límite para la extensión de Etapa 360°"))
 
     def action_confirm(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
