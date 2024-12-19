@@ -123,7 +123,8 @@ class ONSCLegajoVoteRegistry(models.Model):
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
-        self.electoral_act_ids = [(5,)]
+        if self._context.get('is_from_menu', False):
+            self.electoral_act_ids = [(5,)]
 
     def _search_any_electoral_act_active(self, operator, operand):
         ElectoralAct = self.env['onsc.legajo.electoral.act'].suspend_security().with_context(active_test=False)

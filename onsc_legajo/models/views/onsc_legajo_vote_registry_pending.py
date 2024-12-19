@@ -29,7 +29,7 @@ class ONSCLegajoVoteRegistryPendingConsult(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoVoteRegistryPendingConsult, self).fields_get(allfields, attributes)
-        hide = ['legajo_id', 'conc_valid_electoral_act_id']
+        hide = ['legajo_id']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
@@ -40,27 +40,24 @@ class ONSCLegajoVoteRegistryPendingConsult(models.Model):
     nro_doc = fields.Char(string='CI')
     legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
     employee_id = fields.Many2one('hr.employee', string="Funcionario")
-    conc_valid_electoral_act_id = fields.Char(string='Actos electorales (ids concatenados)', )
-    conc_valid_electoral_act_name = fields.Char(string='Actos electorales')
+    # conc_valid_electoral_act_id = fields.Char(string='Actos electorales (ids concatenados)', )
+    # conc_valid_electoral_act_name = fields.Char(string='Actos electorales')
 
-    electoral_act_ids = fields.Many2many(
+    # electoral_act_ids = fields.Many2many(
+    #     comodel_name='onsc.legajo.electoral.act',
+    #     string='Elecciones pendientes',
+    #     compute='_compute_electoral_act_ids'
+    # )
+    electoral_act_id = fields.Many2one(
         comodel_name='onsc.legajo.electoral.act',
-        string='Elecciones pendientes',
-        compute='_compute_electoral_act_ids'
+        string='Elección pendiente',
     )
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
 SELECT
-row_number() OVER(ORDER BY employee_id, conc_valid_electoral_act_id) AS id, *
-FROM
-(SELECT
-    nro_doc,
-    employee_id,
-    legajo_id,
-    STRING_AGG(CAST(electoral_act_id AS VARCHAR), ',') AS conc_valid_electoral_act_id,
-    STRING_AGG(electoral_act_name, ', ') AS conc_valid_electoral_act_name
+    row_number() OVER(ORDER BY employee_id, electoral_act_id) AS id, *
 FROM
 (SELECT nro_doc, employee_id,legajo_id, electoral_act_id, electoral_act_name FROM
 (
@@ -87,24 +84,24 @@ WHERE
             onsc_legajo_vote_registry
         ON
             onsc_legajo_vote_registry_electoral_act.onsc_legajo_vote_registry_id = onsc_legajo_vote_registry.id
-        ) ORDER BY employee_id, electoral_act_id) main_query
-GROUP BY nro_doc, employee_id, legajo_id ORDER BY conc_valid_electoral_act_id) AS full_querry
+        ) ORDER BY employee_id, electoral_act_id)
 )''' % (self._table,))
 
-    def _compute_electoral_act_ids(self):
-        ElectoralAct = self.env['onsc.legajo.electoral.act'].sudo()
-        for rec in self:
-            valid_ids = [int(x) for x in rec.conc_valid_electoral_act_id.split(",")]
-            rec.electoral_act_ids = ElectoralAct.search([('id', 'in', valid_ids)])
+    # def _compute_electoral_act_ids(self):
+    #     ElectoralAct = self.env['onsc.legajo.electoral.act'].sudo()
+    #     for rec in self:
+    #         valid_ids = [int(x) for x in rec.conc_valid_electoral_act_id.split(",")]
+    #         rec.electoral_act_ids = ElectoralAct.search([('id', 'in', valid_ids)])
 
     def button_create_registry(self):
         action = self.env.ref('onsc_legajo.onsc_legajo_vote_registry_wizard_action').suspend_security()
         _context = action._context.copy()
 
-        valid_ids = [int(x) for x in self.conc_valid_electoral_act_id.split(",")]
+        # valid_ids = [int(x) for x in self.conc_valid_electoral_act_id.split(",")]
         _context.update({
             'default_employee_id': self.employee_id.id,
-            'default_default_electoral_act_ids_domain': json.dumps([('id', 'in', valid_ids)])
+            'default_electoral_act_ids': [(6, 0, [self.electoral_act_id.id])],
+            'default_default_electoral_act_ids_domain': json.dumps([('id', 'in', [self.electoral_act_id.id])])
         })
         action.context = _context
         return action.read()[0]
