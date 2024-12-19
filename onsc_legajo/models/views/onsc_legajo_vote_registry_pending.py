@@ -84,7 +84,7 @@ WHERE
             onsc_legajo_vote_registry
         ON
             onsc_legajo_vote_registry_electoral_act.onsc_legajo_vote_registry_id = onsc_legajo_vote_registry.id
-        ) ORDER BY employee_id, electoral_act_id)
+        ) ORDER BY employee_id, electoral_act_id) as main_query
 )''' % (self._table,))
 
     # def _compute_electoral_act_ids(self):
