@@ -8,7 +8,7 @@
             <tree string="Ingresos pendientes">
                 <field name="nro_doc" string="CI"/>
                 <field name="employee_id" string="Funcionario"/>
-                <field name="conc_valid_electoral_act_name"/>
+                <field name="electoral_act_id"/>
                 <button name="button_create_registry" type="object" string="Ingresar" icon="fa-plus-square"/>
                 <button name="button_view_registry" type="object" string="Detalles" icon="fa-folder-open"/>
             </tree>
@@ -28,17 +28,9 @@
                             <field name="employee_id" string="Funcionario"
                                 readonly="1"
                                 options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                            <field name="electoral_act_id" readonly="1"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Elecciones pendientes">
-                            <field name="electoral_act_ids" nolabel="1" readonly="1" style="pointer-events:none;">
-                                <tree editable="top">
-                                    <field name="name"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
                     <footer/>
                 </sheet>
             </form>
@@ -52,7 +44,10 @@
             <search string="Ingresos pendientes">
                 <field name="nro_doc" string="CI"/>
                 <field name="legajo_id" string="Funcionario"/>
+                <field name="electoral_act_id" string="Funcionario"/>
                 <group string="Agrupar por">
+                    <filter name="group_legajo_id" string="Funcionario" context="{'group_by': 'legajo_id'}"/>
+                    <filter name="group_electoral_act_id" string="Acto electoral" context="{'group_by': 'electoral_act_id'}"/>
                 </group>
             </search>
         </field>

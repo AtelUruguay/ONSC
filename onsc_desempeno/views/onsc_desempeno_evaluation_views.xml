@@ -341,13 +341,14 @@
                         </page>
                     </notebook>
                     <field name="is_edit_general_comments" invisible="1"/>
-                    <button name="%(onsc_desempeno.action_onsc_desempeno_general_note)d" 
+                    <group name="general_comments" string="Comentarios Generales"
+                           attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
+                        <button name="%(onsc_desempeno.action_onsc_desempeno_general_note)d" 
                                 string=""
                                 context="{'default_evaluation_id': active_id, 'default_message': general_comments}"
                                 attrs="{'invisible': ['|',('evaluation_type','in', ['environment_definition']),('is_edit_general_comments', '=', True)]}"
                                 type="action" class="btn-primary" icon="fa-edit"/>
-                    <group name="general_comments" string="Comentarios Generales"
-                           attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
+                        <newline/>
                         <field name="general_comments" nolabel="1" placeholder="Comentarios Generales"/>
                     </group>
                 </sheet>

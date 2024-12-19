@@ -62,6 +62,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
         string="Editar datos de origen",
         compute='_compute_is_edit_end_date')
     is_pilot = fields.Boolean(string="Piloto 2024")
+    date_limit_toextend_360 = fields.Date(string='Fecha límite para la extensión de Etapa 360°')
+
 
     @api.depends('start_date')
     def _compute_is_edit_start_date(self):
@@ -88,6 +90,16 @@ class ONSCDesempenoGeneralCycle(models.Model):
         for record in self:
             if record.start_date < fields.Date.today():
                 raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
+
+    @api.constrains('date_limit_toextend_360', 'start_date_max', 'end_date_max')
+    def _check_date_limit_toextend_360(self):
+        for record in self:
+            if record.date_limit_toextend_360 and record.start_date_max and record.end_date_max:
+                rule1 = record.date_limit_toextend_360 >= record.end_date_max
+                rule2 = record.date_limit_toextend_360 <= record.start_date_max
+                if rule1 or rule2:
+                    raise ValidationError(_("La fecha límite para la extensión de la Etapa 360°"
+                                            "debe estar entre las fechas de inicio y fin máximas"))
 
     @api.constrains('end_date')
     def _check_end_date_today(self):
