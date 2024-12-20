@@ -248,7 +248,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             _base_condition = _is_validated and record._check_todisable_dynamic_fields()
             if _base_condition or not record._can_delete_record_if_was_validated():
                 raise ValidationError(
-                    _(u"No es posible eliminar el registro porque es parte de su legajo digital. "
+                    _(u"No es posible eliminar el registro porque es parte de la información de su vínculo/legajo. "
                       u"Puede modificarlo y de hacerlo quedará pendiente de validación."))
         return True
 

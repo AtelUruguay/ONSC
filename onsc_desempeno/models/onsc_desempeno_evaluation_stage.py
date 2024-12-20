@@ -198,6 +198,14 @@ class ONSCDesempenoEvaluationStage(models.Model):
             if record.start_date > record.end_date_environment:
                 raise ValidationError(_(u"La Fecha fin def. entorno debe ser mayor o igual a la  Fecha inicio"))
 
+    @api.constrains('end_date')
+    def _check_end_date_extend_360(self):
+        for record in self:
+            rule1 = record.end_date and record.general_cycle_id.date_limit_toextend_360
+            if rule1 and record.end_date > record.general_cycle_id.date_limit_toextend_360:
+                raise ValidationError(_("La fecha fin debe ser menor o igual a la "
+                                        "Fecha límite para la extensión de Etapa 360°"))
+
     def toggle_active(self):
         self._check_toggle_active()
         return super(ONSCDesempenoEvaluationStage, self.with_context(no_check_write=True)).toggle_active()
