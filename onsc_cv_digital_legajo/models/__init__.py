@@ -17,3 +17,4 @@ from . import oncs_legajo_staging_ws7
 from . import legajo_info
 from . import onsc_legajo_report_config
 from . import onsc_cv_settings
+from . import onsc_cv_minimal
