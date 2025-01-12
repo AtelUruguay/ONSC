@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree string="Seguridad de puestos">
                 <field name="name"/>
+                <field name="is_default_mass_change_uo"/>
           <!--                <field name="is_uo_manager" groups="onsc_legajo.group_legajo_configurador"/>-->
                 <field name="user_role_ids" groups="onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
@@ -23,6 +24,7 @@
                             <field name="name" groups="onsc_legajo.group_legajo_configurador"/>
                             <field name="sequence"
                                    groups="onsc_legajo.group_legajo_configurador"/>
+                            <field name="is_default_mass_change_uo"/>
 <!--                            <field name="is_uo_manager"-->
 <!--                                   groups="onsc_legajo.group_legajo_configurador"/>-->
                             <field name="user_role_ids"
@@ -43,6 +45,7 @@
         <field name="arch" type="xml">
             <search string="Seguridad de puestos">
                 <field name="name"/>
+                <field name="is_default_mass_change_uo"/>
 <!--                <field name="is_uo_manager"/>-->
                 <field name="user_role_ids"/>
             </search>

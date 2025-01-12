@@ -6,10 +6,10 @@
         <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
         <field name="arch" type="xml">
             <button name="button_unlink" position="attributes">
-                <attribute name="attrs">{'invisible': [('is_docket','=',True)]}</attribute>
+                <attribute name="attrs">{'invisible': ['|',('is_docket','=',True),('is_any_alta_in_system','=',True)]}</attribute>
             </button>
             <button name="toggle_active" position="attributes">
-                <attribute name="attrs">{'invisible': ['|',('active', '=', False),('is_docket_active','=',True)]}
+                <attribute name="attrs">{'invisible': ['|','|',('active', '=', False),('is_docket_active','=',True),('is_any_alta_in_system','=',True)]}
                 </attribute>
             </button>
             <field name="image_1920" position="attributes">
@@ -37,6 +37,7 @@
                 <!--TODO-->
                 <field name="is_docket" invisible="1"/>
                 <field name="is_docket_active" invisible="1"/>
+                <field name="is_any_alta_in_system" invisible="1"/>
             </field>
             <field name="afro_descendants_file" position="after">
                 <field name="afro_descendant_date"

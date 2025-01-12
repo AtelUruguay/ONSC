@@ -18,6 +18,7 @@ class ONSCLegajoSecurityJob(models.Model):
     user_role_ids_domain = fields.Char(default=lambda self: self._user_role_ids_domain(),
                                        compute='_compute_user_role_ids_domain')
     sequence = fields.Integer(string="Nivel", compute='_compute_sequence', store=True)
+    is_default_mass_change_uo = fields.Boolean(string='Seguridad por defecto para el cambio de UO')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)', u'El nombre de la seguridad de puesto debe ser única'),
@@ -26,6 +27,12 @@ class ONSCLegajoSecurityJob(models.Model):
     def _compute_user_role_ids_domain(self):
         for rec in self:
             rec.user_role_ids_domain = self._user_role_ids_domain()
+
+    @api.constrains('is_default_mass_change_uo')
+    def _constrains_is_default_mass_change_uo(self):
+        for rec in self:
+            if rec.is_default_mass_change_uo and self.search_count([('is_default_mass_change_uo', '=', True)]) > 1:
+                raise ValueError('Solo puede haber una seguridad de puesto por defecto para el cambio de UO')
 
     @api.depends('user_role_ids')
     def _compute_sequence(self):

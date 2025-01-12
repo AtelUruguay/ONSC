@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View onsc.legajo.mass.cambio.uo View Tree -->
+    <record id="view_onsc_legajo_mass_cambio_uo_tree" model="ir.ui.view">
+        <field name="name">view.onsc.legajo.mass.cambio.uo.tree</field>
+        <field name="model">onsc.legajo.mass.cambio.uo</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View onsc.legajo.mass.cambio.uo form -->
+    <record id="view_onsc_legajo_mass_cambio_uo_form" model="ir.ui.view">
+        <field name="name">view.onsc.legajo.mass.cambio.uo.form</field>
+        <field name="model">onsc.legajo.mass.cambio.uo</field>
+        <field name="arch" type="xml">
+            <form string="Cambio masivo de UO">
+                <header>
+                    <button name="button_confirm" class="btn btn-primary"
+                            type="object" string="Confirmar"
+                            groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
+                            states="draft"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="inciso_id"/>
+                        <h4>
+                            <field name="inciso_id"
+                                force_save="1"
+                                attrs="{'readonly': ['|',('state', 'not in', ['draft']),('is_inciso_readonly', '=', True)]}"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                        </h4>
+                        <label for="operating_unit_id"/>
+                        <h4>
+                            <field name="operating_unit_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                attrs="{'readonly': ['|',('state', 'not in', ['draft']),('is_operating_unit_readonly', '=', True)]}"
+                                domain="operating_unit_id_domain"/>
+                        </h4>
+                    </div>
+                    <group>
+                        <group string="Filtros de búsqueda">
+                            <field name="employee_id"
+                                context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
+                                domain="employee_id_domain"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="department_id"
+                                domain="[('operating_unit_id', '=', operating_unit_id)]"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="is_not_uo"/>
+                            <field name="operating_unit_id_domain" invisible="1"/>
+                            <field name="is_inciso_readonly" invisible="0"/>
+                            <field name="is_operating_unit_readonly" invisible="0"/>
+                            <field name="employee_id_domain" invisible="0"/>
+                            <button name="button_search" class="btn btn-primary"
+                                    type="object" string="Buscar"
+                                    icon="fa-search"
+                                    groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
+                                    states="draft"/>
+                            <newline/>
+                            <button name="button_clean" class="btn btn-primary"
+                                    type="object" string="Limpiar filtros"
+                                    icon="fa-eraser"
+                                    groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
+                                    states="draft"/>
+                        </group>
+                        <group string="Destino y Documentación">
+                            <field name="target_department_id"
+                                domain="[('operating_unit_id', '=', operating_unit_id),('id', '!=', department_id)]"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="start_date"/>
+                            <field name="description"/>
+                            <field name="document_type_id"/>
+                            <field name="document_file" required="1"  widget="binary" filename="document_file_name"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="document_file_name" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Funcionarios">
+                            <field name="line_ids">
+                                <tree editable="top" create="false">
+                                    <field name="is_included"/>
+                                    <field name="employee_id" readonly="1" force_save="1"/>
+                                    <field name="contract_id" required="1"
+                                        domain="contract_id_domain"
+                                        attrs="{'readonly': [('is_contract_readonly', '=', True)]}"
+                                        force_save="1"/>
+                                    <field name="department_id"  readonly="1" force_save="1"/>
+                                    <field name="target_department_id" readonly="1" force_save="1"/>
+                                    <field name="start_date" readonly="1" force_save="1"/>
+                                    <field name="security_job_id" readonly="1" force_save="1"/>
+                                    <field name="is_responsable_uo"/>
+                                    <field name="legajo_state_id"/>
+                                    <field name="is_contract_readonly" invisible="0"/>
+                                    <field name="contract_id_domain" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View onsc.legajo.mass.cambio.uo search -->
+    <record id="view_onsc_legajo_mass_cambio_uo_search" model="ir.ui.view">
+        <field name="name">view.onsc.legajo.mass.cambio.uo.search</field>
+        <field name="model">onsc.legajo.mass.cambio.uo</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <!-- <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/> -->
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action onsc.legajo.mass.cambio.uo -->
+    <record id="action_onsc_legajo_mass_cambio_uo" model="ir.actions.act_window">
+        <field name="name">Cambio de UO masivo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.legajo.mass.cambio.uo</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
