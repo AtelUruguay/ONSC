@@ -22,6 +22,7 @@
             <form string="Cambio masivo de UO">
                 <header>
                     <button name="button_confirm" class="btn btn-primary"
+                            confirm="¿Está seguro que desea confirmar el cambio de UO de estos registros?"
                             type="object" string="Confirmar"
                             groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
                             states="draft"/>
@@ -97,6 +98,7 @@
                                     <field name="security_job_id" readonly="1" force_save="1"/>
                                     <field name="is_responsable_uo"/>
                                     <field name="legajo_state_id"/>
+                                    <field name="op_cambio_uo_id"/>
                                     <field name="is_contract_readonly" invisible="0"/>
                                     <field name="contract_id_domain" invisible="1"/>
                                 </tree>
