@@ -7,6 +7,7 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 from odoo import fields, models, api, _, Command
 from odoo.exceptions import ValidationError
+from odoo import tools
 from odoo.osv import expression
 
 
@@ -263,6 +264,7 @@ class ONSCLegajoMassCambioUOLine(models.Model):
     is_included = fields.Boolean(string='¿Incluido en el cambio?')
     employee_id = fields.Many2one('hr.employee', 'C.I.')
     contract_id = fields.Many2one('hr.contract', 'Contrato')
+    job_id = fields.Many2one('hr.job', 'Puesto')
     department_id = fields.Many2one('hr.department', 'UO origen')
     target_department_id = fields.Many2one('hr.department', 'UO destino')
     start_date = fields.Date(string='Fecha desde')
@@ -280,6 +282,7 @@ class ONSCLegajoMassCambioUOLine(models.Model):
         ('confirm', 'Confirmado'),
         ('error', 'Error')
     ], string='Estado', default='draft')
+    error_message = fields.Char(string='Mensaje de error')
 
     is_contract_readonly = fields.Boolean(
         string='Contrats no editable', compute='_compute_contract_info')
@@ -293,9 +296,14 @@ class ONSCLegajoMassCambioUOLine(models.Model):
                 ('is_responsable_uo', '=', True),
                 ('target_department_id', '=', rec.target_department_id.id),
                 ('employee_id', '=', rec.employee_id.id)
-                ]) > 1:
-                raise ValidationError(
-                    'Solo puede haber un responsable de UO por cada UO destino')
+            ]) > 1:
+                raise ValidationError('Solo puede haber un responsable de UO por cada UO destino')
+
+    @api.onchange('contract_id')
+    def onchange_department_id_contract_id(self):
+        jobs = self.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today())
+        if len(jobs) == 1:
+            self.job_id = jobs[0].id
 
     @api.depends('employee_id', 'cambio_uo_id')
     def _compute_contract_info(self):
@@ -310,25 +318,31 @@ class ONSCLegajoMassCambioUOLine(models.Model):
                 rec.contract_id_domain = json.dumps([('id', 'in', [])])
 
     def action_confirm(self):
-        CambioUO = self.env['onsc.legajo.cambio.uo']
+        CambioUO = self.env['onsc.legajo.cambio.uo'].suspend_security()
         for rec in self.filtered(lambda x: x.is_included and x.state == 'draft'):
             try:
-                cambio_uo = CambioUO.create({
+                vals = {
                     'employee_id': rec.employee_id.id,
-                    'department_id': rec.department_id.id,
-                    'target_department_id': rec.target_department_id.id,
-                    'start_date': rec.start_date,
+                    'contract_id': rec.contract_id.id,
+                    'department_id': rec.target_department_id.id,
+                    'date_start': rec.start_date,
                     'security_job_id': rec.security_job_id.id,
                     'is_responsable_uo': rec.is_responsable_uo,
                     'legajo_state_id': rec.legajo_state_id.id,
-                    'attached_document_discharge_ids': [(0, 0, {
+                    'cv_birthdate': rec.employee_id.cv_birthdate,
+                    'cv_sex': rec.employee_id.cv_sex,
+                    'job_id': rec.job_id.id
+                }
+                if rec.cambio_uo_id.document_file:
+                    vals['attached_document_discharge_ids'] = [(0, 0, {
                         'document_type_id': rec.cambio_uo_id.document_type_id.id,
                         'document_file': rec.cambio_uo_id.document_file,
                         'document_file_name': rec.cambio_uo_id.document_file_name,
                         'name': rec.cambio_uo_id.description
-                    })],
-                })
-                rec.write({'state': 'confirm', 'op_cambio_uo_id': cambio_uo.id})
+                    })]
+                cambio_uo = CambioUO.create(vals)
+                cambio_uo.action_confirm()
+                rec.write({'state': 'confirm', 'op_cambio_uo_id': cambio_uo.id, 'error_message': False})
             except Exception as e:
-                rec.write({'state': 'error'})
+                rec.write({'state': 'error', 'error_message': tools.ustr(e)})
 
