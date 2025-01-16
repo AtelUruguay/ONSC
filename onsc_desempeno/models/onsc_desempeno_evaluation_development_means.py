@@ -137,7 +137,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     means_tooltip = fields.Html(compute='_get_help')
 
     @api.depends('means_id')
-    def _gethelp(self):
+    def _get_help(self):
         for rec in self:
             _html2construct = HTML_HELP % (rec.suspend_security().means_id.description or '')
             rec.means_tooltip = _html2construct
