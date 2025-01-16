@@ -7,10 +7,10 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 REQUIRED_FIELDS = [
-    'country_id', 
-    'cv_address_state_id', 
-    'cv_nro_doc', 
-    'country_of_birth_id', 
+    'country_id',
+    'cv_address_state_id',
+    'cv_nro_doc',
+    'country_of_birth_id',
     'uy_citizenship',
 ]
 
@@ -24,12 +24,12 @@ class ONSCCVMinimal(models.Model):
     ]
     _description = 'CVD Mínimo'
     _rec_name = 'cv_nro_doc'
-    
+
     @property
     def prefix_by_phones(self):
         res = super().prefix_by_phones
         return res + [('prefix_phone_id', 'personal_phone'), ('prefix_mobile_phone_id', 'mobile_phone')]
-    
+
     def _default_cv_document_type_id(self):
         return self.env['onsc.cv.document.type'].search([('code', '=', 'ci')], limit=1)
 
@@ -53,7 +53,7 @@ class ONSCCVMinimal(models.Model):
         default='draft',
         tracking=True
     )
-    
+
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", copy=False)
     uy_citizenship = fields.Selection(string="Ciudadanía uruguaya", copy=False,
                                       selection=[('legal', 'Legal'), ('natural', 'Natural'),
@@ -89,9 +89,12 @@ class ONSCCVMinimal(models.Model):
     cv_address_block = fields.Char(string="Manzana", size=5)
     cv_address_sandlot = fields.Char(string="Solar", size=5)
     cv_address_amplification = fields.Text("Aclaraciones")
-    
+
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+    partner_id = fields.Many2one('res.partner', string="Contacto", copy=False)
+    cv_full_name = fields.Char('Nombre', related='partner_id.cv_full_name', store=True)
+
 
     @api.onchange('cv_nro_doc')
     def onchange_cv_nro_doc(self):
@@ -109,20 +112,18 @@ class ONSCCVMinimal(models.Model):
         if self.cv_address_state_id:
             self.country_id = self.cv_address_state_id.country_id.id
         self.cv_address_location_id = False
-        
+
     @api.constrains('personal_phone', 'mobile_phone')
     def _check_valid_phone(self):
         for record in self:
             if not self._context.get('is_migration') and not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
-            
+
     @api.onchange('uy_citizenship')
     def onchange_uy_citizenship(self):
         if self.uy_citizenship == 'extranjero':
             self.crendencial_serie = False
             self.credential_number = False
-            self.civical_credential_file = False
-            self.civical_credential_filename = False
 
     @api.onchange('crendencial_serie')
     def onchange_crendencial_serie(self):
@@ -183,8 +184,8 @@ class ONSCCVMinimal(models.Model):
         self._check_exist_cv()
         for rec in self:
             partner = rec._get_partner()
-            cv_digital = rec._create_cv(partner)
-        self.write({'state': 'confirm'})
+            rec._create_cv(partner)
+            rec.write({'state': 'confirm', 'partner_id': partner.id})
 
     def _check_exist_cv(self):
         CVDigital = self.env['onsc.cv.digital'].sudo()
@@ -206,7 +207,7 @@ class ONSCCVMinimal(models.Model):
                 fields_str = '\n'.join(message)
                 message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
                 raise ValidationError(_(message))
-            
+
     def _get_partner(self, ):
         Partner = self.env['res.partner'].suspend_security()
         partner = Partner.search([
@@ -219,7 +220,7 @@ class ONSCCVMinimal(models.Model):
                 'cv_emissor_country_id': self.cv_emissor_country_id.id,
                 'cv_document_type_id': self.cv_document_type_id.id,
                 'cv_nro_doc': self.cv_nro_doc,
-                
+
                 'country_id': self.country_id.id,
                 'state_id': self.cv_address_state_id.id,
                 'cv_location_id': self.cv_address_location_id.id,
@@ -233,7 +234,7 @@ class ONSCCVMinimal(models.Model):
                 'cv_address_block': self.cv_address_block,
                 'cv_address_sandlot': self.cv_address_sandlot,
                 'zip': self.cv_address_zip,
-                
+
                 'email': self.email,
                 # 'cv_dnic_name_1': self.first_name,
                 # 'cv_dnic_name_2': self.second_name,
@@ -250,7 +251,7 @@ class ONSCCVMinimal(models.Model):
                 # 'cv_source_info_auth_type': 'dnic',
             }
             partner = Partner.with_context(can_update_contact_cv=True).create(data_partner)
-            partner.suspend_security().update_dnic_values(jump_error=True)
+            partner.suspend_security().update_dnic_values()
             is_dnic_info_complete = partner.cv_dnic_name_1 and partner.cv_dnic_lastname_1
             if (not partner.cv_first_name or not partner.cv_last_name_1) and is_dnic_info_complete:
                 partner.write({

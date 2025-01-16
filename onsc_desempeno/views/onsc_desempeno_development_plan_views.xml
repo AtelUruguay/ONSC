@@ -40,19 +40,19 @@
                             icon="fa-user-circle"/>
                     <button type="object"
                             class="btn btn-primary"
-                            string="Acordar Plan Evaluado"
+                            string="Acordar Evaluado"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_evaluated_available', '=', False)]}"
                             name="button_agree_plan_evaluated"
                             invisible="context.get('readonly_evaluation', False) is True"
-                            confirm="¿Está seguro que desea confirmar el plan?"
+                            confirm="¿Está seguro que desea confirmar?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
-                            string="Acordar Plan Líder"
+                            string="Acordar Líder"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_leader_available', '=', False)]}"
                             name="button_agree_plan_leader"
                             invisible="context.get('readonly_evaluation', False) is True"
-                            confirm="¿Está seguro que desea confirmar el plan?"
+                            confirm="¿Está seguro que desea confirmar?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
@@ -104,15 +104,7 @@
                             attrs="{'invisible': ['|',('show_button_go_back', '=', False),('is_cancel_available', '=', False)]}"
                             type="object"
                             invisible="context.get('readonly_evaluation', False) is True"
-                            icon="fa-unlock"/>`
-                    <button type="object"
-                            class="btn btn-primary"
-                            string="Finalizar Seguimiento"
-                            confirm="¿Está seguro que desea finalizar el Seguimiento del Plan? RECUERDE QUE SOLAMENTE DEBE FINALIZAR UNA VEZ QUE SE HAYA CARGADO LA ACTUALIZACIÓN DEL ÚLTIMO AVANCE ALCANZADO."
-                            attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state', '!=', 'in_process'),('evaluation_type', '!=', 'tracing_plan'),('evaluation_form_edit', '=', False)]}"
-                            name="button_finish_evaluation"
-                            invisible="context.get('readonly_evaluation', False) is True"
-                            icon="fa-user-circle"/>
+                            icon="fa-unlock"/>
 
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,in_process,uncompleted,finished"
@@ -141,12 +133,12 @@
                     <div class="oe_avatar" style="padding-right:20px">
 
                         <label for="gap_deal_state" string="Estado de acordar plan"
-                               invisible="context.get('develop_plan', False) is False"/>
+                               invisible="context.get('develop_plan', False) is False and context.get('tracing_plan', False) is False"/>
                         <h4>
                             <field name="gap_deal_state"
                                    align="left" style="font-size: 100%; width: 190px;" widget="label_selection"
                                    options="{'classes': {'agree_leader': 'info','agree_evaluated': 'info', 'agree': 'success'}}"
-                                   invisible="context.get('develop_plan', False) is False"/>
+                                   invisible="context.get('develop_plan', False) is False and context.get('tracing_plan', False) is False"/>
                         </h4>
                     </div>
                     <div class="oe_title" name="div_title">
@@ -245,7 +237,7 @@
                             <div>
                                 <field style="width:95%" name="means_id" widget="many2one_tooltip" class="float-left" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <div class="float-left">
-                                    <field name="means_tooltip"/>  
+                                    <field name="means_tooltip"/>
                                 </div>
                             </div>
                             <field name="agreed_activities"/>
@@ -440,7 +432,7 @@
                                             <div>
                                                 <field name="means_id" widget="many2one_tooltip" class="float-left" style="width:95%" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                                 <div class="float-left">
-                                                  <field name="means_tooltip"/>  
+                                                  <field name="means_tooltip"/>
                                                 </div>
                                             </div>
                                             <field name="agreed_activities"/>
