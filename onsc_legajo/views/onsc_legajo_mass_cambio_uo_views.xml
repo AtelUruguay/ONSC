@@ -114,6 +114,10 @@
                                     <field name="is_contract_readonly" invisible="0"/>
                                     <field name="job_id" invisible="0"/>
                                     <field name="contract_id_domain" invisible="1"/>
+                                    <button name="button_open_cambio_uo"
+                                            type="object"
+                                            icon="fa-edit"
+                                            states="confirm"/>
                                 </tree>
                                 <form edit="false">
                                     <group>
