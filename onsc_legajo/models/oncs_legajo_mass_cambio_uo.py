@@ -346,9 +346,21 @@ class ONSCLegajoMassCambioUOLine(models.Model):
             except Exception as e:
                 rec.write({'state': 'error', 'error_message': tools.ustr(e)})
 
-        def button_open_cambio_uo(self):
-            self.ensure_one()
-            action = self.env.ref('onsc_legajo.onsc_legajo_cambio_uo_action').suspend_security().read()[0]
-            action['res_id'] = self.op_cambio_uo_id.id
-            return action
+    def button_open_cambio_uo(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'onsc.legajo.cambio.uo',
+            'view_mode': 'form',
+            'res_id': self.op_cambio_uo_id.id,
+            'target': 'current',
+            'context': {'show_descriptors':True, 'is_from_menu': False},
+            'view_mode': 'form',
 
+        }
+
+        action = self.env.ref('onsc_legajo.onsc_legajo_cambio_uo_action').suspend_security().read()[0]
+        action['res_id'] = self.op_cambio_uo_id.id
+        action['view_mode'] = 'form'
+        action['view_type'] = 'form'
+        return action

@@ -158,6 +158,11 @@ class ONSCLegajoAltaVL(models.Model):
     date_income_public_administration = fields.Date(string="Fecha de ingreso a la administración pública", copy=False,
                                                     readonly=True, states={'borrador': [('readonly', False)],
                                                                            'error_sgh': [('readonly', False)]})
+    show_date_income_change_notification = fields.Boolean(
+        'Mostrar notificación de cambio de fecha de ingreso a la administración pública',
+        store=True,
+        compute='_compute_show_date_income_change_notification'
+    )
     inactivity_years = fields.Integer(string="Años de inactividad", copy=False,
                                       readonly=True,
                                       states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
@@ -320,6 +325,19 @@ class ONSCLegajoAltaVL(models.Model):
         for rec in self:
             domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
+
+    @api.depends('state', 'partner_id', 'date_income_public_administration')
+    def _compute_show_date_income_change_notification(self):
+        Legajo = self.env['onsc.legajo'].suspend_security()
+        for rec in self:
+            legajo = Legajo.search([
+                ('emissor_country_id', '=', rec.cv_emissor_country_id.id),
+                ('document_type_id', '=', rec.cv_document_type_id.id),
+                ('nro_doc', '=', rec.partner_id.cv_nro_doc),
+            ], limit=1)
+            cond1 = legajo.public_admin_entry_date and rec.date_income_public_administration and legajo.public_admin_entry_date != rec.date_income_public_administration
+            cond2 = legajo and not legajo.public_admin_entry_date and rec.date_income_public_administration
+            rec.show_date_income_change_notification = rec.state in ['borrador', 'error_sgh'] and (cond1 or cond2)
 
     @api.constrains("inactivity_years")
     def _check_inactivity_years(self):

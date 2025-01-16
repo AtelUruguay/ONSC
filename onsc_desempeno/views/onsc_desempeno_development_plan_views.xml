@@ -46,7 +46,7 @@
                             invisible="context.get('readonly_evaluation', False) is True"
                             confirm="¿Está seguro que desea confirmar el plan?"
                             icon="fa-lock"/>
-                    <button type="object"
+                    <buon type="object"
                             class="btn btn-primary"
                             string="Acordar Plan Líder"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_leader_available', '=', False)]}"
@@ -245,7 +245,7 @@
                             <div>
                                 <field style="width:95%" name="means_id" widget="many2one_tooltip" class="float-left" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <div class="float-left">
-                                    <field name="means_tooltip"/>  
+                                    <field name="means_tooltip"/>
                                 </div>
                             </div>
                             <field name="agreed_activities"/>
@@ -440,7 +440,7 @@
                                             <div>
                                                 <field name="means_id" widget="many2one_tooltip" class="float-left" style="width:95%" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                                 <div class="float-left">
-                                                  <field name="means_tooltip"/>  
+                                                  <field name="means_tooltip"/>
                                                 </div>
                                             </div>
                                             <field name="agreed_activities"/>

@@ -129,6 +129,17 @@
                                     <group name="group7_left">
                                         <field name="date_income_public_administration"/>
                                         <field name="inactivity_years"/>
+                                        <field name="show_date_income_change_notification" invisible="1"/>
+                                        <div class="alert alert-info" colspan="2"
+                                             role="alert"
+                                             attrs="{'invisible': [('show_date_income_change_notification', '=', False)]}"
+                                             style="margin-bottom:0px;">
+                                            <p>
+                                                <i class="fa fa-info-circle" role="alert"/>
+                                                Recuerde que la fecha de ingreso a la administración pública es la fecha del primer vínculo que la persona tuvo con el Estado,
+                                                en caso de modificarla verifique que sea la correcta e impactará en todos los vínculos
+                                            </p>
+                                        </div>
                                     </group>
                                     <group name="group7_right">
                                         <field name="contract_expiration_date"/>
