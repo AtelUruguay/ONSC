@@ -343,9 +343,9 @@
                     <field name="is_edit_general_comments" invisible="1"/>
                     <group name="general_comments" string="Comentarios Generales"
                            attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
-                        <button name="%(onsc_desempeno.action_onsc_desempeno_general_note)d" 
+                        <button name="%(onsc_desempeno.action_onsc_desempeno_general_note)d"
                                 string=""
-                                context="{'default_evaluation_id': active_id, 'default_message': general_comments}"
+                                context="{'default_evaluation_id': id, 'default_message': general_comments}"
                                 attrs="{'invisible': ['|',('evaluation_type','in', ['environment_definition']),('is_edit_general_comments', '=', True)]}"
                                 type="action" class="btn-primary" icon="fa-edit"/>
                         <newline/>
