@@ -13,6 +13,7 @@ class ResCompany(models.Model):
     is_environment_evaluation_form_active = fields.Boolean('Activar ayuda para formulario de definición de entorno')
     environment_evaluation_text = fields.Text('Ayuda para formulario de definición de entorno')
     max_environment_evaluation_forms = fields.Integer(string='Tope de formularios por evaluador')
+    max_environment_evaluation_leader_forms = fields.Integer(string='Tope de formularios para lider')
     random_environment_evaluation_forms = fields.Integer(
         string='Cantidad de formularios de entorno a generar por definición')
     days_notification_end_ev = fields.Integer(u"Días para notificar antes de la fecha de fin de evaluación")

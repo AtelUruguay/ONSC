@@ -497,6 +497,7 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.constrains('full_environment_ids')
     def _check_environment_ids(self):
         max_environment_evaluation_forms = self.env.user.company_id.max_environment_evaluation_forms
+        max_environment_evaluation_leader_forms = self.env.user.company_id.max_environment_evaluation_leader_forms
         for rec in self:
             _len_environment_ids = len(rec.full_environment_ids)
             if not self.env.context.get("gap_deal") and _len_environment_ids < 2:
@@ -512,6 +513,15 @@ class ONSCDesempenoEvaluation(models.Model):
                     raise ValidationError(_('El funcionario %s no puede ser seleccionado en más de una ocasión, '
                                             'favor seleccionar otra persona') % (environment_id.employee_id.full_name))
                 # SE CONSIDERA +1 PORQUE LA NUEVA YA EXCEDERIA EL TOPE MAXIMO PERMITIDO Y ESTE CONTROL ES PREVIO A LA GENERACION DE LA NUEVA DEF ENTORNO
+                leader_evaluations_qty = self.with_context(ignore_security_rules=True).search_count([
+                    ('evaluation_type', '=', 'leader_evaluation'),
+                    ('evaluator_id', '=', environment_id.employee_id.id),
+                    ('general_cycle_id', '=', rec.general_cycle_id.id),
+                ])
+                if leader_evaluations_qty + 1 > max_environment_evaluation_forms:
+                    value_restrict_to_use = max_environment_evaluation_leader_forms
+                else:
+                    value_restrict_to_use = max_environment_evaluation_forms
                 if self.with_context(ignore_security_rules=True).search_count([
                     ('evaluation_type', 'in', ['environment_evaluation',
                                                'self_evaluation',
@@ -520,7 +530,7 @@ class ONSCDesempenoEvaluation(models.Model):
                                                ]),
                     ('evaluator_id', '=', environment_id.employee_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
-                ]) + 1 > max_environment_evaluation_forms:
+                ]) + 1 > value_restrict_to_use:
                     raise ValidationError(
                         _('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (
                             environment_id.employee_id.full_name))
