@@ -79,7 +79,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 node_form.set(
                     'confirm', '¿Está seguro que desea confirmar? Recuerde que solamente debe finalizar una vez que se haya cargado la actualización del último avance alcanzado')
                 node_form.set('string', 'Acordar Líder')
-            for node_form in doc.xpath("//button[@name='button_agree_gh']"):
+            for node_form in doc.xpath("//button[@name='button_agree_plan_evaluated']"):
                 node_form.set(
                     'confirm', '¿Está seguro que desea confirmar? Recuerde que solamente debe finalizar una vez que se haya cargado la actualización del último avance alcanzado')
                 node_form.set('string', 'Acordar Evaluado')
@@ -618,7 +618,7 @@ class ONSCDesempenoEvaluation(models.Model):
             if record.evaluation_type in ('development_plan', 'gap_deal'):
                 record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id or record.evaluated_id.id == user_employee_id.id
             elif record.evaluation_type == 'tracing_plan':
-                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id
+                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id or record.evaluated_id.id == user_employee_id.id
             else:
                 record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id and not record.locked
 
