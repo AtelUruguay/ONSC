@@ -83,7 +83,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 node_form.set(
                     'confirm', '¿Está seguro que desea confirmar? Recuerde que solamente debe finalizar una vez que se haya cargado la actualización del último avance alcanzado')
                 node_form.set('string', 'Acordar Evaluado')
-        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('development_plan'):
+        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('develop_plan'):
             for node_form in doc.xpath("//button[@name='button_agree_gh']"):
                 node_form.set('confirm', '¿Está seguro que desea confirmar?')
         res['arch'] = etree.tostring(doc)
