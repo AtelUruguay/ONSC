@@ -618,7 +618,7 @@ class ONSCDesempenoEvaluation(models.Model):
             if record.evaluation_type in ('development_plan', 'gap_deal'):
                 record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id or record.evaluated_id.id == user_employee_id.id
             elif record.evaluation_type == 'tracing_plan':
-                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id or record.evaluated_id.id == user_employee_id.id
+                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id
             else:
                 record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id and not record.locked
 
