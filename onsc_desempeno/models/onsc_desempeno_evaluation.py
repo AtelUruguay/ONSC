@@ -74,6 +74,15 @@ class ONSCDesempenoEvaluation(models.Model):
         if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('edit', '1')
+        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('tracing_plan'):
+            for node_form in doc.xpath("//button[@name='button_agree_plan_leader']"):
+                node_form.set(
+                    'confirm', '¿Está seguro que desea confirmar? Recuerde que solamente debe finalizar una vez que se haya cargado la actualización del último avance alcanzado')
+                node_form.set('string', 'Acordar Líder')
+            for node_form in doc.xpath("//button[@name='button_agree_gh']"):
+                node_form.set(
+                    'confirm', '¿Está seguro que desea confirmar? Recuerde que solamente debe finalizar una vez que se haya cargado la actualización del último avance alcanzado')
+                node_form.set('string', 'Acordar Evaluado')
         res['arch'] = etree.tostring(doc)
         return res
 
@@ -765,8 +774,13 @@ class ONSCDesempenoEvaluation(models.Model):
         self._generate_environment_evaluations()
         self.write({'state': 'completed'})
 
+    def button_reopen_tracing_deal(self):
+        self.button_reopen_evaluation()
+
     def button_reopen_evaluation(self):
-        self.write({'state': 'in_process'})
+        if self.filtered(lambda x: x.state != 'in_process'):
+            raise ValidationError(_("Esta evaluación ha sido modificada. Por favor, vuelva al menú y acceda nuevamente a la misma"))
+        self.write({'gap_deal_state': 'no_deal', 'state': 'in_process'})
 
     def button_reopen_deal(self):
         if self.filtered(lambda x: x.state_gap_deal != 'in_process'):
