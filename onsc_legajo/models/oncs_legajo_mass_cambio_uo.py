@@ -18,9 +18,10 @@ class ONSCLegajoMassCambioUO(models.Model):
         # 'onsc.partner.common.data',
         'mail.thread',
         'mail.activity.mixin',
-        # 'onsc.legajo.abstract.opbase.security'
+        'onsc.legajo.abstract.opbase.security'
     ]
     _description = 'Cambio Masivo de UO'
+    _rec_name = 'employee_id'
 
     @api.model
     def _get_default_inciso_id(self):
@@ -30,23 +31,26 @@ class ONSCLegajoMassCambioUO(models.Model):
         return False
 
     @api.model
-    def _get_default_ue_id(self):
-        if self.user_has_groups('onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue'):
-            return self.env.user.employee_id.job_id.contract_id.operating_unit_id
-        return False
+    def default_get(self, fields):
+        res = super(ONSCLegajoMassCambioUO, self).default_get(fields)
+        # is_group_administrator = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
+        is_group_inciso = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
+        is_group_ue = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')
+        if is_group_inciso or is_group_ue:
+            employee_contract = self.env.user.employee_id.job_id.contract_id
+            res['inciso_id'] = employee_contract.inciso_id.id
+            res['operating_unit_id'] = employee_contract.operating_unit_id.id
+        return res
 
-    inciso_id = fields.Many2one(
-        'onsc.catalog.inciso',
-        string='Inciso',
-        required=True,
-        default=lambda self: self._get_default_inciso_id(),
-        copy=False)
-    operating_unit_id = fields.Many2one(
-        "operating.unit",
-        string="Unidad ejecutora origen",
-        required=True,
-        default=lambda self: self._get_default_ue_id(),
-        copy=False)
+    def _is_group_inciso_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso')
+
+    def _is_group_ue_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue')
+
+    def _get_domain(self, args):
+        return super(ONSCLegajoMassCambioUO, self)._get_domain(args, user_partner=False)
+
     employee_id = fields.Many2one('hr.employee', 'C.I.', copy=False)
     department_id = fields.Many2one(
         "hr.department", string="UO de origen", copy=False)
@@ -88,7 +92,8 @@ class ONSCLegajoMassCambioUO(models.Model):
 
     @api.onchange('inciso_id')
     def _onchange_inciso_id(self):
-        self.operating_unit_id = False
+        if self.operating_unit_id and self.operating_unit_id.inciso_id != self.inciso_id:
+            self.operating_unit_id = False
 
     @api.onchange('operating_unit_id')
     def _onchange_operating_unit_id(self):
@@ -168,6 +173,7 @@ class ONSCLegajoMassCambioUO(models.Model):
         self.employee_id = False
         self.is_not_uo = False
         self.department_id = False
+        self.line_ids.filtered(lambda x: not x.is_included).unlink()
 
     def button_search(self):
         self.ensure_one()
@@ -223,7 +229,8 @@ class ONSCLegajoMassCambioUO(models.Model):
     def _get_contracts(self, employee_id=None, department_id=None):
         args = [
             ("legajo_state", "in", ("incoming_commission", "active")),
-            ('operating_unit_id', '=', self.operating_unit_id.id)
+            ('operating_unit_id', '=', self.operating_unit_id.id),
+            ('employee_id', '!=', self.env.user.employee_id.id)
         ]
         if employee_id and not department_id:
             args.append(('employee_id', '=', employee_id))
@@ -322,6 +329,8 @@ class ONSCLegajoMassCambioUOLine(models.Model):
         for rec in self.filtered(lambda x: x.is_included and x.state == 'draft'):
             try:
                 vals = {
+                    'inciso_id': rec.cambio_uo_id.inciso_id.id,
+                    'operating_unit_id': rec.cambio_uo_id.operating_unit_id.id,
                     'employee_id': rec.employee_id.id,
                     'contract_id': rec.contract_id.id,
                     'department_id': rec.target_department_id.id,
