@@ -80,6 +80,15 @@
                             invisible="context.get('readonly_evaluation', False) is True"
                             confirm="¿Está seguro de que desea reabrir el plan?"/>
 
+                    <button type="object"
+                            class="btn btn-secundary"
+                            string="Reabrir acuerdo"
+                            attrs="{'invisible': ['|','|','|',('state', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'tracing_plan')]}"
+                            name="button_reopen_tracing_deal"
+                            icon="fa-unlock"
+                            invisible="context.get('readonly_evaluation', False) is True"
+                            confirm="¿Está seguro de que desea reabrir el seguimiento?"/>
+
                     <button name="%(onsc_desempeno.onsc_desempeno_evaluation_change_wizard_action)d"
                             class="btn btn-secundary"
                             string="Cambio de evaluador"
@@ -104,15 +113,7 @@
                             attrs="{'invisible': ['|',('show_button_go_back', '=', False),('is_cancel_available', '=', False)]}"
                             type="object"
                             invisible="context.get('readonly_evaluation', False) is True"
-                            icon="fa-unlock"/>`
-                    <button type="object"
-                            class="btn btn-primary"
-                            string="Finalizar Seguimiento"
-                            confirm="¿Está seguro que desea finalizar el Seguimiento del Plan? RECUERDE QUE SOLAMENTE DEBE FINALIZAR UNA VEZ QUE SE HAYA CARGADO LA ACTUALIZACIÓN DEL ÚLTIMO AVANCE ALCANZADO."
-                            attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state', '!=', 'in_process'),('evaluation_type', '!=', 'tracing_plan'),('evaluation_form_edit', '=', False)]}"
-                            name="button_finish_evaluation"
-                            invisible="context.get('readonly_evaluation', False) is True"
-                            icon="fa-user-circle"/>
+                            icon="fa-unlock"/>
 
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,in_process,uncompleted,finished"
@@ -141,12 +142,12 @@
                     <div class="oe_avatar" style="padding-right:20px">
 
                         <label for="gap_deal_state" string="Estado de acordar plan"
-                               invisible="context.get('develop_plan', False) is False"/>
+                               invisible="context.get('develop_plan', False) is False and context.get('tracing_plan', False) is False"/>
                         <h4>
                             <field name="gap_deal_state"
                                    align="left" style="font-size: 100%; width: 190px;" widget="label_selection"
                                    options="{'classes': {'agree_leader': 'info','agree_evaluated': 'info', 'agree': 'success'}}"
-                                   invisible="context.get('develop_plan', False) is False"/>
+                                   invisible="context.get('develop_plan', False) is False and context.get('tracing_plan', False) is False"/>
                         </h4>
                     </div>
                     <div class="oe_title" name="div_title">

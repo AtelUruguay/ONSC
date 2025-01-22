@@ -22,6 +22,10 @@ class ONSCDesempenoSettings(models.Model):
         related="company_id.max_environment_evaluation_forms",
         readonly=False,
         related_sudo=True)
+    max_environment_evaluation_leader_forms = fields.Integer(
+        related="company_id.max_environment_evaluation_leader_forms",
+        readonly=False,
+        related_sudo=True)
     random_environment_evaluation_forms = fields.Integer(
         related="company_id.random_environment_evaluation_forms",
         readonly=False,

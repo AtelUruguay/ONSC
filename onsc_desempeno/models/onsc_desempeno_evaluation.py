@@ -2,6 +2,7 @@
 import json
 import logging
 import random
+from lxml import etree
 
 from dateutil.relativedelta import relativedelta
 
@@ -63,6 +64,30 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _is_group_usuario_gh_ue(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_usuario_gh_ue')
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(ONSCDesempenoEvaluation, self).fields_view_get(view_id=view_id, view_type=view_type,
+                                                                     toolbar=toolbar,
+                                                                     submenu=submenu)
+        doc = etree.XML(res['arch'])
+        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('edit', '1')
+        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('tracing_plan'):
+            for node_form in doc.xpath("//button[@name='button_agree_plan_leader']"):
+                node_form.set(
+                    'confirm', '¿Está seguro que desea confirmar? Recuerde que solamente debe finalizar una vez que se haya cargado la actualización del último avance alcanzado')
+                node_form.set('string', 'Acordar Líder')
+            for node_form in doc.xpath("//button[@name='button_agree_plan_evaluated']"):
+                node_form.set(
+                    'confirm', '¿Está seguro que desea confirmar? Recuerde que solamente debe finalizar una vez que se haya cargado la actualización del último avance alcanzado')
+                node_form.set('string', 'Acordar Evaluado')
+        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('develop_plan'):
+            for node_form in doc.xpath("//button[@name='button_agree_gh']"):
+                node_form.set('confirm', '¿Está seguro que desea confirmar?')
+        res['arch'] = etree.tostring(doc)
+        return res
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -484,6 +509,7 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.constrains('full_environment_ids')
     def _check_environment_ids(self):
         max_environment_evaluation_forms = self.env.user.company_id.max_environment_evaluation_forms
+        max_environment_evaluation_leader_forms = self.env.user.company_id.max_environment_evaluation_leader_forms
         for rec in self:
             _len_environment_ids = len(rec.full_environment_ids)
             if not self.env.context.get("gap_deal") and _len_environment_ids < 2:
@@ -499,6 +525,15 @@ class ONSCDesempenoEvaluation(models.Model):
                     raise ValidationError(_('El funcionario %s no puede ser seleccionado en más de una ocasión, '
                                             'favor seleccionar otra persona') % (environment_id.employee_id.full_name))
                 # SE CONSIDERA +1 PORQUE LA NUEVA YA EXCEDERIA EL TOPE MAXIMO PERMITIDO Y ESTE CONTROL ES PREVIO A LA GENERACION DE LA NUEVA DEF ENTORNO
+                leader_evaluations_qty = self.with_context(ignore_security_rules=True).search_count([
+                    ('evaluation_type', '=', 'leader_evaluation'),
+                    ('evaluator_id', '=', environment_id.employee_id.id),
+                    ('general_cycle_id', '=', rec.general_cycle_id.id),
+                ])
+                if leader_evaluations_qty + 1 > max_environment_evaluation_forms:
+                    value_restrict_to_use = max_environment_evaluation_leader_forms
+                else:
+                    value_restrict_to_use = max_environment_evaluation_forms
                 if self.with_context(ignore_security_rules=True).search_count([
                     ('evaluation_type', 'in', ['environment_evaluation',
                                                'self_evaluation',
@@ -507,7 +542,7 @@ class ONSCDesempenoEvaluation(models.Model):
                                                ]),
                     ('evaluator_id', '=', environment_id.employee_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
-                ]) + 1 > max_environment_evaluation_forms:
+                ]) + 1 > value_restrict_to_use:
                     raise ValidationError(
                         _('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (
                             environment_id.employee_id.full_name))
@@ -544,8 +579,9 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            _is_valid = record.evaluation_type in ('gap_deal', 'development_plan')
-            is_valid = _is_valid and record.state_gap_deal == 'in_process' and record.gap_deal_state != 'agree_leader'
+            _is_valid_1 = record.evaluation_type in ('gap_deal', 'development_plan') and record.state_gap_deal == 'in_process'
+            _is_valid_2 = record.evaluation_type == 'tracing_plan' and record.state == 'in_process'
+            is_valid = (_is_valid_1 or _is_valid_2) and record.gap_deal_state != 'agree_leader'
             record.is_agree_evaluation_leader_available = is_am_evaluator and is_valid
 
     @api.depends('state', 'state_gap_deal')
@@ -574,9 +610,9 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             is_am_evaluated = record.evaluated_id.id == user_employee_id
-            is_valid = record.evaluation_type in ('gap_deal', 'development_plan') and not \
-                record.gap_deal_state == 'agree_evaluated' and record.state_gap_deal == 'in_process'
-            record.is_agree_evaluation_evaluated_available = is_am_evaluated and is_valid
+            is_valid_1 = record.evaluation_type in ('gap_deal', 'development_plan') and not record.gap_deal_state == 'agree_evaluated' and record.state_gap_deal == 'in_process'
+            is_valid_2 = record.evaluation_type == 'tracing_plan' and not record.gap_deal_state == 'agree_evaluated' and record.state == 'in_process'
+            record.is_agree_evaluation_evaluated_available = is_am_evaluated and (is_valid_1 or is_valid_2)
 
     @api.depends('state', 'evaluator_id', 'evaluated_id')
     def _compute_evaluation_form_edit(self):
@@ -722,11 +758,15 @@ class ONSCDesempenoEvaluation(models.Model):
             self.write({'state': 'in_process'})
 
     def button_finish_evaluation(self):
+        self._check_at_least_one_tracing()
+        self.write({'state': 'finished'})
+
+    def _check_at_least_one_tracing(self):
         Tracing = self.env['onsc.desempeno.evaluation.tracing.plan'].sudo()
         if Tracing.search_count([('develop_means_id', 'in', self.tracing_plan_ids.development_means_ids.ids)]) == 0:
             raise ValidationError(
                 _('Debe existir al menos un seguimiento ingresado para poder finalizar'))
-        self.write({'state': 'finished'})
+
 
     def button_completed_evaluation(self):
         self._check_complete_evaluation()
@@ -737,8 +777,13 @@ class ONSCDesempenoEvaluation(models.Model):
         self._generate_environment_evaluations()
         self.write({'state': 'completed'})
 
+    def button_reopen_tracing_deal(self):
+        self.button_reopen_evaluation()
+
     def button_reopen_evaluation(self):
-        self.write({'state': 'in_process'})
+        if self.filtered(lambda x: x.state != 'finished'):
+            raise ValidationError(_("Esta evaluación ha sido modificada. Por favor, vuelva al menú y acceda nuevamente a la misma"))
+        self.write({'gap_deal_state': 'no_deal', 'state': 'in_process'})
 
     def button_reopen_deal(self):
         if self.filtered(lambda x: x.state_gap_deal != 'in_process'):
@@ -777,18 +822,29 @@ class ONSCDesempenoEvaluation(models.Model):
             self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_plan_leader(self):
-        self._check_development_plan()
+        if self.evaluation_type == 'tracing_plan':
+            self._check_at_least_one_tracing()
+        else:
+            self._check_development_plan()
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_leader'})
         elif self.gap_deal_state == 'agree_evaluated':
-            self.suspend_security()._create_tracing_plan()
-            self.write({'state_gap_deal': 'agreed_plan', 'gap_deal_state': 'agree'})
+            self._end_both_agree_states()
 
     def button_agree_plan_evaluated(self):
-        self._check_development_plan()
+        if self.evaluation_type == 'tracing_plan':
+            self._check_at_least_one_tracing()
+        else:
+            self._check_development_plan()
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_evaluated'})
         elif self.gap_deal_state == 'agree_leader':
+            self._end_both_agree_states()
+
+    def _end_both_agree_states(self):
+        if self.evaluation_type == 'tracing_plan':
+            self.write({'state': 'finished', 'gap_deal_state': 'agree'})
+        else:
             self.suspend_security()._create_tracing_plan()
             self.write({'state_gap_deal': 'agreed_plan', 'gap_deal_state': 'agree'})
 
@@ -904,7 +960,6 @@ class ONSCDesempenoEvaluation(models.Model):
                         _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
 
     def _check_development_plan(self):
-
         if len(self.development_plan_ids.development_means_ids.ids) == 0:
             raise ValidationError(_('Deben tener al menos un plan de acción para poder acordar'))
 

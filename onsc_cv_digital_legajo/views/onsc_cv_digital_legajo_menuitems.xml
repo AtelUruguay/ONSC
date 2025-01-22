@@ -27,4 +27,10 @@
                   parent="onsc_legajo.onsc_legajo_settings_menu"
                   groups="onsc_legajo.group_legajo_configurador"
                   sequence="15"/>
+    <menuitem id="onsc_legajo_action_onsc_cv_minimal"
+                  name="Crear contacto"
+                  action="action_onsc_cv_minimal"
+                  parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
+                  groups="onsc_cv_digital_legajo.group_legajo_cvd_minimal"
+                  sequence="25"/>
 </odoo>

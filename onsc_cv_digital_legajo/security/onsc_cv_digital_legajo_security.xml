@@ -70,5 +70,11 @@
             <field name="category_id" ref="onsc_legajo.module_category_onsc_legajo"/>
         </record>
 
+        <record id="group_legajo_cvd_minimal" model="res.groups">
+            <field name="name">Legajo - Alta contactos para vínculos</field>
+            <field name="comment">Legajo - Alta contactos para vínculos</field>
+            <field name="category_id" ref="onsc_legajo.module_category_onsc_legajo"/>
+        </record>
+
     </data>
 </odoo>

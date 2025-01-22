@@ -74,6 +74,10 @@
                                             <field name="max_environment_evaluation_forms"/>
                                         </div>
                                         <div class="row">
+                                            <label for="max_environment_evaluation_leader_forms" class="col-md-5 o_light_label" style="text-align:right;"/>
+                                            <field name="max_environment_evaluation_leader_forms"/>
+                                        </div>
+                                        <div class="row">
                                             <label for="random_environment_evaluation_forms" class="col-md-5 o_light_label" style="text-align:right;"/>
                                             <field name="random_environment_evaluation_forms"/>
                                         </div>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View onsc.cv.minimal View Tree -->
+    <record id="view_onsc_cv_minimal_tree" model="ir.ui.view">
+        <field name="name">view.onsc.cv.minimal.tree</field>
+        <field name="model">onsc.cv.minimal</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="cv_nro_doc"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View onsc.cv.minimal form -->
+    <record id="view_onsc_cv_minimal_form" model="ir.ui.view">
+        <field name="name">view.onsc.cv.minimal.form</field>
+        <field name="model">onsc.cv.minimal</field>
+        <field name="arch" type="xml">
+            <form string="Onsc Cv Minimal" duplicate="0">
+                <header>
+                    <button name="button_confirm" type="object" string="Confirmar" states="draft" class="oe_highlight"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="cv_full_name" readonly="1"/>
+                        </h1>
+                    </div>
+                        <group>
+                            <group>
+                                <field name="cv_emissor_country_id" readonly="1" force_save="1"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="cv_document_type_id" readonly="1" force_save="1"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="cv_nro_doc" required="True"/>
+                            </group>
+                            <group/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="country_of_birth_id" required="True" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="uy_citizenship" required="True"/>
+                                <field name="marital_status_id" required="True" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="should_disable_form_edit" invisible="True"/>
+                                <field name="crendencial_serie"
+                                        attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
+                                <field name="credential_number"
+                                        attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
+                            </group>
+                            <group>
+                                <label for="personal_phone"/>
+                                <div class="content-group row" style="margin-left:5px">
+                                    <field name="prefix_phone_id" options="{'no_open': True, 'no_create': True}"
+                                            style='max-width:75px !important; padding:1px !important;'
+                                            class="oe_inline"/>
+                                    <field name="personal_phone" class="oe_inline" style="padding:1px !important;"/>
+                                </div>
+                                <label for="mobile_phone"/>
+                                <div class="content-group row" style="margin-left:5px">
+                                    <field name="prefix_mobile_phone_id"
+                                            options="{'no_open': True, 'no_create': True}"
+                                            style='max-width:75px !important; padding:1px !important;'
+                                            class="oe_inline"/>
+                                    <field name="mobile_phone" class="oe_inline" style="padding:1px !important;"/>
+                                </div>
+                                <field name="email" widget="email"/>
+                            </group>
+                        </group>
+                    <notebook>
+                        <page name="page_adress" string="Domicilio">
+                            <group>
+                                <group>
+                                    <field name="country_id" string="País"
+                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                    <field name="cv_address_state_id" string="Departamento"
+                                            domain="[('country_id', '=?', country_id)]"
+                                            context="{'default_country_id': country_id, 'is_readonly': True}"
+                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                    <field name="cv_address_location_id"
+                                            domain="[('state_id', '=?', cv_address_state_id)]"
+                                            attrs="{'readonly': [('cv_address_state_id', '=', False)]}"
+                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                            context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
+                                </group>
+                                <group/>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="country_code" invisible="1"/>
+                                    <field name="cv_address_street_id"
+                                            attrs="{'invisible': [('country_code', '!=', 'UY')]}"
+                                            domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]"
+                                            context="{'default_cv_location_id': cv_address_location_id,'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
+                                    <field name="cv_address_street2_id"
+                                            attrs="{'invisible': [('country_code', '!=', 'UY')]}"
+                                            domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]"
+                                            context="{'default_cv_location_id': cv_address_location_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
+                                    <field name="cv_address_street3_id"
+                                            attrs="{'invisible': [('country_code', '!=', 'UY')]}"
+                                            domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]"
+                                            context="{'default_cv_location_id': cv_address_location_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
+                                    <field name="cv_address_street" string="Calle"
+                                            attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
+                                    <field name="cv_address_nro_door"/>
+                                    <field name="cv_address_is_cv_bis"/>
+                                    <field name="cv_address_apto"/>
+                                    <field name="cv_address_zip" string="C.P" size="6"/>
+                                </group>
+                                <group>
+                                    <field name="cv_address_place"/>
+                                    <field name="cv_address_block"/>
+                                    <field name="cv_address_sandlot"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="cv_address_amplification"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View onsc.cv.minimal search -->
+    <record id="view_onsc_cv_minimal_search" model="ir.ui.view">
+        <field name="name">view.onsc.cv.minimal.search</field>
+        <field name="model">onsc.cv.minimal</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="cv_nro_doc"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action onsc.cv.minimal -->
+    <record id="action_onsc_cv_minimal" model="ir.actions.act_window">
+        <field name="name">Crear contacto</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.cv.minimal</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
