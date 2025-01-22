@@ -46,7 +46,7 @@
                             invisible="context.get('readonly_evaluation', False) is True"
                             confirm="¿Está seguro que desea confirmar el plan?"
                             icon="fa-lock"/>
-                    <buon type="object"
+                    <button type="object"
                             class="btn btn-primary"
                             string="Acordar Plan Líder"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_leader_available', '=', False)]}"
