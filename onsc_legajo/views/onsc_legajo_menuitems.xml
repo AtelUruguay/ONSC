@@ -63,6 +63,13 @@
             action="onsc_legajo.onsc_legajo_baja_vl_action"
             groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas,onsc_legajo.group_legajo_baja_vl_consulta_bajas_vl"
             sequence="8"/>
+    <menuitem
+            id="onsc_baja_mass_cambio_uo_menu"
+            name="Camnbio de UO masivo"
+            parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
+            action="onsc_legajo.action_onsc_legajo_mass_cambio_uo"
+            groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_mass_cambio_uo_consulta"
+            sequence="9"/>
 
     <menuitem id="onsc_legajo_vote_control_menu"
               parent="onsc_legajo.onsc_legajo_capital_humano_menu"

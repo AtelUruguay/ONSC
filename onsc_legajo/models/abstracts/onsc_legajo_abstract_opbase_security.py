@@ -29,12 +29,12 @@ class ONSCLegajoAbstractOpBaseSecurity(models.AbstractModel):
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
-    def _get_domain(self, args, use_employee=False):
+    def _get_domain(self, args, use_employee=False, user_partner=True):
         if use_employee:
             args = expression.AND([[
                 ('employee_id', '!=', self.env.user.employee_id.id)
             ], args])
-        else:
+        elif user_partner:
             args = expression.AND([[
                 ('partner_id', '!=', self.env.user.partner_id.id)
             ], args])

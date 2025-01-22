@@ -102,6 +102,7 @@ class ONSCCVDigital(models.Model):
     employee_id = fields.Many2one("hr.employee", string="Funcionario", compute='_compute_employee_id', store=True)
     is_docket = fields.Boolean(string="Tiene legajo")
     is_docket_active = fields.Boolean(string="Tiene legajo activo", compute='_compute_is_docket_active', store=True)
+    is_any_alta_in_system = fields.Boolean(string="Tiene algún proceso de alta en espera", compute='_compute_is_any_alta_in_system')
     gender_public_visualization_date = fields.Date(string="Fecha información visualización pública de género",
                                                    compute='_compute_gender_public_visualization_date', store=True)
     address_info_date = fields.Date(string="Fecha de información domicilio",
@@ -311,6 +312,14 @@ class ONSCCVDigital(models.Model):
     def _compute_is_docket_active(self):
         for record in self:
             record.is_docket_active = record.employee_id and record.employee_id.legajo_state == 'active'
+            
+    def _compute_is_any_alta_in_system(self):
+        AltaVL = self.env['onsc.legajo.alta.vl'].sudo().with_context(ignore_base_restrict=True)
+        AltaCS = self.env['onsc.legajo.alta.cs'].sudo().with_context(ignore_base_restrict=True)
+        for rec in self:
+            _alta_vl_qty = AltaVL.search_count([('cv_digital_id', '=', rec.id)])
+            _alta_cs_qty = AltaCS.search_count([('cv_digital_id', '=', rec.id)])
+            rec.is_any_alta_in_system = _alta_vl_qty or _alta_cs_qty
 
     @api.depends('cv_race_ids')
     def _compute_is_cv_race_defined(self):
