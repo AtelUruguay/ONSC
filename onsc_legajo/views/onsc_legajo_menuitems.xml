@@ -65,7 +65,7 @@
             sequence="8"/>
     <menuitem
             id="onsc_baja_mass_cambio_uo_menu"
-            name="Camnbio de UO masivo"
+            name="Cambio de UO masivo"
             parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
             action="onsc_legajo.action_onsc_legajo_mass_cambio_uo"
             groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_mass_cambio_uo_consulta"
