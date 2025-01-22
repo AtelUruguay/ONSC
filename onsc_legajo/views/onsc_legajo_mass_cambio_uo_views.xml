@@ -7,9 +7,9 @@
         <field name="model">onsc.legajo.mass.cambio.uo</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="inciso_id"/>
-                <field name="operating_unit_id"/>
-                <field name="state"/>
+                <field name="inciso_id" />
+                <field name="operating_unit_id" />
+                <field name="state" />
             </tree>
         </field>
     </record>
@@ -19,32 +19,32 @@
         <field name="name">view.onsc.legajo.mass.cambio.uo.form</field>
         <field name="model">onsc.legajo.mass.cambio.uo</field>
         <field name="arch" type="xml">
-            <form string="Cambio masivo de UO">
+            <form string="Cambio masivo de UO" copy="False">
                 <header>
                     <button name="button_confirm" class="btn btn-primary"
-                            confirm="¿Está seguro que desea confirmar el cambio de UO de estos registros?"
-                            type="object" string="Confirmar"
-                            groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
-                            states="draft"/>
-                    <field name="state" widget="statusbar"/>
+                        confirm="¿Está seguro que desea confirmar el cambio de UO de estos registros?"
+                        type="object" string="Confirmar"
+                        groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
+                        states="draft" />
+                    <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="inciso_id"/>
+                        <label for="inciso_id" />
                         <h4>
                             <field name="inciso_id"
                                 force_save="1"
                                 required="True"
                                 attrs="{'readonly': ['|',('state', 'not in', ['draft']),('is_inciso_readonly', '=', True)]}"
-                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                         </h4>
-                        <label for="operating_unit_id"/>
+                        <label for="operating_unit_id" />
                         <h4>
                             <field name="operating_unit_id"
                                 required="True"
                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                 attrs="{'readonly': ['|',('state', 'not in', ['draft']),('is_operating_unit_readonly', '=', True)]}"
-                                domain="operating_unit_id_domain"/>
+                                domain="operating_unit_id_domain" />
                         </h4>
                     </div>
                     <group>
@@ -52,102 +52,109 @@
                             <field name="employee_id"
                                 context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                 domain="employee_id_domain"
-                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                             <field name="department_id"
                                 domain="[('operating_unit_id', '=', operating_unit_id)]"
-                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="is_not_uo"/>
-                            <field name="operating_unit_id_domain" invisible="1"/>
-                            <field name="is_inciso_readonly" invisible="1"/>
-                            <field name="is_operating_unit_readonly" invisible="1"/>
-                            <field name="employee_id_domain" invisible="1"/>
-                            <button name="button_search" class="btn btn-primary"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                            <field name="is_not_uo" />
+                            <field name="operating_unit_id_domain" invisible="1" />
+                            <field name="is_inciso_readonly" invisible="1" />
+                            <field name="is_operating_unit_readonly" invisible="1" />
+                            <field name="employee_id_domain" invisible="1" />
+                            <div class="oe_edit_only">
+                                <button name="button_search" class="btn btn-primary oe_edit_only"
                                     type="object" string="Buscar"
                                     icon="fa-search"
                                     groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
-                                    states="draft"/>
-                            <newline/>
-                            <button name="button_clean" class="btn btn-primary"
+                                    states="draft" />
+                                <button name="button_clean" class="btn btn-primary oe_edit_only"
+                                    style="margin-left: 5px;"
                                     type="object" string="Limpiar filtros"
                                     icon="fa-eraser"
                                     groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
-                                    states="draft"/>
+                                    states="draft" />
+                            </div>
                         </group>
                         <group string="Destino y Documentación">
                             <field name="target_department_id"
                                 domain="[('operating_unit_id', '=', operating_unit_id)]"
-                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="start_date"/>
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                            <field name="start_date" />
                             <field name="description"
-                                required="1"/>
+                                required="1" />
                             <field name="document_type_id"
                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                                required="1"/>
-                            <field name="document_file" required="1"  widget="binary" filename="document_file_name"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="document_file_name" invisible="1"/>
-                            <field name="should_disable_form_edit" invisible="1"/>
+                                required="1" />
+                            <field name="document_file" required="1" widget="binary"
+                                filename="document_file_name"
+                                options="{'accepted_file_extensions': '.pdf'}" />
+                            <field name="document_file_name" invisible="1" />
+                            <field name="should_disable_form_edit" invisible="1" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Funcionarios">
                             <field name="line_ids">
-                                <tree editable="top" create="false">
-                                    <field name="is_included"/>
+                                <tree editable="top" create="false"
+                                    decoration-danger="state=='error'">
+                                    <field name="is_included" style="width:20px" />
                                     <field name="employee_id" readonly="1" force_save="1"
-                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                                     <field name="contract_id" required="1"
                                         domain="contract_id_domain"
                                         attrs="{'readonly': [('is_contract_readonly', '=', True)]}"
                                         options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                                        force_save="1"/>
-                                    <field name="department_id"  readonly="1" force_save="1"
-                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                        force_save="1" />
+                                    <field name="department_id" readonly="1" force_save="1"
+                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                                     <field name="target_department_id" readonly="1" force_save="1"
-                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                    <field name="start_date" readonly="1" force_save="1"/>
+                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                    <field name="start_date" readonly="1" force_save="1" />
                                     <field name="security_job_id" readonly="1" force_save="1"
-                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                    <field name="is_responsable_uo"/>
+                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                    <field name="is_responsable_uo" />
                                     <field name="legajo_state_id"
-                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                                     <field name="op_cambio_uo_id"
-                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                    <field name="state"/>
-                                    <field name="is_contract_readonly" invisible="0"/>
-                                    <field name="job_id" invisible="0"/>
-                                    <field name="contract_id_domain" invisible="1"/>
+                                        invisible="1"/>
+                                    <field name="state" invisible="1" />
+                                    <field name="is_contract_readonly" invisible="1" />
+                                    <field name="job_id" invisible="1" />
+                                    <field name="contract_id_domain" invisible="1" />
                                     <button name="button_open_cambio_uo"
                                         string="Ver Cambio de UO"
                                         type="object"
                                         icon="fa-edit"
-                                        states="confirm"/>
+                                        attrs="{'invisible': [('op_cambio_uo_id', '=', False)]}"
+                                    />
                                 </tree>
                                 <form edit="false">
                                     <group>
                                         <group>
-                                            <field name="is_included"/>
+                                            <field name="is_included" />
                                             <field name="employee_id" readonly="1" force_save="1"
-                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                                             <field name="contract_id"
                                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                                                force_save="1"/>
-                                            <field name="department_id"  readonly="1" force_save="1"
-                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                            <field name="target_department_id" readonly="1" force_save="1"
-                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                            <field name="start_date" readonly="1" force_save="1"/>
+                                                force_save="1" />
+                                            <field name="department_id" readonly="1" force_save="1"
+                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                            <field name="target_department_id" readonly="1"
+                                                force_save="1"
+                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                            <field name="start_date" readonly="1" force_save="1" />
                                         </group>
                                         <group>
-                                            <field name="security_job_id" readonly="1" force_save="1"
-                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                            <field name="is_responsable_uo"/>
+                                            <field name="security_job_id" readonly="1"
+                                                force_save="1"
+                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                            <field name="is_responsable_uo" />
                                             <field name="legajo_state_id"
-                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                                             <field name="op_cambio_uo_id"
-                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                            <field name="error_message"/>
-                                            <field name="state" invisible="1"/>
+                                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                            <field name="error_message" />
+                                            <field name="state" invisible="1" />
                                         </group>
                                     </group>
                                 </form>
@@ -165,8 +172,12 @@
         <field name="model">onsc.legajo.mass.cambio.uo</field>
         <field name="arch" type="xml">
             <search>
+                <field name="inciso_id" />
+                <field name="operating_unit_id" />
+                <field name="state" />
                 <group expand="1" string="Group By">
-                    <!-- <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/> -->
+                    <filter string="Estado" name="groupby_state" domain="[]"
+                        context="{'group_by':'state'}" />
                 </group>
             </search>
         </field>
@@ -179,7 +190,7 @@
         <field name="res_model">onsc.legajo.mass.cambio.uo</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
-        <field name="context">{'show_cv_nro_doc':True}</field>
+        <field name="context">{'show_cv_nro_doc':True,'is_from_menu': True}</field>
     </record>
 
 </odoo>

@@ -21,21 +21,14 @@ class ONSCLegajoMassCambioUO(models.Model):
         'onsc.legajo.abstract.opbase.security'
     ]
     _description = 'Cambio Masivo de UO'
-    _rec_name = 'employee_id'
-
-    @api.model
-    def _get_default_inciso_id(self):
-        if self.user_has_groups('onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue') or \
-                self.user_has_groups('onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso'):
-            return self.env.user.employee_id.job_id.contract_id.inciso_id
-        return False
+    _rec_name = 'name'
 
     @api.model
     def default_get(self, fields):
         res = super(ONSCLegajoMassCambioUO, self).default_get(fields)
         # is_group_administrator = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
-        is_group_inciso = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
-        is_group_ue = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')
+        is_group_inciso = self._is_group_inciso_security()
+        is_group_ue = self._is_group_ue_security()
         if is_group_inciso or is_group_ue:
             employee_contract = self.env.user.employee_id.job_id.contract_id
             res['inciso_id'] = employee_contract.inciso_id.id
@@ -82,6 +75,8 @@ class ONSCLegajoMassCambioUO(models.Model):
         compute='_compute_operating_unit_id_domain')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+
+    name = fields.Char(string='Nombre', compute='_compute_name', store=True)
 
     @api.constrains('start_date')
     def _check_start_date(self):
@@ -156,6 +151,12 @@ class ONSCLegajoMassCambioUO(models.Model):
                     [('id', 'in', contracts.mapped('employee_id').ids)])
             else:
                 rec.employee_id_domain = json.dumps([('id', 'in', [])])
+
+    @api.depends('inciso_id', 'operating_unit_id', 'state')
+    def _compute_name(self):
+        for rec in self:
+            state_display = dict(self.fields_get(allfields=['state'])['state']['selection']).get(rec.state)
+            rec.name = '%s-%s-%s' % (rec.inciso_id.name, rec.operating_unit_id.name, state_display)
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'draft'):
@@ -268,11 +269,11 @@ class ONSCLegajoMassCambioUOLine(models.Model):
 
     cambio_uo_id = fields.Many2one(
         'onsc.legajo.mass.cambio.uo', 'Cambio de UO masivo')
-    is_included = fields.Boolean(string='¿Incluido en el cambio?')
+    is_included = fields.Boolean(string='¿Incluido?')
     employee_id = fields.Many2one('hr.employee', 'C.I.')
     contract_id = fields.Many2one('hr.contract', 'Contrato')
-    job_id = fields.Many2one('hr.job', 'Puesto')
-    department_id = fields.Many2one('hr.department', 'UO origen')
+    job_id = fields.Many2one('hr.job', 'Puesto', compute='_compute_job_info', store=True)
+    department_id = fields.Many2one('hr.department', 'UO origen', compute='_compute_job_info', store=True)
     target_department_id = fields.Many2one('hr.department', 'UO destino')
     start_date = fields.Date(string='Fecha desde')
     security_job_id = fields.Many2one(
@@ -296,21 +297,16 @@ class ONSCLegajoMassCambioUOLine(models.Model):
     contract_id_domain = fields.Char(
         string="Dominio Contrato (interno)", compute='_compute_contract_info')
 
-    @api.constrains('employee_id', 'target_department_id', 'is_responsable_uo')
+    @api.constrains('employee_id', 'target_department_id', 'is_responsable_uo', 'cambio_uo_id')
     def _constrains_is_responsable_uo(self):
         for rec in self:
             if rec.is_responsable_uo and self.search_count([
                 ('is_responsable_uo', '=', True),
                 ('target_department_id', '=', rec.target_department_id.id),
-                ('employee_id', '=', rec.employee_id.id)
+                ('employee_id', '=', rec.employee_id.id),
+                ('cambio_uo_id', '=', rec.cambio_uo_id.id)
             ]) > 1:
                 raise ValidationError('Solo puede haber un responsable de UO por cada UO destino')
-
-    @api.onchange('contract_id')
-    def onchange_department_id_contract_id(self):
-        jobs = self.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today())
-        if len(jobs) == 1:
-            self.job_id = jobs[0].id
 
     @api.depends('employee_id', 'cambio_uo_id')
     def _compute_contract_info(self):
@@ -324,36 +320,67 @@ class ONSCLegajoMassCambioUOLine(models.Model):
                 rec.is_contract_readonly = False
                 rec.contract_id_domain = json.dumps([('id', 'in', [])])
 
+    @api.depends('contract_id')
+    def _compute_job_info(self):
+        for rec in self:
+            if rec.contract_id:
+                jobs = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today())
+                if len(jobs) >= 1:
+                    rec.job_id = jobs[0].id
+                    rec.department_id = jobs[0].department_id.id
+                else:
+                    rec.job_id = False
+                    rec.department_id = False
+
     def action_confirm(self):
         CambioUO = self.env['onsc.legajo.cambio.uo'].suspend_security()
         for rec in self.filtered(lambda x: x.is_included and x.state == 'draft'):
             try:
-                vals = {
-                    'inciso_id': rec.cambio_uo_id.inciso_id.id,
-                    'operating_unit_id': rec.cambio_uo_id.operating_unit_id.id,
-                    'employee_id': rec.employee_id.id,
-                    'contract_id': rec.contract_id.id,
-                    'department_id': rec.target_department_id.id,
-                    'date_start': rec.start_date,
-                    'security_job_id': rec.security_job_id.id,
-                    'is_responsable_uo': rec.is_responsable_uo,
-                    'legajo_state_id': rec.legajo_state_id.id,
-                    'cv_birthdate': rec.employee_id.cv_birthdate,
-                    'cv_sex': rec.employee_id.cv_sex,
-                    'job_id': rec.job_id.id
-                }
-                if rec.cambio_uo_id.document_file:
-                    vals['attached_document_discharge_ids'] = [(0, 0, {
-                        'document_type_id': rec.cambio_uo_id.document_type_id.id,
-                        'document_file': rec.cambio_uo_id.document_file,
-                        'document_file_name': rec.cambio_uo_id.document_file_name,
-                        'name': rec.cambio_uo_id.description
-                    })]
-                cambio_uo = CambioUO.create(vals)
-                cambio_uo.action_confirm()
-                rec.write({'state': 'confirm', 'op_cambio_uo_id': cambio_uo.id, 'error_message': False})
-            except Exception as e:
-                rec.write({'state': 'error', 'error_message': tools.ustr(e)})
+                # Usamos un savepoint para aislar la operación completa
+                with self._cr.savepoint():
+                    vals = {
+                        'inciso_id': rec.cambio_uo_id.inciso_id.id,
+                        'operating_unit_id': rec.cambio_uo_id.operating_unit_id.id,
+                        'employee_id': rec.employee_id.id,
+                        'contract_id': rec.contract_id.id,
+                        'department_id': rec.target_department_id.id,
+                        'date_start': rec.start_date,
+                        'security_job_id': rec.security_job_id.id,
+                        'is_responsable_uo': rec.is_responsable_uo,
+                        'legajo_state_id': rec.legajo_state_id.id,
+                        'cv_birthdate': rec.employee_id.cv_birthdate,
+                        'cv_sex': rec.employee_id.cv_sex,
+                        'job_id': rec.job_id.id
+                    }
+                    if rec.cambio_uo_id.document_file:
+                        vals['attached_document_discharge_ids'] = [(0, 0, {
+                            'document_type_id': rec.cambio_uo_id.document_type_id.id,
+                            'document_file': rec.cambio_uo_id.document_file,
+                            'document_file_name': rec.cambio_uo_id.document_file_name,
+                            'name': rec.cambio_uo_id.description
+                        })]
+
+                    # Crear el registro del cambio de unidad operativa
+                    cambio_uo = CambioUO.create(vals)
+
+                    try:
+                        # Intentar confirmar el cambio de unidad operativa
+                        cambio_uo.action_confirm()
+                    except Exception as inner_e:
+                        # Si falla, registramos el error pero mantenemos el registro creado
+                        rec.write({
+                            'state': 'error',
+                            'error_message': f"Error en confirmación: {tools.ustr(inner_e)}",
+                            'op_cambio_uo_id': cambio_uo.id  # Asociar el registro creado
+                        })
+                        continue  # Ir al siguiente registro
+
+                    # Si todo funciona, marcamos el estado como confirmado
+                    rec.write({'state': 'confirm', 'op_cambio_uo_id': cambio_uo.id, 'error_message': False})
+            except Exception as outer_e:
+                # Manejo de errores generales para el registro
+                rec.write({'state': 'error', 'error_message': f"Error general: {tools.ustr(outer_e)}"})
+
 
     def button_open_cambio_uo(self):
         self.ensure_one()
@@ -361,15 +388,11 @@ class ONSCLegajoMassCambioUOLine(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'onsc.legajo.cambio.uo',
             'view_mode': 'form',
+            'view_type': 'form',
             'res_id': self.op_cambio_uo_id.id,
             'target': 'current',
             'context': {'show_descriptors':True, 'is_from_menu': False},
-            'view_mode': 'form',
-
+            'views': [
+                [self.env.ref('onsc_legajo.onsc_legajo_cambio_uo_form').id, 'form'],
+            ]
         }
-
-        action = self.env.ref('onsc_legajo.onsc_legajo_cambio_uo_action').suspend_security().read()[0]
-        action['res_id'] = self.op_cambio_uo_id.id
-        action['view_mode'] = 'form'
-        action['view_type'] = 'form'
-        return action
