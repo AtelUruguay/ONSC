@@ -363,7 +363,7 @@ class ONSCLegajoStagingWS7(models.Model):
             ('legajo_state', '=', 'incoming_commission')], limit=1)
 
         state_square_id = self.env.ref('onsc_legajo.onsc_legajo_o')
-        
+
         if record.mov == 'ASCENSO':
             movement_description = self.env.user.company_id.ws7_new_ascenso_reason_description
         elif record.mov in ['TRANSFORMA','TRANSFORMA_REDUE']:
@@ -401,8 +401,12 @@ class ONSCLegajoStagingWS7(models.Model):
                 causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
 
             # DESACTIVA EL CONTRATO SALIENTE (A)
+            if second_movement.fecha_vig == contract.date_start:
+                contract_date_end = second_movement.fecha_vig
+            else:
+                contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
-                second_movement.fecha_vig + datetime.timedelta(days=-1),
+                contract_date_end,
                 legajo_state='baja',
                 eff_date=fields.Date.today(),
             )
@@ -410,7 +414,7 @@ class ONSCLegajoStagingWS7(models.Model):
             # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
             if same_ue:
                 incoming_contract.with_context(no_check_write=True).deactivate_legajo_contract(
-                    second_movement.fecha_vig + datetime.timedelta(days=-1),
+                    contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today()
                 )
@@ -437,17 +441,22 @@ class ONSCLegajoStagingWS7(models.Model):
             )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
+            if second_movement.fecha_vig == contract.date_start:
+                contract_date_end = second_movement.fecha_vig
+            else:
+                contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
+
             if new_contract.operating_unit_id != contract.operating_unit_id:
                 # DESACTIVA EL CONTRATO
                 contract.with_context(no_check_write=True, is_copy_job=False).deactivate_legajo_contract(
-                    second_movement.fecha_vig + datetime.timedelta(days=-1),
+                    contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today()
                 )
             else:
                 # DESACTIVA EL CONTRATO
                 contract.with_context(no_check_write=True).deactivate_legajo_contract(
-                    second_movement.fecha_vig + datetime.timedelta(days=-1),
+                    contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today()
                 )
@@ -588,8 +597,12 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
+        if record.fecha_vig == contract.date_end:
+            contract_date_end = record.fecha_vig
+        else:
+            contract_date_end = record.fecha_vig + datetime.timedelta(days=-1)
         contract.with_context(no_check_write=True).deactivate_legajo_contract(
-            record.fecha_vig + datetime.timedelta(days=-1),
+            contract_date_end,
             legajo_state='reserved',
             eff_date=fields.Date.today()
         )
@@ -726,11 +739,11 @@ class ONSCLegajoStagingWS7(models.Model):
             return Contract.search_count(args)
         return Contract.search(args, limit=1)
 
-    def _get_contract_copy(self, 
-            contract, 
-            record, 
-            legajo_state='active', 
-            link_tocontract=False, 
+    def _get_contract_copy(self,
+            contract,
+            record,
+            legajo_state='active',
+            link_tocontract=False,
             state_square_id=False,
             movement_description=False
         ):
