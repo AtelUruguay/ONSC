@@ -403,12 +403,16 @@ class ONSCLegajoStagingWS7(models.Model):
             # DESACTIVA EL CONTRATO SALIENTE (A)
             if second_movement.fecha_vig == contract.date_start:
                 contract_date_end = second_movement.fecha_vig
+                archive_contract = True
             else:
                 contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
+                archive_contract = False
+
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
                 contract_date_end,
                 legajo_state='baja',
                 eff_date=fields.Date.today(),
+                archive_contract=archive_contract
             )
 
             # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
@@ -416,7 +420,8 @@ class ONSCLegajoStagingWS7(models.Model):
                 incoming_contract.with_context(no_check_write=True).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
-                    eff_date=fields.Date.today()
+                    eff_date=fields.Date.today(),
+                    archive_contract=archive_contract
                 )
                 incoming_contract.write({
                     'causes_discharge_id': causes_discharge.id,
@@ -443,22 +448,26 @@ class ONSCLegajoStagingWS7(models.Model):
 
             if second_movement.fecha_vig == contract.date_start:
                 contract_date_end = second_movement.fecha_vig
+                archive_contract = True
             else:
                 contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
+                archive_contract = False
 
             if new_contract.operating_unit_id != contract.operating_unit_id:
                 # DESACTIVA EL CONTRATO
                 contract.with_context(no_check_write=True, is_copy_job=False).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
-                    eff_date=fields.Date.today()
+                    eff_date=fields.Date.today(),
+                    archive_contract=archive_contract
                 )
             else:
                 # DESACTIVA EL CONTRATO
                 contract.with_context(no_check_write=True).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
-                    eff_date=fields.Date.today()
+                    eff_date=fields.Date.today(),
+                    archive_contract=archive_contract
                 )
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
@@ -599,12 +608,15 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         if record.fecha_vig == contract.date_end:
             contract_date_end = record.fecha_vig
+            archive_contract = True
         else:
             contract_date_end = record.fecha_vig + datetime.timedelta(days=-1)
+            archive_contract = False
         contract.with_context(no_check_write=True).deactivate_legajo_contract(
             contract_date_end,
             legajo_state='reserved',
-            eff_date=fields.Date.today()
+            eff_date=fields.Date.today(),
+            archive_contract=archive_contract
         )
         self._contract_end_role_assignments(
             contract,
