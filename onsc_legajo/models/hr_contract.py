@@ -371,8 +371,13 @@ class HrContract(models.Model):
             vals.update({'inciso_dest_id': False, 'operating_unit_dest_id': False})
         self.write(vals)
 
-    def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False, inciso_dest_id=False,
-                                   operating_unit_dest_id=False):
+    def deactivate_legajo_contract(self,
+                                   date_end,
+                                   legajo_state='baja',
+                                   eff_date=False,
+                                   inciso_dest_id=False,
+                                   operating_unit_dest_id=False,
+                                   archive_contract=False):
         if self.eff_date and eff_date and self.eff_date > eff_date:
             raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
         vals = {'legajo_state': legajo_state}
@@ -382,6 +387,8 @@ class HrContract(models.Model):
             vals.update({'eff_date': str(eff_date)})
         else:
             vals.update({'eff_date': fields.Date.today()})
+        if archive_contract:
+            vals.update({'active': False})
 
         vals.update({'inciso_dest_id': inciso_dest_id})
         vals.update({'operating_unit_dest_id': operating_unit_dest_id})
