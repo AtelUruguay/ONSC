@@ -268,6 +268,7 @@ class ONSCCVMinimal(models.Model):
             data = {
                 'partner_id': partner_id.id,
                 'personal_phone': self.personal_phone,
+                'mobile_phone': self.mobile_phone,
                 'email': self.email,
                 'country_id': self.country_id.id,
                 'marital_status_id': self.marital_status_id.id,
