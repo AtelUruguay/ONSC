@@ -94,6 +94,19 @@
                     </group>
                     <notebook>
                         <page string="Funcionarios">
+                            <div class="oe_edit_only">
+                                <button name="button_select_all" class="btn btn-primary oe_edit_only"
+                                    type="object" string="Marcar todos"
+                                    icon="fa-check-square"
+                                    groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
+                                    states="draft" />
+                                <button name="button_unselect_all" class="btn btn-primary oe_edit_only"
+                                    style="margin-left: 5px;"
+                                    type="object" string="Desmarcar todos"
+                                    icon="fa-square-o"
+                                    groups="onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_mass_cambio_uo_recursos_humanos_ue"
+                                    states="draft" />
+                            </div>
                             <field name="line_ids">
                                 <tree editable="top" create="false"
                                     decoration-danger="state=='error'">
