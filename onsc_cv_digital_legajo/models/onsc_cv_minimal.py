@@ -251,7 +251,7 @@ class ONSCCVMinimal(models.Model):
                 # 'cv_source_info_auth_type': 'dnic',
             }
             partner = Partner.with_context(can_update_contact_cv=True).create(data_partner)
-            partner.suspend_security().update_dnic_values(jump_error=True)
+            partner.suspend_security().update_dnic_values()
             is_dnic_info_complete = partner.cv_dnic_name_1 and partner.cv_dnic_lastname_1
             if (not partner.cv_first_name or not partner.cv_last_name_1) and is_dnic_info_complete:
                 partner.write({
