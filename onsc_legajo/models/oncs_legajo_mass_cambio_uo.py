@@ -181,6 +181,13 @@ class ONSCLegajoMassCambioUO(models.Model):
         self.line_ids.filtered(lambda x: not x.is_included).unlink()
         self._search_contracts()
 
+    def button_select_all(self):
+        self.line_ids.write({'is_included': True})
+
+    def button_unselect_all(self):
+        self.line_ids.write({'is_included': False})
+
+
     def _search_contracts(self):
         Line = self.env['onsc.legajo.mass.cambio.uo.line']
         default_security_job = self.env['onsc.legajo.security.job'].sudo().search([
