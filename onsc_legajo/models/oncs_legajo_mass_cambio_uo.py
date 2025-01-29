@@ -219,8 +219,6 @@ class ONSCLegajoMassCambioUO(models.Model):
                         'cambio_uo_id': self.id,
                         'employee_id': employee_id,
                         'department_id': self.department_id.id,
-                        'target_department_id': self.target_department_id.id,
-                        'start_date': self.start_date,
                         'security_job_id': default_security_job.id,
                         'contract_ids': [contract_id],
                         'legajo_state_id': legajo_state_id
@@ -281,8 +279,12 @@ class ONSCLegajoMassCambioUOLine(models.Model):
     contract_id = fields.Many2one('hr.contract', 'Contrato')
     job_id = fields.Many2one('hr.job', 'Puesto', compute='_compute_job_info', store=True)
     department_id = fields.Many2one('hr.department', 'UO origen', compute='_compute_job_info', store=True)
-    target_department_id = fields.Many2one('hr.department', 'UO destino')
-    start_date = fields.Date(string='Fecha desde')
+    target_department_id = fields.Many2one(
+        'hr.department',
+        'UO destino',
+        related='cambio_uo_id.target_department_id', store=True
+    )
+    start_date = fields.Date(string='Fecha desde', related='cambio_uo_id.start_date', store=True)
     security_job_id = fields.Many2one(
         "onsc.legajo.security.job", string="Seguridad de puesto")
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
@@ -291,7 +293,8 @@ class ONSCLegajoMassCambioUOLine(models.Model):
         string='Departamento donde desempeña funciones')
     op_cambio_uo_id = fields.Many2one(
         'onsc.legajo.cambio.uo',
-        string='Cambio de UO')
+        string='Cambio de UO',
+        ondelete="set null")
     state = fields.Selection([
         ('draft', 'Borrador'),
         ('confirm', 'Confirmado'),
@@ -391,6 +394,8 @@ class ONSCLegajoMassCambioUOLine(models.Model):
 
     def button_open_cambio_uo(self):
         self.ensure_one()
+        if not self.op_cambio_uo_id:
+            return
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'onsc.legajo.cambio.uo',
