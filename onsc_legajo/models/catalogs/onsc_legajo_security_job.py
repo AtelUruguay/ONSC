@@ -18,7 +18,7 @@ class ONSCLegajoSecurityJob(models.Model):
     user_role_ids_domain = fields.Char(default=lambda self: self._user_role_ids_domain(),
                                        compute='_compute_user_role_ids_domain')
     sequence = fields.Integer(string="Nivel", compute='_compute_sequence', store=True)
-    is_default_mass_change_uo = fields.Boolean(string='Seguridad por defecto para el cambio de UO')
+    is_default_mass_change_uo = fields.Boolean(string='Seguridad por defecto para el cambio de UO masivo')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)', u'El nombre de la seguridad de puesto debe ser única'),
