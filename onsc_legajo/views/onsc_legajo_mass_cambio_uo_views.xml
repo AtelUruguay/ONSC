@@ -19,7 +19,7 @@
         <field name="name">view.onsc.legajo.mass.cambio.uo.form</field>
         <field name="model">onsc.legajo.mass.cambio.uo</field>
         <field name="arch" type="xml">
-            <form string="Cambio masivo de UO" copy="False">
+            <form string="Cambio masivo de UO" duplicate="0">
                 <header>
                     <button name="button_confirm" class="btn btn-primary"
                         confirm="¿Está seguro que desea confirmar el cambio de UO de estos registros?"
@@ -109,11 +109,12 @@
                             </div>
                             <field name="line_ids">
                                 <tree editable="top" create="false"
-                                    decoration-danger="state=='error'">
+                                    decoration-danger="state=='error'"
+                                    decoration-info="not contract_id">
                                     <field name="is_included" style="width:20px" />
                                     <field name="employee_id" readonly="1" force_save="1"
                                         options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
-                                    <field name="contract_id" required="1"
+                                    <field name="contract_id"
                                         domain="contract_id_domain"
                                         attrs="{'readonly': [('is_contract_readonly', '=', True)]}"
                                         options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"

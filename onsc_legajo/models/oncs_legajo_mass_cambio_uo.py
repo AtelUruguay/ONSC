@@ -165,6 +165,7 @@ class ONSCLegajoMassCambioUO(models.Model):
         return super(ONSCLegajoMassCambioUO, self).unlink()
 
     def button_confirm(self):
+        self._validate_confirm()
         for rec in self:
             rec.line_ids.action_confirm()
         self.write({'state': 'confirm'})
@@ -187,6 +188,10 @@ class ONSCLegajoMassCambioUO(models.Model):
     def button_unselect_all(self):
         self.line_ids.write({'is_included': False})
 
+    def _validate_confirm(self):
+        for rec in self:
+            if rec.state == 'draft' and rec.line_ids.filtered(lambda x: x.is_included and not x.contract_id):
+                raise ValidationError(_("Existen funcionarios seleccionados para cambio de UO sin indicar contrato."))
 
     def _search_contracts(self):
         Line = self.env['onsc.legajo.mass.cambio.uo.line']

@@ -226,13 +226,7 @@ class ONSCLegajoCambioUO(models.Model):
                     record.job_id,
                     record.department_id,
                     record.date_start):
-                raise ValidationError(_("No se puede tener más un responsable para la misma UO"))
-
-            # cond1 = not is_same_department or not is_same_security
-            # if cond1 and record.is_responsable_uo and not Job.is_job_available_for_manager(
-            #         record.department_id,
-            #         record.date_start):
-            #     raise ValidationError(_("No se puede tener más un responsable para la misma UO"))
+                raise ValidationError(_("No se puede tener más de un responsable para la misma UO"))
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -246,12 +240,6 @@ class ONSCLegajoCambioUO(models.Model):
                 record.cv_birthdate = False
                 record.cv_sex = False
                 record.contract_id = False
-
-    # EL INCISO Y LA UE LO DAN EL CONTRATO, NO HAY QUE ESPERAR A TENER UO SELECCIONADA
-    # @api.onchange('department_id')
-    # def onchange_department_id(self):
-    #     self.operating_unit_id = self.department_id.operating_unit_id.id
-    #     self.inciso_id = self.department_id.inciso_id.id
 
     @api.onchange('contract_id')
     def onchange_department_id_contract_id(self):
