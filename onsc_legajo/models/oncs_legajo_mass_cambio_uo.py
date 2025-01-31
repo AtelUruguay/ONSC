@@ -93,7 +93,9 @@ class ONSCLegajoMassCambioUO(models.Model):
     @api.onchange('operating_unit_id')
     def _onchange_operating_unit_id(self):
         self.department_id = False
+        self.target_department_id = False
         self.employee_id = False
+        self.line_ids = [(5, 0)]
 
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
@@ -223,7 +225,6 @@ class ONSCLegajoMassCambioUO(models.Model):
                     buked_vals_dict[employee_id] = {
                         'cambio_uo_id': self.id,
                         'employee_id': employee_id,
-                        'department_id': self.department_id.id,
                         'security_job_id': default_security_job.id,
                         'contract_ids': [contract_id],
                         'legajo_state_id': legajo_state_id
@@ -241,15 +242,17 @@ class ONSCLegajoMassCambioUO(models.Model):
         args = [
             ("legajo_state", "in", ("incoming_commission", "active")),
             ('operating_unit_id', '=', self.operating_unit_id.id),
-            ('employee_id', '!=', self.env.user.employee_id.id)
+            ('employee_id', '!=', self.env.user.employee_id.id),
         ]
         if employee_id and not department_id:
             args.append(('employee_id', '=', employee_id))
             return self.env['hr.contract'].sudo().search(args)
         elif department_id:
+            today = fields.Date.today()
             args = [
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
-                ('department_id', '=', department_id)
+                ('department_id', '=', department_id),
+                '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)
             ]
             if employee_id:
                 args.append(('employee_id', '=', employee_id))
@@ -346,6 +349,9 @@ class ONSCLegajoMassCambioUOLine(models.Model):
                 else:
                     rec.job_id = False
                     rec.department_id = False
+            else:
+                rec.job_id = False
+                rec.department_id = False
 
     def action_confirm(self):
         CambioUO = self.env['onsc.legajo.cambio.uo'].suspend_security()
