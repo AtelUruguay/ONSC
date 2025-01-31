@@ -93,7 +93,9 @@ class ONSCLegajoMassCambioUO(models.Model):
     @api.onchange('operating_unit_id')
     def _onchange_operating_unit_id(self):
         self.department_id = False
+        self.target_department_id = False
         self.employee_id = False
+        self.line_ids = [(5, 0)]
 
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
@@ -165,6 +167,7 @@ class ONSCLegajoMassCambioUO(models.Model):
         return super(ONSCLegajoMassCambioUO, self).unlink()
 
     def button_confirm(self):
+        self._validate_confirm()
         for rec in self:
             rec.line_ids.action_confirm()
         self.write({'state': 'confirm'})
@@ -187,6 +190,10 @@ class ONSCLegajoMassCambioUO(models.Model):
     def button_unselect_all(self):
         self.line_ids.write({'is_included': False})
 
+    def _validate_confirm(self):
+        for rec in self:
+            if rec.state == 'draft' and rec.line_ids.filtered(lambda x: x.is_included and not x.contract_id):
+                raise ValidationError(_("Existen funcionarios seleccionados para cambio de UO sin indicar contrato."))
 
     def _search_contracts(self):
         Line = self.env['onsc.legajo.mass.cambio.uo.line']
@@ -218,7 +225,6 @@ class ONSCLegajoMassCambioUO(models.Model):
                     buked_vals_dict[employee_id] = {
                         'cambio_uo_id': self.id,
                         'employee_id': employee_id,
-                        'department_id': self.department_id.id,
                         'security_job_id': default_security_job.id,
                         'contract_ids': [contract_id],
                         'legajo_state_id': legajo_state_id
@@ -236,15 +242,17 @@ class ONSCLegajoMassCambioUO(models.Model):
         args = [
             ("legajo_state", "in", ("incoming_commission", "active")),
             ('operating_unit_id', '=', self.operating_unit_id.id),
-            ('employee_id', '!=', self.env.user.employee_id.id)
+            ('employee_id', '!=', self.env.user.employee_id.id),
         ]
         if employee_id and not department_id:
             args.append(('employee_id', '=', employee_id))
             return self.env['hr.contract'].sudo().search(args)
         elif department_id:
+            today = fields.Date.today()
             args = [
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
-                ('department_id', '=', department_id)
+                ('department_id', '=', department_id),
+                '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)
             ]
             if employee_id:
                 args.append(('employee_id', '=', employee_id))
@@ -341,6 +349,9 @@ class ONSCLegajoMassCambioUOLine(models.Model):
                 else:
                     rec.job_id = False
                     rec.department_id = False
+            else:
+                rec.job_id = False
+                rec.department_id = False
 
     def action_confirm(self):
         CambioUO = self.env['onsc.legajo.cambio.uo'].suspend_security()
