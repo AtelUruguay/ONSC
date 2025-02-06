@@ -408,7 +408,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
                 archive_contract = False
 
-            contract.with_context(no_check_write=True).deactivate_legajo_contract(
+            contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
                 contract_date_end,
                 legajo_state='baja',
                 eff_date=fields.Date.today(),
@@ -417,7 +417,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
             # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
             if same_ue:
-                incoming_contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                incoming_contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today(),
@@ -455,15 +455,17 @@ class ONSCLegajoStagingWS7(models.Model):
 
             if new_contract.operating_unit_id != contract.operating_unit_id:
                 # DESACTIVA EL CONTRATO
-                contract.with_context(no_check_write=True, is_copy_job=False).deactivate_legajo_contract(
+                contract.with_context(
+                    no_check_write=True,is_copy_job=False,no_check_date_range=True
+                ).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today(),
                     archive_contract=archive_contract
-                )
+                    )
             else:
                 # DESACTIVA EL CONTRATO
-                contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today(),
@@ -612,7 +614,7 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             contract_date_end = record.fecha_vig + datetime.timedelta(days=-1)
             archive_contract = False
-        contract.with_context(no_check_write=True).deactivate_legajo_contract(
+        contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
             contract_date_end,
             legajo_state='reserved',
             eff_date=fields.Date.today(),
@@ -816,7 +818,12 @@ class ONSCLegajoStagingWS7(models.Model):
         new_contract = self.env['hr.contract'].suspend_security().create(vals)
         return new_contract
 
-    def _copy_jobs(self, source_contract, target_contract, operation='ws7'):
+    def _copy_jobs(
+        self,
+        source_contract,
+        target_contract,
+        operation='ws7',
+    ):
         """
         :param source_contract: Recordset de contrato
         :param target_contract: Recordset de contrato
@@ -830,21 +837,30 @@ class ONSCLegajoStagingWS7(models.Model):
         if target_contract.operating_unit_id != source_contract.operating_unit_id:
             self._contract_end_role_assignments(source_contract, target_contract.date_start, operation=operation)
             return jobs
-        for job_id in source_contract.job_ids.filtered(lambda x:
-                                                       (x.end_date is False or x.end_date >= fields.Date.today())
-                                                       and x.start_date <= target_contract.date_start):
-            new_job = self.env['hr.job'].suspend_security().create_job(
-                target_contract,
-                job_id.department_id,
-                target_contract.date_start,
-                job_id.security_job_id,
-                is_uo_manager=job_id.is_uo_manager,
-                extra_security_roles=job_id.role_extra_ids,
-                source_job=job_id)
+        for job in source_contract.job_ids:
+            is_future_job = job.start_date > target_contract.date_start
+            if job.end_date is False or job.end_date >= target_contract.date_start or is_future_job:
+                if job.start_date < target_contract.date_start:
+                    job_date_start = target_contract.date_start
+                else:
+                    job_date_start = job.start_date
+                if job.end_date:
+                    job_date_end = job.end_date
+                else:
+                    job_date_end = False
+                new_job = self.env['hr.job'].suspend_security().create_job(
+                    target_contract,
+                    job.department_id,
+                    job_date_start,
+                    job.security_job_id,
+                    is_uo_manager=job.is_uo_manager,
+                    extra_security_roles=job.role_extra_ids,
+                    end_date=job_date_end,
+                    source_job=job)
 
-            self._copy_role_assignments(target_contract, job_id, new_job, operation=operation)
-            self._copy_jobs_update_new_job_data(job_id, new_job)
-            jobs |= new_job
+                self._copy_role_assignments(target_contract, job, new_job, operation=operation)
+                self._copy_jobs_update_new_job_data(job, new_job)
+                jobs |= new_job
         return jobs
 
     def _copy_role_assignments(self, target_contract, job, new_job, operation='ws7'):

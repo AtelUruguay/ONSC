@@ -127,10 +127,12 @@ class HrJob(models.Model):
 
     @api.constrains("contract_id", "start_date", "end_date")
     def _check_date_range_into_contract(self):
+        if self._context.get('no_check_date_range'):
+            return True
         for record in self:
             if record.start_date < record.contract_id.date_start:
                 raise ValidationError(_("La fecha desde está fuera del rango de fechas del contrato"))
-            if record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
+            if record.contract_id.active and record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
                 raise ValidationError(_("La fecha hasta está fuera del rango de fechas del contrato"))
 
     @api.onchange('start_date')
@@ -262,13 +264,16 @@ class HrJob(models.Model):
         role_extra_ids = [(5,)]
         if extra_security_roles:
             for extra_security_role in extra_security_roles:
-                role_extra_ids.append((0, 0, {
+                role_extra_vals = {
                     'user_role_id': extra_security_role.user_role_id.id,
                     'type': 'manual',
                     'start_date': start_date,
                     'end_date': False,
                     'active': extra_security_role.active
-                }))
+                }
+                if end_date:
+                    role_extra_vals['end_date'] = end_date
+                role_extra_ids.append((0, 0, role_extra_vals))
         job = self.suspend_security().create({
             'name': '%s - %s' % (contract.display_name, str(start_date)),
             'employee_id': contract.employee_id.id,
@@ -289,12 +294,17 @@ class HrJob(models.Model):
         return job
 
     def deactivate(self, date_end):
-        for job in self.suspend_security().filtered(
-                lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
+        for job in self.suspend_security():
+            if job.end_date and job.end_date <= date_end:
+                continue
             job.role_assignment_ids.filtered(lambda x: x.date_end is False or x.date_end > date_end).write({
                 'date_end': date_end
             })
-            job.end_date = date_end
+            if job.start_date > date_end:
+                job_end_date = job.start_date
+            else:
+                job_end_date = date_end
+            job.end_date = job_end_date
             job.suspend_security().onchange_end_date()
             if date_end < fields.Date.today() and job.is_uo_manager:
                 job.suspend_security().mapped('department_id').filtered(
@@ -393,10 +403,11 @@ class HrJobRoleLine(models.Model):
     def _check_roles_duplicated(self):
         if self._context.get('bulked_creation'):
             return True
-        for record in self:
-            job_roles = record.job_id.role_ids
-            job_roles |= record.job_id.role_extra_ids
-            job_roles = job_roles.filtered(
+        for record in self.filtered(lambda x: x.type != 'system'):
+            # Se comenta porque no debe controlar contra roles del Tipo de Seguridad
+            # job_roles = record.job_id.role_ids
+            # job_roles = record.job_id.role_extra_ids
+            job_roles = record.job_id.role_extra_ids.filtered(
                 lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
             if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date)) or (x.end_date and x.end_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date))):
                 raise ValidationError(_("El rol configurado no puede repetirse para el mismo puesto en el mismo "
