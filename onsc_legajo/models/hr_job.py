@@ -127,6 +127,8 @@ class HrJob(models.Model):
 
     @api.constrains("contract_id", "start_date", "end_date")
     def _check_date_range_into_contract(self):
+        if self._context.get('no_check_date_range'):
+            return True
         for record in self:
             if record.start_date < record.contract_id.date_start:
                 raise ValidationError(_("La fecha desde está fuera del rango de fechas del contrato"))

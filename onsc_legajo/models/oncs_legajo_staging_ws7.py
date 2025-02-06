@@ -408,16 +408,16 @@ class ONSCLegajoStagingWS7(models.Model):
                 contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
                 archive_contract = False
 
-            contract.with_context(no_check_write=True).deactivate_legajo_contract(
+            contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
                 contract_date_end,
                 legajo_state='baja',
                 eff_date=fields.Date.today(),
-                archive_contract=archive_contract
+                archive_contract=archive_contract,
             )
 
             # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
             if same_ue:
-                incoming_contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                incoming_contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today(),
@@ -455,15 +455,17 @@ class ONSCLegajoStagingWS7(models.Model):
 
             if new_contract.operating_unit_id != contract.operating_unit_id:
                 # DESACTIVA EL CONTRATO
-                contract.with_context(no_check_write=True, is_copy_job=False).deactivate_legajo_contract(
+                contract.with_context(
+                    no_check_write=True,is_copy_job=False,no_check_date_range=True
+                ).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today(),
                     archive_contract=archive_contract
-                )
+                    )
             else:
                 # DESACTIVA EL CONTRATO
-                contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today(),
@@ -612,7 +614,7 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             contract_date_end = record.fecha_vig + datetime.timedelta(days=-1)
             archive_contract = False
-        contract.with_context(no_check_write=True).deactivate_legajo_contract(
+        contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
             contract_date_end,
             legajo_state='reserved',
             eff_date=fields.Date.today(),
