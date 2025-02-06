@@ -412,7 +412,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 contract_date_end,
                 legajo_state='baja',
                 eff_date=fields.Date.today(),
-                archive_contract=archive_contract,
+                archive_contract=archive_contract
             )
 
             # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
