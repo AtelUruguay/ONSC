@@ -34,6 +34,7 @@ class HrJob(models.Model):
             security_job,
             is_uo_manager=False,
             extra_security_roles=False,
+            end_date=False,
             source_job=False
     ):
         new_job = super(HrJob, self).create_job(
@@ -43,6 +44,7 @@ class HrJob(models.Model):
             security_job,
             is_uo_manager=is_uo_manager,
             extra_security_roles=extra_security_roles,
+            end_date=end_date,
             source_job=source_job
         )
         if not self._context.get('ignore_evaluation_list_in', False):
