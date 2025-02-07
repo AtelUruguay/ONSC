@@ -489,7 +489,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         except Exception as e:
             raise ValidationError(
                 _('El archivo no es válido o no tiene el formato correcto. Detalle: %s') % tools.ustr(e))
-            
+
     def _update_partner_info_if_needed(self, partner):
         if not partner:
             return False
