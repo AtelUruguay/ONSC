@@ -40,6 +40,30 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     _description = 'Modelo abstracto de catálogos condicionales'
     _fields_2check_unicity = ['name', 'state']
 
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        """Add in form view divs with info status off validation """
+        res = super(ONSCCVAbstractConfig, self).fields_view_get(view_id, view_type, toolbar, submenu)
+        if view_type == 'form':
+            doc = etree.XML(res['arch'])
+            for node in doc.xpath('//sheet'):
+                node.insert(0, self.div_oe_button_box)
+            xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
+            res['arch'] = xarch
+            res['fields'] = xfields
+        return res
+
+    @property
+    def div_oe_button_box(self):
+        return etree.XML(_("""
+                <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="action_show_cv"
+                                string="Ver CV"
+                                states="to_validate"
+                                groups="onsc_cv_digital.group_validador_catalogos_view_cv_cv"
+                                type="object" icon="fa-copy"/>
+                    </div>"""))
+
     def _default_state(self):
         if self.user_has_groups('onsc_cv_digital.group_gestor_catalogos_cv') and self._context.get('is_config'):
             return 'validated'
@@ -173,6 +197,9 @@ class ONSCCVAbstractConfig(models.AbstractModel):
         self._check_validation_status()
         self.write({'state': 'validated'})
         self.sudo()._send_validation_email()
+
+    def action_show_cv(self):
+        return self.env['onsc.cv.digital']._action_open_partner_minimal_cv(self.create_uid.partner_id.id)
 
     def _send_validation_email(self):
         """

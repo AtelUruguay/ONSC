@@ -684,6 +684,20 @@ class ONSCCVDigital(models.Model):
             action.update({'res_id': my_cv.id})
         return action
 
+    def _action_open_partner_minimal_cv(self, partner_id):
+        action = self.sudo().env.ref('onsc_cv_digital.onsc_cv_digital_partner_minimal_client_action').read()[0]
+        if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
+            cv = self.search([
+                ('partner_id', '=', partner_id),
+                ('active', 'in', [False, True]),
+                ('type', '=', 'cv')], limit=1)
+            if not cv:
+                return
+            action.update({'views': [(self.get_readonly_formview_id(), 'form')]})
+            action.update({'res_id': cv.id})
+            return action
+        return
+
     def get_readonly_formview_id(self):
         """
         Crea una vista form con campos readonly la primera vez y luego es llamada si el CV está inactivo

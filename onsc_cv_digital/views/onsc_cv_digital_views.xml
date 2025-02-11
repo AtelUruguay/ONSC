@@ -163,7 +163,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Información general">
+                        <page string="Información general" invisible="context.get('show_minimal_cv', False)">
                             <div class="float-right">
                                 <field name="cv_help_general_info"/>
                             </div>
@@ -470,7 +470,7 @@
                             </div>
                             <field name="tutoring_orientation_supervision_ids"/>
                         </page>
-                        <page string="Discapacidad">
+                        <page string="Discapacidad" invisible="context.get('show_minimal_cv', False)">
                             <div class="float-right">
                                 <field name="cv_help_disability"/>
                             </div>
@@ -689,6 +689,14 @@
         <field name="res_model">onsc.cv.digital</field>
         <field name="view_mode">form</field>
         <field name="context">{'user_cv': True}</field>
+    </record>
+
+    <record id='onsc_cv_digital_partner_minimal_client_action' model='ir.actions.act_window'>
+        <field name="name">Currículum Digital</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.cv.digital</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'user_cv': True, 'show_minimal_cv': True}</field>
     </record>
 
     <record id='onsc_cv_digital_action' model='ir.actions.act_window'>

@@ -29,6 +29,12 @@
         <field name="comment">Validador documental de llamados</field>
         <field name="category_id" ref="module_category_onsc_cv_digital"/>
     </record>
+
+    <record id="group_validador_catalogos_view_cv_cv" model="res.groups">
+        <field name="name">Acceso a CVD para validador de catálogos</field>
+        <field name="comment">Acceso a CVD para validador de catálogos</field>
+        <field name="category_id" ref="module_category_onsc_cv_digital"/>
+    </record>
     </data>
 
     <data>
