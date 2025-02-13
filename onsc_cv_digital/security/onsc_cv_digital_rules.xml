@@ -9,10 +9,10 @@
     </record>
 
     <record id="onsc_cv_digital_validador_documental_admincv_access" model="ir.rule">
-        <field name="name">CV - Curriculum acceso Validador documental y Administrador CV</field>
+        <field name="name">CV - Curriculum acceso Validador documental, Condicional y Administrador CV</field>
         <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital"/>
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('onsc_cv_digital.group_validador_documental_cv')),(4, ref('onsc_cv_digital.group_manager_cv'))]"/>
+        <field name="groups" eval="[(4, ref('onsc_cv_digital.group_validador_documental_cv')),(4, ref('onsc_cv_digital.group_manager_cv')),(4, ref('onsc_cv_digital.group_validador_catalogos_view_cv_cv'))]"/>
     </record>
 </data>
 </odoo>
