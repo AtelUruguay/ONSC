@@ -133,6 +133,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                     node_form.set('create', '0')
                     node_form.set('duplicate', '0')
                     node_form.set('delete', '0')
+                    node_form.set('edit', '0')
                 for node in doc.xpath("//field"):
                     if node.get("name") == "active":
                         node.getparent().remove(node)
@@ -140,6 +141,9 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                         node.set("readonly", "1")
                     if node.get("name") == "state":
                         any_node_state = True
+                for node in doc.xpath("//div"):
+                    if node.get("class") == "oe_chatter":
+                        node.getparent().remove(node)
                 if not any_node_state and self._fields.get('state'):
                     etree.SubElement(doc, 'field', {'name': 'state', 'invisible': '1'})
                 form_id = self.env['ir.ui.view'].create(
