@@ -14,6 +14,7 @@
                     <button class="oe_stat_button" name="button_actualizar_dnic"
                                 string="Actualizar datos con DNIC"
                                 groups="onsc_cv_digital.group_user_cv"
+                                invisible="context.get('show_minimal_cv', False)"
                                 type="object" icon="fa-link"/>
                 </button>
             </field>
