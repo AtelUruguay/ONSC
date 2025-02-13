@@ -18,20 +18,16 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="institution_id" force_save="1"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': [('internal_course', '=', 'yes')]}"
-                                   options="{'no_open':true}"
                                    domain="institution_id_domain"
                                    context="{'default_is_unformal_education': True,'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="subinstitution_id" force_save="1"
-                                   options="{'no_open':true}"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': ['|',('institution_id', '=', False),('internal_course', '=', 'yes')]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="internal_course_name" attrs="{'invisible': [('internal_course', '=', 'no')], 'required': [('internal_course', '=', 'yes')]}"/>
                             <field name="institution_cert_id"
-                                   options="{'no_open':true}"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"/>
                             <field name="subinstitution_cert_id"
-                                   options="{'no_open':true}"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')], 'readonly': [('institution_cert_id', '=', False)]}"
                                    context="{'default_institution_cert_id': institution_cert_id, 'is_readonly': True}"
                                    domain="[('institution_cert_id', '=', institution_cert_id)]"/>

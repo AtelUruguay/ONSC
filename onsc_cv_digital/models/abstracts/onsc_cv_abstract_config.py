@@ -128,8 +128,20 @@ class ONSCCVAbstractConfig(models.AbstractModel):
             if form_parent_id:
                 arch = form_parent_id.arch
                 doc = etree.XML(arch)
+                any_node_state = False
+                for node_form in doc.xpath("//form"):
+                    node_form.set('create', '0')
+                    node_form.set('duplicate', '0')
+                    node_form.set('delete', '0')
                 for node in doc.xpath("//field"):
-                    node.set("readonly", "1")
+                    if node.get("name") == "active":
+                        node.getparent().remove(node)
+                    else:
+                        node.set("readonly", "1")
+                    if node.get("name") == "state":
+                        any_node_state = True
+                if not any_node_state and self._fields.get('state'):
+                    etree.SubElement(doc, 'field', {'name': 'state', 'invisible': '1'})
                 form_id = self.env['ir.ui.view'].create(
                     {'name': '%s.form.readonly' % self._name,
                      "model": self._name,
