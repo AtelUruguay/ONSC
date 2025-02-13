@@ -35,29 +35,25 @@
                 <header>
                 </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
+                    <div class="oe_button_box" name="button_box" invisible="context.get('show_minimal_cv', False)">
                         <button class="oe_stat_button" name="button_copy_cv"
                                 string="Mis postulaciones"
                                 context="{'from_cv_action': True}"
                                 groups="onsc_cv_digital.group_user_cv"
-                                invisible="context.get('show_minimal_cv', False)"
                                 type="object" icon="fa-copy"/>
                         <button class="oe_stat_button" name="%(onsc_cv_digital.onsc_cv_report_wizard_action)d"
                                 string="Imprimir CV"
                                 groups="onsc_cv_digital.group_user_cv"
-                                invisible="context.get('show_minimal_cv', False)"
                                 type="action" icon="fa-print"/>
                         <button class="oe_stat_button" name="button_unlink"
                                 confirm="¿Está seguro que desea eliminar su CV? Si selecciona Aceptar el mismo se eliminará permanentemente perdiéndose todos los datos ingresados"
                                 string="Eliminar"
                                 groups="onsc_cv_digital.group_user_cv"
-                                invisible="context.get('show_minimal_cv', False)"
                                 type="object" icon="fa-trash"/>
                         <button class="oe_stat_button" name="toggle_active"
                                 confirm="¿Está seguro de que desea inactivar su CV?"
                                 string="Inactivar"
                                 groups="onsc_cv_digital.group_user_cv"
-                                invisible="context.get('show_minimal_cv', False)"
                                 attrs="{'invisible': [('active', '=', False)]}"
                                 type="object" icon="fa-archive"/>
                     </div>
