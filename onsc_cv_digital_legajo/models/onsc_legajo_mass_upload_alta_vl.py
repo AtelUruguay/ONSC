@@ -665,6 +665,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     # )
                 alta_vl_id.with_context(no_update_extra=True)._update_altavl_info()
                 line.write({'state': 'done'})
+                self.env.cr.commit()
                 alta_vl_id.with_context({'not_check_attached_document': True}).check_required_fields_ws4()
                 self.env.cr.commit()
             except Exception as e:
