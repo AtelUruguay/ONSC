@@ -7,56 +7,118 @@ class ONSCLegajoBaseView(models.Model):
     _name = "onsc.legajo.base.view"
     _description = "Legajo Vista Base"
     _auto = False
-    _order = "legajo_id"
-    legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
-    contract_id = fields.Many2one('hr.contract', string="Contrato")
-    legajo_state = fields.Selection(
-        [('active', 'Activo'), ('egresed', 'Egresado')],
-        string='Estado del funcionario',
-    )
-    contract_legajo_state = fields.Selection([
-        ('active', 'Activo'),
-        ('baja', 'Baja'),
-        ('reserved', 'Reservado'),
-        ('outgoing_commission', 'Comisión saliente'),
-        ('incoming_commission', 'Comisión entrante')], string='Estado del contrato')
-    job_id = fields.Many2one('hr.job', string="Puesto")
-    job_name = fields.Char(
-        string='Nombre del puesto',
-        required=False)
-    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
-    employee_id = fields.Many2one('hr.employee', string="Funcionario")
-    department_id = fields.Many2one('hr.department', string="UO")
-    start_date = fields.Date(string='Fecha desde')
-    end_date = fields.Date(string='Fecha hasta')
-    active_job_qty = fields.Integer(string='Cantidad de puestos activos (por Legajo)')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
 SELECT
-    contract.legajo_id,
+row_number() OVER(ORDER BY legajo_id, contract_id, type, main_query.job_id) AS id, *
+FROM
+--CONTRATO ACTIVO SIN PUESTOS ACTIVOS
+(SELECT
+    base_contract_view.*,
+    NULL AS job_id,
+    NULL AS job_name,
+    NULL AS security_job_id,
+    NULL AS department_id,
+    NULL AS start_date,
+    NULL AS end_date,
+    NULL AS is_uo_manager
+FROM
+(SELECT
+    contract.legajo_id AS legajo_id,
     contract.id AS contract_id,
-    legajo.legajo_state AS legajo_state,
     contract.legajo_state AS contract_legajo_state,
-    job.id AS job_id,
-    job.name AS job_name,
-    job.security_job_id AS security_job_id,
     contract.inciso_id,
     contract.operating_unit_id,
     contract.employee_id,
-    job.department_id,
-    job.start_date AS start_date,
-    job.end_date AS end_date,
-    'system' AS type,
-    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND legajo_id = legajo.id) AS active_job_qty
+    'active' AS type,
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
+    contract.inciso_origin_id AS inciso_origin_id,
+    contract.operating_unit_origin_id AS operating_unit_origin_id,
+    contract.inciso_dest_id AS inciso_dest_id,
+    contract.operating_unit_dest_id AS operating_unit_dest_id,
+    contract.regime_id AS regime_id,
+    contract.commission_regime_id AS commission_regime_id,
+    contract.descriptor1_id AS descriptor1_id,
+    contract.descriptor2_id AS descriptor2_id,
+    contract.descriptor3_id AS descriptor3_id,
+    contract.descriptor4_id AS descriptor4_id,
+    contract.nro_doc,
+    contract.create_date AS contract_create_date
 FROM
-    hr_contract contract
-LEFT JOIN hr_job job ON job.contract_id = contract.id
-LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
-WHERE
-    (job.start_date <= CURRENT_DATE AND (job.end_date IS NULL OR job.end_date >= CURRENT_DATE)) OR
-    job.id IS NULL AND contract.legajo_state <> 'baja'
-)''' % (self._table,))
+    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
+WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty = 0
+UNION ALL
+--CONTRATO ACTIVO CON PUESTOS ACTIVOS
+SELECT
+    base_contract_view.*,
+    hr_job.id AS job_id,
+    hr_job.name AS job_name,
+    hr_job.security_job_id AS security_job_id,
+    hr_job.department_id AS department_id,
+    hr_job.start_date AS start_date,
+    hr_job.end_date AS end_date,
+    hr_job.is_uo_manager as is_uo_manager
+FROM
+ (SELECT
+    contract.legajo_id AS legajo_id,
+    contract.id AS contract_id,
+    contract.legajo_state AS contract_legajo_state,
+    contract.inciso_id,
+    contract.operating_unit_id,
+    contract.employee_id,
+    'active' AS type,
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
+    contract.inciso_origin_id AS inciso_origin_id,
+    contract.operating_unit_origin_id AS operating_unit_origin_id,
+    contract.inciso_dest_id AS inciso_dest_id,
+    contract.operating_unit_dest_id AS operating_unit_dest_id,
+    contract.regime_id AS regime_id,
+    contract.commission_regime_id AS commission_regime_id,
+    contract.descriptor1_id AS descriptor1_id,
+    contract.descriptor2_id AS descriptor2_id,
+    contract.descriptor3_id AS descriptor3_id,
+    contract.descriptor4_id AS descriptor4_id,
+    contract.nro_doc,
+    contract.create_date AS contract_create_date
+FROM
+    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
+LEFT JOIN hr_job ON hr_job.contract_id = base_contract_view.contract_id
+WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty > 0 AND (end_date IS NULL OR end_date > CURRENT_DATE)
+--CONTRATO SALIENTE TOMAR EL ULTIMO PUESTO
+UNION ALL
+SELECT
+    base_contract_view.*,
+    (SELECT id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_id,
+    (SELECT name FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_name,
+    (SELECT security_job_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS security_job_id,
+    (SELECT department_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS department_id,
+    (SELECT start_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS start_date,
+    (SELECT end_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS end_date,
+    (SELECT is_uo_manager FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS is_uo_manager
+FROM
+(SELECT
+    contract.legajo_id AS legajo_id,
+    contract.id AS contract_id,
+    contract.legajo_state AS contract_legajo_state,
+    contract.inciso_id,
+    contract.operating_unit_id,
+    contract.employee_id,
+    'active' AS type,
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
+    contract.inciso_origin_id AS inciso_origin_id,
+    contract.operating_unit_origin_id AS operating_unit_origin_id,
+    contract.inciso_dest_id AS inciso_dest_id,
+    contract.operating_unit_dest_id AS operating_unit_dest_id,
+    contract.regime_id AS regime_id,
+    contract.commission_regime_id AS commission_regime_id,
+    contract.descriptor1_id AS descriptor1_id,
+    contract.descriptor2_id AS descriptor2_id,
+    contract.descriptor3_id AS descriptor3_id,
+    contract.descriptor4_id AS descriptor4_id,
+    contract.nro_doc,
+    contract.create_date AS contract_create_date
+FROM
+    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
+WHERE contract_legajo_state = 'outgoing_commission') AS main_query)''' % (self._table,))

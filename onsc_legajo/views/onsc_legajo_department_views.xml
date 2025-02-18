@@ -16,6 +16,7 @@
                        decoration-warning="contract_legajo_state in ['outgoing_commission', 'reserved', 'baja']"/>
                 <field name="job_name" string="Puesto"/>
                 <field name="security_job_id" optional="show"/>
+                <field name="hierarchical_level_id" string="Nivel jerárquico" optional="hide"/>
                 <field name="department_id" string="UO" optional="hide"/>
                 <field name="operating_unit_id" string="Unidad ejecutora" optional="hide"/>
                 <field name="contract_id" string="Contrato" optional="hide"/>
@@ -42,11 +43,6 @@
         <field name="model">onsc.legajo.department</field>
         <field name="arch" type="xml">
             <search string="Legajos">
-<!--                <searchpanel>-->
-<!--                    <field name="inciso_id" string="Inciso" icon="fa-building" enable_counters="1"/>-->
-<!--                    <field name="operating_unit_id" string="Unidad ejecutora" icon="fa-building" enable_counters="1"/>-->
-<!--                    <field name="department_id" string="Unidad organizativa" icon="fa-building" enable_counters="1"/>-->
-<!--                </searchpanel>-->
                 <field name="legajo_id" string="Funcionario"/>
                 <field name="contract_id" string="Contrato"/>
                 <field name="department_id" string="UO"/>
