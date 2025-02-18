@@ -107,6 +107,7 @@ class ONSCLegajoDepartment(models.Model):
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
     employee_id = fields.Many2one('hr.employee', string="Funcionario")
     department_id = fields.Many2one('hr.department', string="UO")
+    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico")
     start_date = fields.Date(string='Fecha desde')
     end_date = fields.Date(string='Fecha hasta')
     type = fields.Selection(
@@ -129,21 +130,36 @@ class ONSCLegajoDepartment(models.Model):
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2')
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3')
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4')
+    organigram_joker = fields.Many2one('hr.department', string='Organigrama')
+    level_0 = fields.Many2one('hr.department', string='Nivel 0')
+    level_1 = fields.Many2one('hr.department', string='Nivel 1')
+    level_2 = fields.Many2one('hr.department', string='Nivel 2')
+    level_3 = fields.Many2one('hr.department', string='Nivel 3')
+    level_4 = fields.Many2one('hr.department', string='Nivel 4')
+    level_5 = fields.Many2one('hr.department', string='Nivel 5')
     nro_doc = fields.Char(u'Número de documento')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
 SELECT
-row_number() OVER(ORDER BY legajo_id, contract_id, type, job_id) AS id, *
+    row_number() OVER(ORDER BY legajo_id, contract_id, type, main_query.job_id) AS id,
+    main_query.*,
+    jh.level_0 AS organigram_joker,
+    jh.level_0,
+    jh.level_1,
+    jh.level_2,
+    jh.level_3,
+    jh.level_4,
+    jh.level_5
 FROM
---CONTRATO ACTIVO SIN PUESTOS ACTIVOS
 (SELECT
     base_contract_view.*,
     NULL AS job_id,
     NULL AS job_name,
     NULL AS security_job_id,
     NULL AS department_id,
+    NULL AS hierarchical_level_id,
     NULL AS start_date,
     NULL AS end_date,
     NULL AS is_uo_manager
@@ -179,6 +195,7 @@ SELECT
     hr_job.name AS job_name,
     hr_job.security_job_id AS security_job_id,
     hr_job.department_id AS department_id,
+    hr_job.hierarchical_level_id,
     hr_job.start_date AS start_date,
     hr_job.end_date AS end_date,
     hr_job.is_uo_manager as is_uo_manager
@@ -215,6 +232,7 @@ SELECT
     (SELECT name FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_name,
     (SELECT security_job_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS security_job_id,
     (SELECT department_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS department_id,
+    (SELECT hierarchical_level_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS hierarchical_level_id,
     (SELECT start_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS start_date,
     (SELECT end_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS end_date,
     (SELECT is_uo_manager FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS is_uo_manager
@@ -241,7 +259,10 @@ FROM
     contract.nro_doc
 FROM
     hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
-WHERE contract_legajo_state = 'outgoing_commission') AS main_query)''' % (self._table,))
+WHERE contract_legajo_state = 'outgoing_commission') AS main_query
+LEFT JOIN
+onsc_legajo_job_hierarchy AS jh
+ON main_query.job_id = jh.job_id)''' % (self._table,))
 
     def get_uo_tree(self, contract=False):
         Department = self.env['hr.department'].sudo()

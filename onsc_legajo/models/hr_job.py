@@ -92,6 +92,7 @@ class HrJob(models.Model):
     )
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?')
     sequence = fields.Integer(string="Nivel", compute='_compute_sequence', store=True)
+    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", related='department_id.hierarchical_level_id', store=True)
 
     _sql_constraints = [
         ('name_company_uniq', 'unique(1=1)',
