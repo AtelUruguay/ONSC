@@ -27,3 +27,4 @@ from . import onsc_legajo_demerito
 from . import onsc_legajo_vote_control
 from . import oncs_legajo_mass_cambio_uo
 from . import views
+from . import onsc_legajo_summary

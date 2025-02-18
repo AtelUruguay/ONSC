@@ -20,3 +20,4 @@ from . import onsc_legajo_electoral_act
 from . import onsc_legajo_rule_type_sanction
 from . import onsc_legajo_legend
 from . import onsc_legajo_res_country_department
+from . import onsc_legajo_penalty_type

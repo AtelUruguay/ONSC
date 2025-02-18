@@ -52,6 +52,7 @@ ONSC - Legajo
         "views/catalogs/onsc_catalog_type_sanction.xml",
         "views/catalogs/onsc_catalog_legend.xml",
         "views/catalogs/onsc_catalog_res_country_department.xml",
+        "views/catalogs/onsc_legajo_penalty_type_views.xml",
         "wizard/onsc_legajo_update_occupation_wizard_views.xml",
         "views/hr_employee_views.xml",
         "views/onsc_legajo_alta_vl_views.xml",
@@ -70,6 +71,7 @@ ONSC - Legajo
         "views/onsc_legajo_staging_ws7_views.xml",
         "wizard/onsc_legajo_sycronize_ws7_wizard_views.xml",
         "views/onsc_legajo_mass_cambio_uo_views.xml",
+        "views/onsc_legajo_summary_views.xml",
         "views/onsc_legajo_menuitems.xml",
     ],
     'assets': {
