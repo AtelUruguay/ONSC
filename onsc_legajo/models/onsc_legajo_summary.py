@@ -11,8 +11,8 @@ STATES = [
     ('S', 'Resolución'),
 ]
 SINOSELECTION = [
-    ('S', 'Si'),
-    ('N', 'No'),
+    ('s', 'Si'),
+    ('n', 'No'),
 ]
 
 
@@ -27,7 +27,7 @@ class ONSCLegajoSummary(models.Model):
     emissor_country = fields.Char(u'País emisor del documento')
     document_type = fields.Char(u'Tipo de documento')
     nro_doc = fields.Char(u'Número de documento')
-    inciso_code = fields.Integer("Incisio")
+    inciso_code = fields.Integer("Inciso")
     inciso_name = fields.Char("Nombre Inciso")
     operating_unit_code = fields.Char("UE")
     operating_unit_name = fields.Char("Nombre UE")
@@ -49,6 +49,9 @@ class ONSCLegajoSummary(models.Model):
     communications_ids = fields.One2many("onsc.legajo.summary.communications",
                                          inverse_name="summary_id",
                                          string="Comunicaciones del sumario")
+    cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')  # tipo_doc
+    country_id = fields.Many2one('res.country', u'País')  # cod_pais
+    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo")
 
 
 class ONSCLegajoSummaryComunications(models.Model):

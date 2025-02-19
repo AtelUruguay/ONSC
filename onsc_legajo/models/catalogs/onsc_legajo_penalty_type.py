@@ -6,8 +6,8 @@ from odoo import fields, models
 _logger = logging.getLogger(__name__)
 
 SINOSELECTION = [
-    ('S', 'S'),
-    ('N', 'N'),
+    ('s', 'S'),
+    ('n', 'N'),
 ]
 
 
