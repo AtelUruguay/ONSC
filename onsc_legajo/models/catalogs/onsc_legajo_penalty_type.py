@@ -5,7 +5,7 @@ from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 
-SINOSELECTION = [
+SNSELECTION = [
     ('s', 'S'),
     ('n', 'N'),
 ]
@@ -19,7 +19,7 @@ class ONSCLegajoRegime(models.Model):
     code = fields.Char(string=u"Código", required=True)
     subcode = fields.Char(string=u"Subcódigo", required=True)
     description = fields.Char(string="Descripción", required=True)
-    warning = fields.Selection(SINOSELECTION, string="Advertencia en Alta VL (S/N)")
+    warning = fields.Selection(SNSELECTION, string="Advertencia en Alta VL (S/N)")
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [

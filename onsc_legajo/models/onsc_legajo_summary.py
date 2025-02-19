@@ -10,7 +10,7 @@ STATES = [
     ('R', 'Remitido'),
     ('S', 'Resolución'),
 ]
-SINOSELECTION = [
+SNSELECTION = [
     ('s', 'Si'),
     ('n', 'No'),
 ]
@@ -39,7 +39,7 @@ class ONSCLegajoSummary(models.Model):
     interrogator_notify_date = fields.Date("Fecha de notificación al sumariante")
     summary_notify_date = fields.Date("Fecha de notificación al sumariado")
     summary_detail = fields.Char("Detalle de sanción")
-    suspension = fields.Selection(SINOSELECTION, string='Suspensión preventiva')
+    suspension = fields.Selection(SNSELECTION, string='Suspensión preventiva')
     start_date_suspension = fields.Date("Inicio")
     end_date_suspension = fields.Date("Fin")
     retention_percentage = fields.Float("Retención de haberes con porcentajes")
