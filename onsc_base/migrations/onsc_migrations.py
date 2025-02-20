@@ -152,3 +152,34 @@ class ONSCMigrations(models.Model):
         bajasVL_towrite.write({'causes_discharge_extended_id': False})
         bajasVL_towrite._compute_is_read_only_description()
         _logger.info('FIN CRON 28.8 bajaVL')
+
+    def _ler_2_1_01(self, lote=1, lote_size=1000):
+        StateTransactionHistory = self.env['hr.contract.state.transaction.history'].suspend_security()
+        HrContract = self.env['hr.contract'].sudo()
+        _lote = lote - 1
+        offset = lote_size * _lote
+        legajo_state_field_id = self.env['ir.model.fields'].search([
+            ('model', '=', 'hr.contract'),
+            ('name', '=', 'legajo_state')
+        ], limit=1)
+        legajo_state_items= dict(HrContract.fields_get(allfields=['legajo_state'])['legajo_state']['selection']).items()
+        messages = self.env['mail.message'].sudo().search([
+            ('model', '=', 'hr.contract'),
+            ('tracking_value_ids.field', '=', legajo_state_field_id.id),
+        ], order='res_id asc, date asc', limit=lote_size, offset=offset)
+        bulked_vals = []
+        for msg in messages:
+            if HrContract.search_count([('id', '=', msg.res_id)]):
+                if len(msg.tracking_value_ids) > 1:
+                    tracking_value_id = msg.tracking_value_ids.filtered(lambda x: x.field.id == legajo_state_field_id.id)
+                else:
+                    tracking_value_id = msg.tracking_value_ids
+                from_state_key = next(key for key, value in legajo_state_items if value == tracking_value_id.old_value_char)
+                to_state_key = next(key for key, value in legajo_state_items if value == tracking_value_id.new_value_char)
+                bulked_vals.append({
+                    'contract_id': msg.res_id,
+                    'create_date': msg.date,
+                    'from_state': from_state_key,
+                    'to_state': to_state_key,
+                })
+        StateTransactionHistory.create(bulked_vals)

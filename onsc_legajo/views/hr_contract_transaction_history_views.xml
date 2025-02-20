@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View hr.contract.transaction.history View Tree -->
+    <record id="view_hr_contract_state_transaction_history_tree" model="ir.ui.view">
+        <field name="name">view.hr.contract.state.transaction.history.tree</field>
+        <field name="model">hr.contract.state.transaction.history</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="contract_id"/>
+                <field name="transaction_date"/>
+                <field name="from_state"/>
+                <field name="to_state"/>
+                <field name="create_date" string="Creado el" optional="hide"/>
+                <field name="create_uid" string="Creado por" optional="hide"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action hr.contract.transaction.history -->
+    <record id="action_hr_contract_state_transaction_history" model="ir.actions.act_window">
+        <field name="name">Hr Contract Transaction History</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.contract.state.transaction.history</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
