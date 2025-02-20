@@ -127,7 +127,7 @@ class ONSCMigrations(models.Model):
 
     def _v28_7_altaCS(self, date=False, id=False):
         _logger.info('CRON 28.7 ALTACS')
-        AltaCS = self['onsc.legajo.alta.cs'].sudo().with_context(ignore_base_restrict=True)
+        AltaCS = self.env['onsc.legajo.alta.cs'].sudo().with_context(ignore_base_restrict=True)
         CvDigital = self.env['onsc.cv.digital'].sudo()
         if date:
             args = [('create_date', '>=', date)]
