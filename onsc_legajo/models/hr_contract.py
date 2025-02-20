@@ -335,8 +335,20 @@ class HrContract(models.Model):
         return super(HrContract, self).create(vals)
 
     def write(self, values):
-        if 'legajo_state' in values.keys() and 'state_square_id' not in values.keys():
-            values['state_square_id'] = self._get_state_square(values.get('legajo_state')).id
+        if 'legajo_state' in values.keys():
+            StateTransactionHistory = self.env['hr.contract.state.transaction.history'].suspend_security()
+            if 'state_square_id' not in values.keys():
+                values['state_square_id'] = self._get_state_square(values.get('legajo_state')).id
+            new_state = values['legajo_state']
+            for contract in self:
+                previous_state = contract.legajo_state
+                if previous_state != new_state:
+                    StateTransactionHistory.create({
+                        'contract_id': contract.id,
+                        'from_state': previous_state,
+                        'to_state': new_state,
+                    })
+
         result = super(HrContract, self.suspend_security()).write(values)
         self._notify_sgh(values)
         return result
@@ -433,3 +445,27 @@ class HrContractHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.contract.model.history'
     _parent_model = 'hr.contract'
+
+class HrContractStateTransactionHistory(models.Model):
+    _name = 'hr.contract.state.transaction.history'
+    _order = 'create_date desc'
+
+    from_state = fields.Selection(
+        [('active', 'Activo'),
+         ('baja', 'Baja'),
+         ('reserved', 'Reservado'),
+         ('outgoing_commission', 'Comisión saliente'),
+         ('incoming_commission', 'Comisión entrante')],
+        string='Estado origen del Contrato', required=False)
+    to_state = fields.Selection(
+        [('active', 'Activo'),
+         ('baja', 'Baja'),
+         ('reserved', 'Reservado'),
+         ('outgoing_commission', 'Comisión saliente'),
+         ('incoming_commission', 'Comisión entrante')],
+        string='Estado destino del Contrato', required=False)
+    contract_id = fields.Many2one('hr.contract', string='Contrato', required=True, index=True)
+    transaction_date = fields.Datetime(string='Fecha')
+
+    create_uid = fields.Many2one('res.users', string='Creado por')
+    create_date = fields.Datetime(string='Creado el')
