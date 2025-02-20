@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_penalty_type_view_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.penalty.type.tree</field>
+        <field name="model">onsc.legajo.penalty.type</field>
+        <field name="arch" type="xml">
+            <tree string="Tipo de sanción">
+                <field name="code"/>
+                <field name="subcode"/>
+                <field name="description" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="warning" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="onsc_legajo_penalty_type_view_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.penalty.type.form</field>
+        <field name="model">onsc.legajo.penalty.type</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de sanción">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="subcode"/>
+                            <field name="description" groups="onsc_legajo.group_legajo_configurador"/>
+                            <field name="warning" groups="onsc_legajo.group_legajo_configurador"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="onsc_legajo_penalty_type_view_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.penalty.type.search</field>
+        <field name="model">onsc.legajo.penalty.type</field>
+        <field name="arch" type="xml">
+            <search string="Tipo de sanción">
+                <field name="code"/>
+                <field name="subcode"/>
+                <field name="description" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="warning" groups="onsc_legajo.group_legajo_configurador"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_legajo_penalty_type_action" model="ir.actions.act_window">
+        <field name="name">Tipo de sanción</field>
+        <field name="res_model">onsc.legajo.penalty.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo Tipo de sanción
+            </p>
+        </field>
+    </record>
+</odoo>
