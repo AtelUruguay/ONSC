@@ -224,6 +224,12 @@
               parent="onsc_legajo_catalog_menu"
               groups="onsc_legajo.group_legajo_configurador"
               sequence="20"/>
+    <menuitem id="onsc_legajo_penalty_type_menu"
+              name="Tipo de sanción"
+              action="onsc_legajo_penalty_type_action"
+              parent="onsc_legajo_catalog_menu"
+              groups="onsc_legajo.group_legajo_configurador"
+              sequence="21"/>
 
 
     <menuitem id="onsc_legajo_logs_menu"
