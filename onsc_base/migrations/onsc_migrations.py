@@ -178,7 +178,7 @@ class ONSCMigrations(models.Model):
                 to_state_key = next(key for key, value in legajo_state_items if value == tracking_value_id.new_value_char)
                 bulked_vals.append({
                     'contract_id': msg.res_id,
-                    'create_date': msg.date,
+                    'transaction_date': msg.date,
                     'from_state': from_state_key,
                     'to_state': to_state_key,
                 })
