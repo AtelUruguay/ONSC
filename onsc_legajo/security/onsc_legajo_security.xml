@@ -320,7 +320,7 @@
                 <field name="implied_ids"
                        eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company'))]"/>
         </record>
-        
+
         <!--ASIGNACIÓN DE FUNCIONES-->
         <record id="group_legajo_role_assignment_recursos_humanos_inciso" model="res.groups">
             <field name="name">Asignación de funciones - Recursos Humanos Inciso</field>
@@ -398,5 +398,29 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
+
+        <!-- REPORTES -->
+        <record id="group_legajo_report_padron_inciso_ue_uo_inciso" model="res.groups">
+            <field name="name">Reporte (Padrón por Inciso, UE y UO) por Inciso</field>
+            <field name="comment">Reporte (Padrón por Inciso, UE y UO) por Inciso</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_report_padron_inciso_ue_uo_ue" model="res.groups">
+            <field name="name">Reporte (Padrón por Inciso, UE y UO) por UE</field>
+            <field name="comment">Reporte (Padrón por Inciso, UE y UO) por UE</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_report_padron_inciso_ue_uo_consult" model="res.groups">
+            <field name="name">Reporte (Padrón por Inciso, UE y UO) Consulta</field>
+            <field name="comment">Reporte (Padrón por Inciso, UE y UO) Consulta</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+
     </data>
 </odoo>
