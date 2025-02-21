@@ -256,7 +256,7 @@
               parent="onsc_legajo_logs_menu"
               sequence="10"/>
      <menuitem id="onsc_legajo_summary_menu"
-              name="Sumarios sincronizado"
+              name="Sumarios sincronizados"
               groups="onsc_legajo.group_legajo_summary_consulta"
               action="onsc_legajo_summary_action"
               parent="onsc_legajo_logs_menu"
