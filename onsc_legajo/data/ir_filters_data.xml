@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="filter_department_organigram" model="ir.filters">
+            <field name="name">Organigrama</field>
+            <field name="model_id">onsc.legajo.department</field>
+            <field name="domain">[]</field>
+            <field name="user_id" eval="False"/>
+            <field name="context">{'group_by': ['level_0','level_1','level_2','level_3','level_4','level_5']}</field>
+        </record>
+    </data>
+</odoo>
