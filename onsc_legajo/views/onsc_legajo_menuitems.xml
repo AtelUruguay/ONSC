@@ -88,7 +88,7 @@
               name="Padrón por Inciso, UE y UO"
               parent="onsc_legajo.onsc_legajo_report_menu"
               action="action_onsc_legajo_padron_estructure_filter_wizard"
-              groups="onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso, onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue, onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult"
+              groups="onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso,onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue,onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult"
               sequence="1"/>
 
     <menuitem id="onsc_hr_employee_menu"
