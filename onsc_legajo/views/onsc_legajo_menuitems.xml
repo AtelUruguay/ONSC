@@ -255,6 +255,12 @@
               action="onsc_legajo_syncronize_ws7_action"
               parent="onsc_legajo_logs_menu"
               sequence="10"/>
+     <menuitem id="onsc_legajo_summary_menu"
+              name="Sumarios sincronizado"
+              groups="onsc_legajo.group_legajo_summary_consulta"
+              action="onsc_legajo_summary_action"
+              parent="onsc_legajo_logs_menu"
+              sequence="12"/>
 
     <menuitem id="onsc_legajo_settings_menu"
               name="Configuración"

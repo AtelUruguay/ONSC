@@ -34,7 +34,7 @@
         </field>
     </record>
 
-    <record id="onsc_legajo_merito_form" model="ir.ui.view">
+    <record id="onsc_legajo_summary_form" model="ir.ui.view">
         <field name="name">onsc.legajo.summary.form</field>
         <field name="model">onsc.legajo.summary</field>
         <field name="type">form</field>
@@ -83,6 +83,11 @@
                 </group>
             </form>
         </field>
+    </record>
+     <record id="onsc_legajo_summary_action" model="ir.actions.act_window">
+        <field name="name">Sumarios sincronizados</field>
+        <field name="res_model">onsc.legajo.summary</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
 </odoo>
