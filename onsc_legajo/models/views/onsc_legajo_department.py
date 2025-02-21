@@ -2,6 +2,7 @@
 
 from odoo import fields, models, tools, api
 from odoo.osv import expression
+from odoo.tools import func
 
 
 class ONSCLegajoDepartment(models.Model):
@@ -28,11 +29,22 @@ class ONSCLegajoDepartment(models.Model):
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
             domain = self._get_domain(domain)
-        return super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True)).read_group(domain, fields, groupby,
-                                                                                               offset=offset,
-                                                                                               limit=limit,
-                                                                                               orderby=orderby,
-                                                                                               lazy=lazy)
+        result = super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True)).read_group(domain, fields, groupby,
+                                                                                                 offset=offset,
+                                                                                                 limit=limit,
+                                                                                                 orderby=orderby,
+                                                                                                 lazy=lazy)
+        for res in result:
+            count_key, count_key_value = next(iter(res.items()))
+            group_key_str = count_key.split('_count')[0]
+            group_key = res.get(group_key_str)
+            if not group_key:
+                # if group_key_str == 'level_1':
+                #     result = [d for d in result if 'level_1' not in d]
+                # else:
+                res[group_key_str] = (0, func.lazy(
+                    lambda: self.fields_get().get(group_key_str).get('string') or 'Nivel'))
+        return result
 
     def _is_group_responsable_uo_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
