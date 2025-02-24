@@ -39,9 +39,6 @@ class ONSCLegajoDepartment(models.Model):
             group_key_str = count_key.split('_count')[0]
             group_key = res.get(group_key_str)
             if not group_key:
-                # if group_key_str == 'level_1':
-                #     result = [d for d in result if 'level_1' not in d]
-                # else:
                 res[group_key_str] = (0, func.lazy(
                     lambda: self.fields_get().get(group_key_str).get('string') or 'Nivel'))
         return result
