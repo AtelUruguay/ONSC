@@ -9,28 +9,26 @@ _logger = logging.getLogger(__name__)
 
 class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     _name = 'onsc.legajo.padron.estructure.filter.wizard'
+    _inherit = 'onsc.legajo.abstract.opaddmodify.security'
     _description = 'Wizard para filtrar estructuras de padron'
 
-    inciso_id = fields.Many2one('onsc.legajo.inciso', string='Inciso')
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one(
         'operating.unit',
-        string='Unidad Ejecutora',
-        domain="[('inciso_id', '=', inciso_id)]"
-    )
-    department_id = fields.Many2one(
-        'onsc.legajo.department',
-        string='Departamento',
-        domain="[('operating_unit_id', '=', operating_unit_id)]"
+        string='Unidad Ejecutora'
     )
 
-    @api.onchange('inciso_id')
-    def _onchange_inciso_id(self):
-        self.operating_unit_id = False
+    def _is_group_admin_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
 
-    @api.onchange('operating_unit_id')
-    def _onchange_operating_unit_id(self):
-        self.department_id = False
+    def _is_group_inciso_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso')
+
+    def _is_group_ue_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue')
+
+    def _is_group_admin_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
 
     def action_show(self):
         return True
-
