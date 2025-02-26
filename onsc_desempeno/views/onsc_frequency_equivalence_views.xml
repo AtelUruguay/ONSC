@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_onsc_desempeno_frequency_equivalence_tree" model="ir.ui.view">
+        <field name="name">view.onsc.desempeno.frequency.equivalence.tree</field>
+        <field name="model">onsc.desempeno.frequency.equivalence</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="name"/>
+                <field name="value"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_onsc_desempeno_frequency_equivalence" model="ir.actions.act_window">
+        <field name="name">Tabla de equivalencia</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.desempeno.frequency.equivalence</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="view_onsc_desempeno_grade_equivalence_tree" model="ir.ui.view">
+        <field name="name">view.onsc.desempeno.grade.equivalence.tree</field>
+        <field name="model">onsc.desempeno.grade.equivalence</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="degree_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                <field name="min_value"/>
+                <field name="max_value"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_onsc_desempeno_grade_equivalence" model="ir.actions.act_window">
+        <field name="name">Grado de necesidad de desarrollo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.desempeno.grade.equivalence</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
