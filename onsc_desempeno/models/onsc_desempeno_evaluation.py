@@ -530,16 +530,23 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('evaluator_id', '=', environment_id.employee_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ])
-                if leader_evaluations_qty + 1 > max_environment_evaluation_forms:
+                if leader_evaluations_qty + 1 >= max_environment_evaluation_forms:
+                    evaluation_type_args = [
+                        'environment_evaluation',
+                        'self_evaluation',
+                        'collaborator'
+                    ]
                     value_restrict_to_use = max_environment_evaluation_leader_forms
                 else:
+                    evaluation_type_args = [
+                        'environment_evaluation',
+                        'self_evaluation',
+                        'leader_evaluation',
+                        'collaborator'
+                    ]
                     value_restrict_to_use = max_environment_evaluation_forms
                 if self.with_context(ignore_security_rules=True).search_count([
-                    ('evaluation_type', 'in', ['environment_evaluation',
-                                               'self_evaluation',
-                                               'leader_evaluation',
-                                               'collaborator'
-                                               ]),
+                    ('evaluation_type', 'in', evaluation_type_args),
                     ('evaluator_id', '=', environment_id.employee_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ]) + 1 > value_restrict_to_use:

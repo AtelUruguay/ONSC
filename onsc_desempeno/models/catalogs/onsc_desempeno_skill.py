@@ -57,11 +57,6 @@ class ONSCDesempenoSkillLine(models.Model):
                                     compute=lambda s: s._get_help('dimension_tooltip'),
                                     default=lambda s: s._get_help('dimension_tooltip', True))
 
-    _sql_constraints = [
-        ('line_uniq', 'unique(skill_id,dimension_id,level_id)',
-         u'La dimensión y nivel debe ser unico para la competencia'),
-    ]
-
     def _get_help(self, help_field='', is_default=False):
         _html2construct = HTML_HELP % ('Tooltip')
         if is_default:

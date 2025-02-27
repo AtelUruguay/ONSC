@@ -153,10 +153,13 @@ class ONSCDesempenoEvaluationReport(models.Model):
 
     @api.depends('evaluation_type')
     def _compute_show_button_evaluation(self):
-        group_admin = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
         for record in self:
-            if record.evaluation_type in ('environment_evaluation', 'collaborator',
-                                          'leader_evaluation') and group_admin and record.evaluated_id.id == self.env.user.employee_id.id:
+            if record.evaluation_type in [
+                'environment_evaluation',
+                'collaborator',
+                'leader_evaluation',
+                'self_evaluation'
+            ] and record.evaluated_id.id == self.env.user.employee_id.id:
                 condition = False
             else:
                 condition = True
