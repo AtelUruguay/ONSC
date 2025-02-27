@@ -15,7 +15,7 @@ class ONSCDesempenoDimension(models.Model):
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name,definition)', u'El nombre y la definición de la dimensión debe ser único'),
+        ('name_uniq', 'unique(name)', u'El nombre de la dimensión debe ser único'),
     ]
 
     @api.returns('self', lambda value: value.id)

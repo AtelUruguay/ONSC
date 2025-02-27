@@ -40,16 +40,17 @@
                     </div>
                     <notebook>
                         <page string="Dimensiones">
-                            <field name="skill_line_ids" options="{'no_open': True, 'no_create': True, 'no_edit': False, 'no_delete':True}" create="0" delete="0" edit="1" can_delete="false">
-                                <tree create="0" delete="false" editable="bottom">  <!-- editable="bottom" para la edición en línea -->
+                            <field name="skill_line_ids"
+                                attrs="{'readonly':[('competency_form_edit', '=',True)]}"
+                                options="{'unlink':False, 'link':False}">
+                                <tree editable="bottom">
                                     <field name="dimension_tooltip" string="" readonly="1"/>
                                     <field name="dimension_id" readonly="1"
                                         options="{'fields_to_show': ['definition'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="behavior" style="white-space:normal;" readonly="1"/>
                                     <field name="frequency_id" required="1" options="{'fields_to_show': ['name'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 </tree>
-
-                                <form string="Dimensiones" create="0" delete="0">
+                                <form string="Dimensiones">
                                     <group>
                                         <group>
                                             <field name="dimension_id"  readonly="1"
@@ -69,6 +70,7 @@
                                 required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                         <field colspan="4"
                                 name="improvement_areas"
+                                placeholder="Mínimo 30 caracteres"
                                 attrs="{'readonly':[('competency_form_edit', '=',True)]}"
                                 required="1"/>
                     </group>

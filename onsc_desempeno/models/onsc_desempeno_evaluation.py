@@ -952,16 +952,15 @@ class ONSCDesempenoEvaluation(models.Model):
             rec.write({'environment_evaluation_ids': [(6, 0, selected_random_environment.ids)]})
 
     def _check_complete_evaluation(self):
-        if self.evaluation_type == 'gap_deal':
-            for competency in self.gap_deal_competency_ids:
-                if not competency.degree_id or not competency.improvement_areas:
-                    raise ValidationError(
-                        _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
-        else:
-            for competency in self.evaluation_competency_ids:
-                if not competency.degree_id or not competency.improvement_areas:
-                    raise ValidationError(
-                        _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
+        competencies = self.gap_deal_competency_ids if self.evaluation_type == 'gap_deal' else self.evaluation_competency_ids
+        for competency in competencies:
+            if not competency.degree_id or not competency.improvement_areas:
+                raise ValidationError(
+                    _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
+        for skill_line in competencies.mapped('skill_line_ids'):
+            if not skill_line.frequency_id:
+                raise ValidationError(
+                    _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
 
     def _check_development_plan(self):
         if len(self.development_plan_ids.development_means_ids.ids) == 0:
