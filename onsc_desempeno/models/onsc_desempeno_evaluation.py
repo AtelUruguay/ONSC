@@ -494,6 +494,9 @@ class ONSCDesempenoEvaluation(models.Model):
     is_button_reopen_evaluation_available = fields.Boolean(
         string='¿Está el botón de Reabrir seguimiento visible?',
         compute='_compute_is_button_reopen_evaluation_available')
+    is_notebook_available = fields.Boolean(
+        '¿Está disponible el Notebook?',
+        compute='_compute_is_notebook_available')
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -683,6 +686,36 @@ class ONSCDesempenoEvaluation(models.Model):
                                                ('employee_id', '=', record.evaluator_id.id),
                                                ('is_employee_notified', '=', True)])
             record.is_cancel_available = (is_gh_user_ue or is_gh_user_inciso) and notified_qty == 0
+
+    def _compute_is_notebook_available(self):
+        user_employee = self.env.user.employee_id
+        evaluation_types_evaluator = [
+            'leader_evaluation',
+            'collaborator',
+            'environment_evaluation'
+        ]
+        evaluation_types_evaluated = ['self_evaluation']
+        user_restricted = self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue')
+        for record in self:
+            if not user_restricted:
+                record.is_notebook_available = True
+            else:
+                is_iam_evaluated = record.evaluated_id.id == user_employee.id
+                is_iam_evaluator = record.evaluator_id.id == user_employee.id
+                is_am_orig_evaluator = record.original_evaluator_id.id == user_employee.id
+                if self._is_group_responsable_uo():
+                    my_department = user_employee.job_id.department_id
+                    available_departments = my_department
+                    available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
+                    is_am_responsable = record.uo_id.id in available_departments.ids
+                else:
+                    is_am_responsable = False
+
+                is_evaluator_valid = is_iam_evaluator or is_am_responsable or is_am_orig_evaluator
+                cond1 = record.evaluation_type in evaluation_types_evaluator and is_evaluator_valid
+                cond2 = record.evaluation_type in evaluation_types_evaluated and is_iam_evaluated
+
+                record.is_notebook_available = cond1 or cond2
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
