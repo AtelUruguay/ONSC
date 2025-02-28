@@ -387,7 +387,8 @@ class ONSCLegajoStagingWS7(models.Model):
             new_contract_status = same_ue and 'active' or 'outgoing_commission'
             new_contract = self._get_contract_copy(
                 contract,
-                second_movement, new_contract_status,
+                second_movement,
+                legajo_state=new_contract_status,
                 state_square_id=state_square_id.id,
                 movement_description=operation_dict.get(record.mov),
             )
@@ -438,20 +439,24 @@ class ONSCLegajoStagingWS7(models.Model):
                     'cs_contract_id': new_contract.id
                 })
         else:
+            if second_movement.fecha_vig == contract.date_start:
+                contract_date_end = second_movement.fecha_vig
+                archive_contract = True
+                legajo_state = contract.legajo_state
+            else:
+                contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
+                archive_contract = False
+                legajo_state = 'active'
+
             new_contract = self._get_contract_copy(
                 contract,
                 second_movement,
+                legajo_state=legajo_state,
+                link_tocontract=True,
                 state_square_id=state_square_id.id,
                 movement_description=movement_description
             )
             self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
-
-            if second_movement.fecha_vig == contract.date_start:
-                contract_date_end = second_movement.fecha_vig
-                archive_contract = True
-            else:
-                contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
-                archive_contract = False
 
             if new_contract.operating_unit_id != contract.operating_unit_id:
                 # DESACTIVA EL CONTRATO
