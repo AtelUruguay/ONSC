@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 STATES = [
     ('A', 'Abierto'),
@@ -23,7 +23,7 @@ class ONSCLegajoSummary(models.Model):
         'onsc.legajo.abstract.opaddmodify.security'
     ]
 
-    last_update_date = fields.Date(string="Fecha inicio", readonly=True)
+    last_update_date = fields.Date(string="Última actualización", readonly=True)
     emissor_country = fields.Char(u'País emisor del documento')
     document_type = fields.Char(u'Tipo de documento')
     nro_doc = fields.Char(u'Número de documento')
@@ -49,19 +49,43 @@ class ONSCLegajoSummary(models.Model):
     communications_ids = fields.One2many("onsc.legajo.summary.communications",
                                          inverse_name="summary_id",
                                          string="Comunicaciones del sumario")
+    summary_number = fields.Char(u'Número de sumario')
+    record_number = fields.Char(u'Número de expediente')
+    instructor_doc_number = fields.Char("Número documento ")
+    display_inciso = fields.Char('Inciso', compute='_compute_display_inciso')
+    display_ue = fields.Char('UE', compute='_compute_display_ue')
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
     cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')  # tipo_doc
     country_id = fields.Many2one('res.country', u'País')  # cod_pais
-    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo")
+    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", index=True)
 
+    @api.depends('operating_unit_code', 'operating_unit_id', 'operating_unit_name')
+    def _compute_display_ue(self):
+        for rec in self:
+            if rec.operating_unit_id:
+                rec.display_ue = rec.operating_unit_id.budget_code + '_' + rec.inciso_id.name
+            else:
+                rec.display_ue = rec.operating_unit_code + '_' + rec.operating_unit_name
+
+    @api.depends('inciso_id', 'inciso_code', 'inciso_name')
+    def _compute_display_ue(self):
+        for rec in self:
+            if rec.inciso_id:
+                rec.display_inciso = rec.inciso_id.budget_code + '_' + rec.inciso_id.name
+            else:
+                rec.display_inciso = rec.inciso_code + '_' + rec.inciso_name
+
+    def button_open_current_summary(self):
+        action = self.sudo().env.ref('onsc_legajo.onsc_legajo_summary_action').read()[0]
+        action.update({'res_id': self.id})
+        return action
 
 class ONSCLegajoSummaryComunications(models.Model):
     _name = "onsc.legajo.summary.communications"
     _description = 'Comunicaciones del sumario'
-    _inherit = [
-        'onsc.legajo.abstract.opaddmodify.security'
-    ]
 
-    summary_id = fields.Many2one("onsc.legajo.summary", string=u"Sumario")
+    summary_id = fields.Many2one("onsc.legajo.summary", string=u"Sumario", required=True, index=True)
     communication_date = fields.Date("Fecha")
     instance = fields.Char("Instancia")
     communication_type = fields.Char(u"Tipo de comunicación")

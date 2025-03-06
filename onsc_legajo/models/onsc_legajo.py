@@ -123,6 +123,13 @@ class ONSCLegajo(models.Model):
         string='Elecciones disponibles',
         compute="_compute_electoral_act_ids_domain")
 
+    summary_ids = fields.One2many(
+        comodel_name="onsc.legajo.summary",
+        inverse_name="legajo_id",
+        string="Sumarios")
+    show_legajo_summary = fields.Boolean(string=u'¿Ver información de Sumarios?', compute='_compute_show_legajo_info')
+    last_sync_rve_date = fields.Date(u'Última sincronización con RVE', compute='_compute_last_sync_rve_date')
+
     @api.depends('vote_registry_ids', 'vote_registry_ids.electoral_act_ids')
     def _compute_electoral_act_ids_domain(self):
         ElectoralAct = self.env['onsc.legajo.electoral.act'].suspend_security().with_context(active_test=False)
@@ -215,11 +222,23 @@ class ONSCLegajo(models.Model):
             rec.is_any_regime_legajo = len(rec.sudo().contract_ids.filtered(lambda x: x.regime_id.is_legajo)) > 0
 
     def _compute_show_legajo_info(self):
-        is_user_valid = self.user_has_groups('onsc_legajo.group_legajo_show_legajo_info')
-        is_user_basic_valid = self.user_has_groups('onsc_legajo.group_legajo_show_basic_legajo_info')
         for rec in self:
-            rec.show_legajo_info = is_user_valid or rec.employee_id.user_id.id == self.env.user.id
-            rec.show_legajo_basic_info = is_user_basic_valid or rec.employee_id.user_id.id == self.env.user.id
+            rec.show_legajo_summary = False
+        # TODO: uncomment in LES Sprint2
+        # is_user_valid = self.user_has_groups('onsc_legajo.group_legajo_show_legajo_info')
+        # is_user_basic_valid = self.user_has_groups('onsc_legajo.group_legajo_show_basic_legajo_info')
+        # is_user_valid_summary = self.user_has_groups('onsc_legajo.group_legajo_summary_consulta')
+        # for rec in self:
+        #     rec.show_legajo_info = is_user_valid or rec.employee_id.user_id.id == self.env.user.id
+        #     rec.show_legajo_basic_info = is_user_basic_valid or rec.employee_id.user_id.id == self.env.user.id
+        #     rec.show_legajo_summary = is_user_valid_summary or rec.employee_id.user_id.id == self.env.user.id
+
+    def _compute_last_sync_rve_date(self):
+        Summary = self.env['onsc.legajo.summary'].suspend_security()
+        for rec in self:
+            rec.last_sync_rve_date = Summary.search([('legajo_id', '=', rec.id)], limit=1,order="last_update_date desc").last_update_date
+
+
 
     def button_open_employee(self):
         self.ensure_one()
@@ -280,6 +299,10 @@ class ONSCLegajo(models.Model):
         except Exception as e:
             raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
 
+    def button_open_current_summary(self):
+        action = self.sudo().env.ref('onsc_legajo.onsc_legajo_summary_action').read()[0]
+        action.update({'res_id': self.id})
+        return action
     def _action_milegajo(self):
         ctx = self.env.context.copy()
         ctx['mi_legajo'] = True

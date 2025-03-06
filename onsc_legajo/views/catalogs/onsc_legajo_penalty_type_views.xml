@@ -5,6 +5,7 @@
         <field name="model">onsc.legajo.penalty.type</field>
         <field name="arch" type="xml">
             <tree string="Tipo de sanción">
+                <field name="identifier"/>
                 <field name="code"/>
                 <field name="subcode"/>
                 <field name="description" groups="onsc_legajo.group_legajo_configurador"/>
@@ -21,6 +22,7 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="identifier"/>
                             <field name="code"/>
                             <field name="subcode"/>
                             <field name="description" groups="onsc_legajo.group_legajo_configurador"/>

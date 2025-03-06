@@ -15,7 +15,9 @@ class ONSCLegajoRegime(models.Model):
     _name = 'onsc.legajo.penalty.type'
     _inherit = 'onsc.legajo.abstract.sync'
     _description = 'Tipo de sanción'
+    _rec_name = 'identifier'
 
+    identifier = fields.Char(string='ID', required=True)
     code = fields.Char(string=u"Código", required=True)
     subcode = fields.Char(string=u"Subcódigo", required=True)
     description = fields.Char(string="Descripción", required=True)
@@ -23,6 +25,6 @@ class ONSCLegajoRegime(models.Model):
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
-        ('cod_uniq', 'unique("code")', u'El código debe ser único'),
-        ('descripcion_uniq', 'unique("description")', u'La descripción debe ser única')
+        ('identifier_uniq', 'unique(identifier)', u'El ID debe ser único'),
+        ('cod_uniq', 'unique(code,subcode)', u'La combinación Código-Subcódigo debe ser única'),
     ]
