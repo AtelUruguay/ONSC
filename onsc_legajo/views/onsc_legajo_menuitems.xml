@@ -121,7 +121,7 @@
               action="onsc_legajo_res_country_department_action"
               parent="onsc_legajo_catalog_menu"
               groups="onsc_legajo.group_legajo_configurador"
-              sequence="20"/>
+              sequence="10"/>
     <menuitem id="onsc_legajo_emergency_menu"
               name="Emergencias"
               action="onsc_legajo_emergency_action"
@@ -219,13 +219,13 @@
               groups="onsc_legajo.group_legajo_configurador"
               sequence="120"/>
     <menuitem id="onsc_legajo_type_demerit_menu"
-              name="Tipo de demérito"
+              name="Tipos de demérito"
               action="onsc_legajo_type_demerit_action"
               parent="onsc_legajo_catalog_menu"
               groups="onsc_legajo.group_legajo_configurador"
               sequence="121"/>
     <menuitem id="onsc_legajo_penalty_type_menu"
-              name="Tipo de sanción"
+              name="Tipos de sanción"
               action="onsc_legajo_penalty_type_action"
               parent="onsc_legajo_catalog_menu"
               groups="onsc_legajo.group_legajo_configurador"

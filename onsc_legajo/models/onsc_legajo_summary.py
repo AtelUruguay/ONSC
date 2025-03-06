@@ -49,9 +49,6 @@ class ONSCLegajoSummary(models.Model):
     communications_ids = fields.One2many("onsc.legajo.summary.communications",
                                          inverse_name="summary_id",
                                          string="Comunicaciones del sumario")
-    cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')  # tipo_doc
-    country_id = fields.Many2one('res.country', u'País')  # cod_pais
-    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", index=True)
     summary_number = fields.Char(u'Número de sumario')
     record_number = fields.Char(u'Número de expediente')
     instructor_doc_number = fields.Char("Número documento ")
@@ -59,6 +56,9 @@ class ONSCLegajoSummary(models.Model):
     display_ue = fields.Char('UE', compute='_compute_display_ue')
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
+    cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')  # tipo_doc
+    country_id = fields.Many2one('res.country', u'País')  # cod_pais
+    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", index=True)
 
     @api.depends('operating_unit_code', 'operating_unit_id', 'operating_unit_name')
     def _compute_display_ue(self):
@@ -80,7 +80,6 @@ class ONSCLegajoSummary(models.Model):
         action = self.sudo().env.ref('onsc_legajo.onsc_legajo_summary_action').read()[0]
         action.update({'res_id': self.id})
         return action
-
 
 class ONSCLegajoSummaryComunications(models.Model):
     _name = "onsc.legajo.summary.communications"

@@ -15,6 +15,7 @@ class ONSCLegajoRegime(models.Model):
     _name = 'onsc.legajo.penalty.type'
     _inherit = 'onsc.legajo.abstract.sync'
     _description = 'Tipo de sanción'
+    _rec_name = 'identifier'
 
     identifier = fields.Char(string='ID', required=True)
     code = fields.Char(string=u"Código", required=True)
