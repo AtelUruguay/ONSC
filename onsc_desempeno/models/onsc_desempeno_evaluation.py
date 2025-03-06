@@ -697,7 +697,8 @@ class ONSCDesempenoEvaluation(models.Model):
         evaluation_types_evaluated = ['self_evaluation']
         user_restricted = self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue')
         for record in self:
-            if not user_restricted:
+            cond_available = record.evaluation_type not in evaluation_types_evaluator and record.evaluation_type not in evaluation_types_evaluated
+            if not user_restricted or cond_available:
                 record.is_notebook_available = True
             else:
                 is_iam_evaluated = record.evaluated_id.id == user_employee.id
@@ -989,11 +990,11 @@ class ONSCDesempenoEvaluation(models.Model):
         for competency in competencies:
             if not competency.degree_id or not competency.improvement_areas:
                 raise ValidationError(
-                    _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
-        for skill_line in competencies.mapped('skill_line_ids'):
+                    _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
+        for skill_line in competencies.mapped('evaluation_skill_line_ids'):
             if not skill_line.frequency_id:
                 raise ValidationError(
-                    _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
+                    _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
 
     def _check_development_plan(self):
         if len(self.development_plan_ids.development_means_ids.ids) == 0:
