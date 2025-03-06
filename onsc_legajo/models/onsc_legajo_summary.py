@@ -51,17 +51,14 @@ class ONSCLegajoSummary(models.Model):
                                          string="Comunicaciones del sumario")
     cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')  # tipo_doc
     country_id = fields.Many2one('res.country', u'País')  # cod_pais
-    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo")
+    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", index=True)
 
 
 class ONSCLegajoSummaryComunications(models.Model):
     _name = "onsc.legajo.summary.communications"
     _description = 'Comunicaciones del sumario'
-    _inherit = [
-        'onsc.legajo.abstract.opaddmodify.security'
-    ]
 
-    summary_id = fields.Many2one("onsc.legajo.summary", string=u"Sumario")
+    summary_id = fields.Many2one("onsc.legajo.summary", string=u"Sumario", required=True, index=True)
     communication_date = fields.Date("Fecha")
     instance = fields.Char("Instancia")
     communication_type = fields.Char(u"Tipo de comunicación")
