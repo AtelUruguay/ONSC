@@ -222,13 +222,16 @@ class ONSCLegajo(models.Model):
             rec.is_any_regime_legajo = len(rec.sudo().contract_ids.filtered(lambda x: x.regime_id.is_legajo)) > 0
 
     def _compute_show_legajo_info(self):
-        is_user_valid = self.user_has_groups('onsc_legajo.group_legajo_show_legajo_info')
-        is_user_basic_valid = self.user_has_groups('onsc_legajo.group_legajo_show_basic_legajo_info')
-        is_user_valid_summary = self.user_has_groups('onsc_legajo.group_legajo_summary_consulta')
         for rec in self:
-            rec.show_legajo_info = is_user_valid or rec.employee_id.user_id.id == self.env.user.id
-            rec.show_legajo_basic_info = is_user_basic_valid or rec.employee_id.user_id.id == self.env.user.id
-            rec.show_legajo_summary = is_user_valid_summary or rec.employee_id.user_id.id == self.env.user.id
+            rec.show_legajo_summary = False
+        # TODO: uncomment in LES Sprint2
+        # is_user_valid = self.user_has_groups('onsc_legajo.group_legajo_show_legajo_info')
+        # is_user_basic_valid = self.user_has_groups('onsc_legajo.group_legajo_show_basic_legajo_info')
+        # is_user_valid_summary = self.user_has_groups('onsc_legajo.group_legajo_summary_consulta')
+        # for rec in self:
+        #     rec.show_legajo_info = is_user_valid or rec.employee_id.user_id.id == self.env.user.id
+        #     rec.show_legajo_basic_info = is_user_basic_valid or rec.employee_id.user_id.id == self.env.user.id
+        #     rec.show_legajo_summary = is_user_valid_summary or rec.employee_id.user_id.id == self.env.user.id
 
     def _compute_last_sync_rve_date(self):
         Summary = self.env['onsc.legajo.summary'].suspend_security()
