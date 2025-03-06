@@ -125,6 +125,7 @@
                     <field name="is_any_regime_legajo" invisible="1"/>
                     <field name="show_legajo_info" invisible="1"/>
                     <field name="show_legajo_basic_info" invisible="1"/>
+                    <field name="show_legajo_summary" invisible="1"/>
                     <field name="image_1920" widget="image" class="oe_avatar"
                            options="{&quot;zoom&quot;: true, &quot;preview_image&quot;:&quot;avatar_128&quot;}"/>
                     <div class="oe_title">
@@ -262,6 +263,22 @@
                         <page name="demeritos" string="Deméritos"
                               attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_info', '=', False)]}">
                             <field name="demerito_ids"/>
+                        </page>
+                        <page name="summarys" string="Sumarios"
+                              attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_summary', '=', False)]}">
+                            <field name="last_sync_rve_date"/>
+                            <field name="summary_ids">
+                                <tree>
+                                    <field name="summary_number"/>
+                                    <field name="record_number"/>
+                                    <field name="display_inciso"/>
+                                    <field name="display_ue"/>
+                                    <field name="summary_causal"/>
+                                    <field name="state"/>
+                                    <button type="object" string="Ver detalle del sumario"
+                                            name="button_open_current_summary"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>

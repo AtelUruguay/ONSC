@@ -34,14 +34,16 @@
         </field>
     </record>
 
-    <record id="onsc_legajo_merito_form" model="ir.ui.view">
+    <record id="onsc_legajo_summary_form" model="ir.ui.view">
         <field name="name">onsc.legajo.summary.form</field>
         <field name="model">onsc.legajo.summary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form>
-                <group>
+                <group string="Datos del Sumario ">
                     <group>
+                        <field name="summary_number"/>
+                        <field name="record_number"/>
                         <field name="last_update_date"/>
                         <field name="emissor_country"/>
                         <field name="document_type"/>
@@ -53,7 +55,7 @@
                         <field name="regime"/>
                         <field name="relationship_date"/>
                         <field name="state"/>
-                        <field name="summary_causal"/>
+
                     </group>
                     <group>
                         <field name="summary_causal"/>
@@ -68,7 +70,12 @@
                         <field name="start_date_suspension" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
                         <field name="end_date_suspension" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
                         <field name="retention_percentage" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
+                    </group>
+                </group>
+                <group string="Datos del instructor sumariante">
+                    <group>
                         <field name="instructor_name"/>
+                        <field name="instructor_doc_number"/>
                         <field name="instructor_email"/>
                     </group>
                 </group>
@@ -83,6 +90,11 @@
                 </group>
             </form>
         </field>
+    </record>
+     <record id="onsc_legajo_summary_action" model="ir.actions.act_window">
+        <field name="name">Sumarios sincronizados</field>
+        <field name="res_model">onsc.legajo.summary</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
 </odoo>
