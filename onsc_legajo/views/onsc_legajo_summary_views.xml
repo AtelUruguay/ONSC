@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_legajo_summary_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.summary.tree</field>
+        <field name="model">onsc.legajo.summary</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="last_update_date"/>
+                <field name="emissor_country"/>
+                <field name="document_type"/>
+                <field name="nro_doc"/>
+                <field name="inciso_code"/>
+                <field name="inciso_name"/>
+                <field name="operating_unit_code"/>
+                <field name="operating_unit_name"/>
+                <field name="regime"/>
+                <field name="relationship_date"/>
+                <field name="state"/>
+                <field name="summary_causal"/>
+                <field name="act_date"/>
+                <field name="interrogator_notify_date"/>
+                <field name="summary_notify_date"/>
+                <field name="summary_detail"/>
+                <field name="suspension"/>
+                <field name="start_date_suspension"/>
+                <field name="end_date_suspension"/>
+                <field name="retention_percentage"/>
+                <field name="instructor_name"/>
+                <field name="instructor_email"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_summary_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.summary.form</field>
+        <field name="model">onsc.legajo.summary</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="last_update_date"/>
+                        <field name="emissor_country"/>
+                        <field name="document_type"/>
+                        <field name="nro_doc"/>
+                        <field name="inciso_code"/>
+                        <field name="inciso_name"/>
+                        <field name="operating_unit_code"/>
+                        <field name="operating_unit_name"/>
+                        <field name="regime"/>
+                        <field name="relationship_date"/>
+                        <field name="state"/>
+                        <field name="summary_causal"/>
+                    </group>
+                    <group>
+                        <field name="summary_causal"/>
+                        <field name="act_date"/>
+                        <field name="interrogator_notify_date"/>
+                        <field name="summary_notify_date"/>
+                        <field name="penalty_type_id"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               attrs="{'invisible': [('state', '!=', 'C')]}"/>
+                        <field name="summary_detail" attrs="{'invisible': [('state', '!=', 'C')]}"/>
+                        <field name="suspension"/>
+                        <field name="start_date_suspension" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
+                        <field name="end_date_suspension" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
+                        <field name="retention_percentage" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
+                        <field name="instructor_name"/>
+                        <field name="instructor_email"/>
+                    </group>
+                </group>
+                <group string="Comunicaciones del sumario">
+                    <field name="communications_ids" nolabel="1">
+                        <tree>
+                            <field name="communication_date"/>
+                            <field name="instance"/>
+                            <field name="communication_type"/>
+                        </tree>
+                    </field>
+                </group>
+            </form>
+        </field>
+    </record>
+     <record id="onsc_legajo_summary_action" model="ir.actions.act_window">
+        <field name="name">Sumarios sincronizados</field>
+        <field name="res_model">onsc.legajo.summary</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

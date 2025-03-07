@@ -398,6 +398,11 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
+        <record id="group_legajo_summary_consulta" model="res.groups">
+            <field name="name">Sumarios - Consulta de sumarios sincronizados</field>
+            <field name="comment">Consulta de sumarios sincronizados</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+        </record>
 
         <!-- REPORTES -->
         <record id="group_legajo_report_padron_inciso_ue_uo_inciso" model="res.groups">

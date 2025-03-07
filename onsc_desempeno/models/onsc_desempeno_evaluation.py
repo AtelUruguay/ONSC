@@ -945,9 +945,6 @@ class ONSCDesempenoEvaluation(models.Model):
             rec.write({'environment_evaluation_ids': [(6, 0, selected_random_environment.ids)]})
 
     def _check_complete_evaluation(self):
-        if self.evaluation_type != 'environment_definition' and not self.general_comments:
-            raise ValidationError(_("El campo comentarios generales es obligatorio"))
-
         if self.evaluation_type == 'gap_deal':
             for competency in self.gap_deal_competency_ids:
                 if not competency.degree_id or not competency.improvement_areas:
