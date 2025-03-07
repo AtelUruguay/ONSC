@@ -29,7 +29,11 @@
                 <field name="retention_percentage"/>
                 <field name="instructor_name"/>
                 <field name="instructor_email"/>
-
+                <field name="penalty_type_id"/>
+                <field name="summary_number"/>
+                <field name="record_number"/>
+                <field name="instructor_doc_number"/>
+                <field name="observations"/>
             </tree>
         </field>
     </record>
@@ -40,7 +44,7 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form>
-                <group string="Datos del Sumario ">
+                <group string="Datos del Sumario">
                     <group>
                         <field name="summary_number"/>
                         <field name="record_number"/>
@@ -55,7 +59,6 @@
                         <field name="regime"/>
                         <field name="relationship_date"/>
                         <field name="state"/>
-
                     </group>
                     <group>
                         <field name="summary_causal"/>
@@ -70,6 +73,8 @@
                         <field name="start_date_suspension" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
                         <field name="end_date_suspension" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
                         <field name="retention_percentage" attrs="{'invisible': [('suspension', '!=', 'N')]}"/>
+                        <field name="penalty_type_id"/>
+                        <field name="observations"/>
                     </group>
                 </group>
                 <group string="Datos del instructor sumariante">
