@@ -22,6 +22,7 @@ ONSC - Legajo
     "data": [
         "security/onsc_legajo_security.xml",
         "security/ir.model.access.csv",
+        "data/ir_filters_data.xml",
         "data/ir_cron_data.xml",
         "data/ir_config_parameters_data.xml",
         "data/onsc_legajo_state_square_data.xml",
