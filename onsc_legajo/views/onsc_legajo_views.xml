@@ -264,8 +264,7 @@
                               attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_info', '=', False)]}">
                             <field name="demerito_ids"/>
                         </page>
-                        <!-- TODO uncomment in LES Sprint2 -->
-                        <!-- <page name="summarys" string="Sumarios"
+                        <page name="summarys" string="Sumarios"
                               attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_summary', '=', False)]}">
                             <field name="last_sync_rve_date"/>
                             <field name="summary_ids">
@@ -280,7 +279,7 @@
                                             name="button_open_current_summary"/>
                                 </tree>
                             </field>
-                        </page> -->
+                        </page>
                     </notebook>
                 </sheet>
             </form>
