@@ -300,6 +300,7 @@ class ONSCLegajo(models.Model):
         action = self.sudo().env.ref('onsc_legajo.onsc_legajo_summary_action').read()[0]
         action.update({'res_id': self.id})
         return action
+
     def _action_milegajo(self):
         ctx = self.env.context.copy()
         ctx['mi_legajo'] = True

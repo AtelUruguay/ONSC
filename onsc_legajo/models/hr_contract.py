@@ -198,7 +198,7 @@ class HrContract(models.Model):
         string='Departamento donde desempeña funciones',
         copy=False, history=True)
 
-    legajo_id = fields.Many2one('onsc.legajo', string='Legajo', compute='_compute_legajo_id', store=True)
+    legajo_id = fields.Many2one('onsc.legajo', string='Legajo', compute='_compute_legajo_id', store=True, index=True)
     show_law_legajo_legend = fields.Boolean(
         string='¿Mostrar leyenda de legajo?',
         compute='_compute_show_law_legajo_legend'
@@ -216,6 +216,7 @@ class HrContract(models.Model):
                                              string="Unidad ejecutora Destino",
                                              domain="[('inciso_id','=', inciso_dest_id)]",
                                              history=True)
+    public_admin_entry_date = fields.Date(string=u'Fecha de ingreso a la administración pública', related='legajo_id.public_admin_entry_date', store=True)
 
     def name_get(self):
         res = []

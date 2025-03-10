@@ -31,4 +31,14 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
 
     def action_show(self):
-        return True
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'onsc.legajo.department',
+            'view_mode': 'tree,form',
+            'target': 'current',
+            'domain': [('inciso_id', '=', self.inciso_id.id), ('operating_unit_id', '=', self.operating_unit_id.id)],
+            'context': {'is_from_menu': True, 'is_legajo': True, 'active_test': False, 'ignore_base_restrict': True},
+            'views': [
+                [self.env.ref('onsc_legajo.onsc_legajo_department_tree').id, 'tree'],
+            ]
+        }
