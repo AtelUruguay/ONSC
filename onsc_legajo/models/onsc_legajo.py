@@ -224,12 +224,11 @@ class ONSCLegajo(models.Model):
     def _compute_show_legajo_info(self):
         is_user_valid = self.user_has_groups('onsc_legajo.group_legajo_show_legajo_info')
         is_user_basic_valid = self.user_has_groups('onsc_legajo.group_legajo_show_basic_legajo_info')
-        # TODO LES Sprint 2
-        # is_user_valid_summary = self.user_has_groups('onsc_legajo.group_legajo_summary_consulta')
+        is_user_valid_summary = self.user_has_groups('onsc_legajo.group_legajo_summary_consulta')
         for rec in self:
             rec.show_legajo_info = is_user_valid or rec.employee_id.user_id.id == self.env.user.id
             rec.show_legajo_basic_info = is_user_basic_valid or rec.employee_id.user_id.id == self.env.user.id
-            rec.show_legajo_summary = False
+            rec.show_legajo_summary = is_user_valid_summary
 
     def _compute_last_sync_rve_date(self):
         Summary = self.env['onsc.legajo.summary'].suspend_security()
