@@ -80,30 +80,41 @@
               groups="onsc_legajo.group_legajo_vote_control_recursos_humanos_inciso,onsc_legajo.group_legajo_vote_control_recursos_humanos_ue,onsc_legajo.group_legajo_vote_control_administrar,onsc_legajo.group_legajo_vote_control_consulta,onsc_legajo.group_legajo_vote_control_responsable_uo"
               sequence="2"/>
 
+    <menuitem id="onsc_legajo_report_menu"
+              name="Reportes"
+              parent="onsc_legajo.onsc_legajo_root_menu"
+              sequence="10"/>
+        <menuitem id="onsc_legajo_report_padron_inciso_ue_uo_menu"
+              name="Padrón por Inciso, UE y UO"
+              parent="onsc_legajo.onsc_legajo_report_menu"
+              action="action_onsc_legajo_padron_estructure_filter_wizard"
+              groups="onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso,onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue,onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult"
+              sequence="1"/>
+
     <menuitem id="onsc_hr_employee_menu"
               name="Funcionarios"
               action="onsc_legajo_hr_employee_action"
               parent="onsc_legajo.onsc_legajo_root_menu"
               groups="onsc_legajo.group_legajo_configurador_empleado"
-              sequence="5"/>
+              sequence="50"/>
     <menuitem id="onsc_hr_contract_menu"
               name="Contratos"
               parent="onsc_legajo.onsc_legajo_root_menu"
               action="onsc_legajo_hr_contract_action"
               groups="onsc_legajo.group_legajo_configurador_contrato"
-              sequence="6"/>
+              sequence="60"/>
     <menuitem id="onsc_legajo_hr_job_menu"
               name="Puestos en UO"
               parent="onsc_legajo_root_menu"
               action="onsc_legajo_hr_job_action"
               groups="onsc_legajo.group_legajo_configurador_puesto"
-              sequence="7"/>
+              sequence="70"/>
 
 
     <menuitem id="onsc_legajo_catalog_menu"
               name="Catálogos"
               parent="onsc_legajo_root_menu"
-              sequence="50"/>
+              sequence="100"/>
     <menuitem id="onsc_legajo_electoral_act_menu"
               name="Acto Electoral"
               action="onsc_legajo_electoral_act_action"

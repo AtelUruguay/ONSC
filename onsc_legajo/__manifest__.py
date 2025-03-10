@@ -33,6 +33,7 @@ ONSC - Legajo
         "data/onsc_legajo_role_electoral_act_data.xml",
         "data/onsc_legajo_data.xml",
         "wizard/mail_wizard_invite_views.xml",
+        "wizard/onsc_legajo_padron_estructure_filter_wizard.xml",
         "views/onsc_legajo_department_views.xml",
         "views/onsc_legajo_vote_registry_pending.xml",
         "views/onsc_legajo_settings_view.xml",
