@@ -269,6 +269,7 @@
                             <field name="last_sync_rve_date"/>
                             <field name="summary_ids">
                                 <tree>
+                                    <field name="show_button_open_summary" invisible="1"/>
                                     <field name="summary_number"/>
                                     <field name="record_number"/>
                                     <field name="display_inciso"/>
@@ -276,7 +277,8 @@
                                     <field name="summary_causal"/>
                                     <field name="state"/>
                                     <button type="object" string="Ver detalle del sumario"
-                                            name="button_open_current_summary"/>
+                                            name="button_open_current_summary"
+                                            attrs="{'invisible': [('show_button_open_summary', '=', False)]}"/>
                                 </tree>
                             </field>
                         </page>

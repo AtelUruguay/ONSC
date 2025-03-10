@@ -228,7 +228,7 @@ class ONSCLegajo(models.Model):
         for rec in self:
             rec.show_legajo_info = is_user_valid or rec.employee_id.user_id.id == self.env.user.id
             rec.show_legajo_basic_info = is_user_basic_valid or rec.employee_id.user_id.id == self.env.user.id
-            rec.show_legajo_summary = is_user_valid_summary
+            rec.show_legajo_summary = is_user_valid_summary or rec.employee_id.user_id.id == self.env.user.id
 
     def _compute_last_sync_rve_date(self):
         Summary = self.env['onsc.legajo.summary'].suspend_security()
