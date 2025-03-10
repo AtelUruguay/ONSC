@@ -183,3 +183,22 @@ class ONSCMigrations(models.Model):
                     'to_state': to_state_key,
                 })
         StateTransactionHistory.create(bulked_vals)
+
+    def _ler_2_1_01_contract(self, lote=1, lote_size=1000):
+        HrContract = self.env['hr.contract'].sudo()
+        StateTransactionHistory = self.env['hr.contract.state.transaction.history'].suspend_security()
+        _lote = lote - 1
+        offset = lote_size * _lote
+        bulked_vals = []
+        for contract in HrContract.search([], limit=lote_size, offset=offset):
+            first_history = StateTransactionHistory.search([('contract_id', '=', contract.id)], limit=1)
+            if first_history:
+                to_state = first_history.from_state
+            else:
+                to_state = contract.legajo_state
+            bulked_vals.append({
+                'contract_id': contract.id,
+                'transaction_date': contract.date_start,
+                'to_state': to_state,
+            })
+        StateTransactionHistory.create(bulked_vals)
