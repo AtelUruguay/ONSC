@@ -62,6 +62,7 @@ class ONSCLegajoSummary(models.Model):
     legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", index=True)
     show_button_open_summary = fields.Boolean('Mostrar button abrir sumarios ',compute='_compute_show_button_open_summary')
 
+
     @api.depends('operating_unit_code', 'operating_unit_id', 'operating_unit_name')
     def _compute_display_ue(self):
         for rec in self:
@@ -71,7 +72,7 @@ class ONSCLegajoSummary(models.Model):
                 rec.display_ue = rec.operating_unit_code + '_' + rec.operating_unit_name
 
     @api.depends('inciso_id', 'inciso_code', 'inciso_name')
-    def _compute_display_ue(self):
+    def _compute_display_inciso(self):
         for rec in self:
             if rec.inciso_id:
                 rec.display_inciso = rec.inciso_id.budget_code + '_' + rec.inciso_id.name
