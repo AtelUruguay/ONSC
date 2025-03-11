@@ -41,6 +41,13 @@ GAP_DEAL_STATES = [
     ('agree', 'Acordado'),
 ]
 
+_EVALUATION_360 = {
+    'self_evaluation',
+    'collaborator',
+    'leader_evaluation',
+    'environment_evaluation'
+}  # Evaluaciones 360
+
 
 class ONSCDesempenoEvaluation(models.Model):
     _name = 'onsc.desempeno.evaluation'
@@ -68,10 +75,13 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCDesempenoEvaluation, self).fields_view_get(view_id=view_id, view_type=view_type,
-                                                                     toolbar=toolbar,
-                                                                     submenu=submenu)
+                                                                   toolbar=toolbar,
+                                                                   submenu=submenu)
         doc = etree.XML(res['arch'])
-        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
+        if 'edit' in self._context and not self._context.get('edit'):
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('edit', '0')
+        elif view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('edit', '1')
         if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('tracing_plan'):
@@ -533,7 +543,7 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('evaluator_id', '=', environment_id.employee_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ])
-                if leader_evaluations_qty + 1 >= max_environment_evaluation_forms:
+                if leader_evaluations_qty >= max_environment_evaluation_forms:
                     evaluation_type_args = [
                         'environment_evaluation',
                         'self_evaluation',
