@@ -35,6 +35,10 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         comodel_name="onsc.desempeno.skill.line",
         relation="competency_skill_line_rel",
         string="Lineas de competencia")
+    evaluation_skill_line_ids = fields.Many2many(
+        comodel_name="onsc.desempeno.evaluation.skill.line",
+        relation="evaluation_competency_skill_line_rel",
+        string="Lineas de competencia")
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo',
                                 required=False, ondelete='restrict')
     improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=False)
@@ -83,7 +87,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                 condition = record.state not in ['in_process'] or _cond1
             record.competency_form_edit = condition
 
-    @api.depends('skill_line_ids','skill_line_ids.frequency_id')
+    @api.depends('evaluation_skill_line_ids','evaluation_skill_line_ids.frequency_id')
     def _compute_grade_suggested(self):
         EquivalenceGrade = self.env['onsc.desempeno.grade.equivalence']
         for record in self:
@@ -113,3 +117,36 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
 
     def action_close_dialog(self):
         return {'type': 'ir.actions.act_window_close'}
+
+    def set_competencies(self, skills, evaluation_id=False, gap_deal_id=False):
+        """
+        Set competencies for the given skills.
+
+        This method creates and returns competency records based on the provided skills.
+        It filters skill lines by the evaluation level and creates evaluation skill lines
+        accordingly.
+
+        Args:
+            skills (list): A list of skill records to process.
+            evaluation_id (int, optional): The ID of the evaluation. Defaults to False.
+            gap_deal_id (int, optional): The ID of the gap deal. Defaults to False.
+
+        Returns:
+            recordset: A recordset of the created 'onsc.desempeno.evaluation.competency' records.
+        """
+        competencies = self.env['onsc.desempeno.evaluation.competency']
+        for skill in skills:
+            skill_lines = skill.skill_line_ids.filtered(lambda r: r.level_id.id == evaluation.level_id.id)
+            evaluation_skill_lines = [(0, 0, {
+                'dimension_id': skill_line.dimension_id.id,
+                'level_id': skill_line.level_id.id,
+                'behavior': skill_line.behavior,
+            }) for skill_line in skill_lines]
+            competencies |= self.create({
+                'evaluation_id': evaluation_id,
+                'gap_deal_id': gap_deal_id,
+                'skill_id': skill.id,
+                'skill_line_ids': [(6, 0, skill_lines.ids)],
+                'evaluation_skill_line_ids': evaluation_skill_lines
+            })
+        return competencies

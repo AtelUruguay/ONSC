@@ -17,6 +17,7 @@
                            attrs="{'readonly': [('operating_unit_edit', '=', False)]}"
                            options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="general_cycle_id"
+                           context="{'active_test': False}"
                            options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="evaluation_type"/>
                     <field name="state"/>

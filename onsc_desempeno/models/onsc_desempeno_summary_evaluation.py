@@ -192,7 +192,14 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     def button_open_evaluation(self):
         _logger.info('********************* SUMMARY EVALUATION LINK ****************************')
         ctx = self.env.context.copy()
-        ctx.update({'show_evaluation_type': True, 'ignore_security_rules': True, 'ignore_base_restrict': True, 'is_from_menu': True, 'environment_definition': True})
+        ctx.update({
+            'show_evaluation_type': True,
+            'ignore_security_rules': True,
+            'ignore_base_restrict': True,
+            'is_from_menu': True,
+            'environment_definition': True,
+            'edit': False
+        })
         if self.evaluation_type == 'gap_deal':
             ctx.update({'gap_deal': True})
         else:
@@ -200,23 +207,16 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
         if self.evaluation_type == 'development_plan':
             ctx.update({'develop_plan': True})
-            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
             action = self.env["ir.actions.actions"]._for_xml_id(
                 "onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         elif self.evaluation_type == 'tracing_plan':
             ctx.update({'tracing_plan': True})
-            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
             action = self.env["ir.actions.actions"]._for_xml_id(
                 "onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         else:
-            # action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
             action = self.env["ir.actions.actions"]._for_xml_id(
                 "onsc_desempeno.onsc_desempeno_evaluation_readonly_action")
-        # action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
 
-        # TEST SECOND WAY
-        # COPY ACTION AND UPDATE OTHERWISE USE SAME ACTION
-        # action = self.env["ir.actions.actions"]._for_xml_id("onsc_desempeno.onsc_desempeno_evaluation_devlop_action")
         if self._context.get('evaluation_id'):
             _evaluation_id = self._context.get('evaluation_id')
             _logger.info('CONTEXT EVALUATION: %s' % _evaluation_id)

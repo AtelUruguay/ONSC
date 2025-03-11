@@ -41,6 +41,13 @@ GAP_DEAL_STATES = [
     ('agree', 'Acordado'),
 ]
 
+_EVALUATION_360 = {
+    'self_evaluation',
+    'collaborator',
+    'leader_evaluation',
+    'environment_evaluation'
+}  # Evaluaciones 360
+
 
 class ONSCDesempenoEvaluation(models.Model):
     _name = 'onsc.desempeno.evaluation'
@@ -68,10 +75,13 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCDesempenoEvaluation, self).fields_view_get(view_id=view_id, view_type=view_type,
-                                                                     toolbar=toolbar,
-                                                                     submenu=submenu)
+                                                                   toolbar=toolbar,
+                                                                   submenu=submenu)
         doc = etree.XML(res['arch'])
-        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
+        if 'edit' in self._context and not self._context.get('edit'):
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('edit', '0')
+        elif view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('edit', '1')
         if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('tracing_plan'):
@@ -533,7 +543,7 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('evaluator_id', '=', environment_id.employee_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ])
-                if leader_evaluations_qty + 1 >= max_environment_evaluation_forms:
+                if leader_evaluations_qty >= max_environment_evaluation_forms:
                     evaluation_type_args = [
                         'environment_evaluation',
                         'self_evaluation',
@@ -697,7 +707,8 @@ class ONSCDesempenoEvaluation(models.Model):
         evaluation_types_evaluated = ['self_evaluation']
         user_restricted = self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue')
         for record in self:
-            if not user_restricted:
+            cond_available = record.evaluation_type not in evaluation_types_evaluator and record.evaluation_type not in evaluation_types_evaluated
+            if not user_restricted or cond_available:
                 record.is_notebook_available = True
             else:
                 is_iam_evaluated = record.evaluated_id.id == user_employee.id
@@ -989,11 +1000,11 @@ class ONSCDesempenoEvaluation(models.Model):
         for competency in competencies:
             if not competency.degree_id or not competency.improvement_areas:
                 raise ValidationError(
-                    _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
-        for skill_line in competencies.mapped('skill_line_ids'):
+                    _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
+        for skill_line in competencies.mapped('evaluation_skill_line_ids'):
             if not skill_line.frequency_id:
                 raise ValidationError(
-                    _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
+                    _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
 
     def _check_development_plan(self):
         if len(self.development_plan_ids.development_means_ids.ids) == 0:
