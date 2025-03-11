@@ -284,7 +284,7 @@ LEFT JOIN oldest_contract_data ocd
     ON bc.contract_id = ocd.contract_id
 WHERE
     bc.contract_legajo_state = 'outgoing_commission'
-''' % (self._table,))
+)''' % (self._table,))
 
     def get_uo_tree(self, contract=False):
         Department = self.env['hr.department'].sudo()
