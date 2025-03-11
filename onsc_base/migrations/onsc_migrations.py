@@ -198,7 +198,7 @@ class ONSCMigrations(models.Model):
                 to_state = contract.legajo_state
             bulked_vals.append({
                 'contract_id': contract.id,
-                'transaction_date': contract.date_start,
+                'transaction_date': contract.create_date,
                 'to_state': to_state,
             })
         StateTransactionHistory.create(bulked_vals)
