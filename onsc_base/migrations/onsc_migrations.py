@@ -155,7 +155,7 @@ class ONSCMigrations(models.Model):
 
     def _ler_2_1_01(self, lote=1, lote_size=1000):
         StateTransactionHistory = self.env['hr.contract.state.transaction.history'].suspend_security()
-        HrContract = self.env['hr.contract'].sudo()
+        HrContract = self.env['hr.contract'].with_context(active_test=False).sudo()
         _lote = lote - 1
         offset = lote_size * _lote
         legajo_state_field_id = self.env['ir.model.fields'].search([
@@ -185,7 +185,7 @@ class ONSCMigrations(models.Model):
         StateTransactionHistory.create(bulked_vals)
 
     def _ler_2_1_01_contract(self, lote=1, lote_size=1000):
-        HrContract = self.env['hr.contract'].sudo()
+        HrContract = self.env['hr.contract'].with_context(active_test=False).sudo()
         StateTransactionHistory = self.env['hr.contract.state.transaction.history'].suspend_security()
         _lote = lote - 1
         offset = lote_size * _lote
