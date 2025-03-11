@@ -63,7 +63,7 @@ class ONSCLegajoSummary(models.Model):
 
 
     @api.depends('operating_unit_code', 'operating_unit_id', 'operating_unit_name')
-    def _compute_display_inciso(self):
+    def _compute_display_ue(self):
         for rec in self:
             if rec.operating_unit_id:
                 rec.display_ue = rec.operating_unit_id.budget_code + '_' + rec.inciso_id.name
