@@ -102,7 +102,7 @@
         <field name="model">onsc.legajo.summary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="0" edit="0" delete="0" copy="0">
                 <group string="Datos del Sumario">
                     <group>
                         <field name="summary_number"/>
@@ -158,10 +158,11 @@
      <record id="onsc_legajo_summary_action" model="ir.actions.act_window">
         <field name="name">Sumarios sincronizados</field>
         <field name="res_model">onsc.legajo.summary</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">form,tree</field>
         <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_summary_basic_form')}),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_summary_tree')}),
-            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_summary_basic_form')})]"/>
+            ]"/>
     </record>
 
 </odoo>
