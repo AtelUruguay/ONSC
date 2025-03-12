@@ -109,6 +109,14 @@
                                             <field name="mass_upload_record_limit"/>
                                         </div>
 
+
+                                    </div>
+                                     <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de altas</h6>
+                                    <div class="content-group">
+                                       <div class="row">
+                                            <label for="message_block_summary" string="Mensaje de sumario bloqueante" class="col-md-5 o_light_label"/>
+                                            <field name="message_block_summary"/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

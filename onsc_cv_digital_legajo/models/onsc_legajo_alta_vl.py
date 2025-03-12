@@ -113,7 +113,12 @@ class ONSCLegajoAltaVL(models.Model):
         compute='_compute_show_exist_altaVL_warning',
         store=False
     )
-
+    summary_message = fields.Char(string="Mensaje de Sumarios", compute='_compute_summary_message', copy=False)
+    show_summary_message = fields.Boolean(
+        string='Mostrar mensaje de advertencia',
+        compute='_compute_summary_message',
+        store=False
+    )
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
         for record in self:
@@ -353,6 +358,14 @@ class ONSCLegajoAltaVL(models.Model):
                             ('legajo_state', '=', 'active')])):
                          show_exist_altaVL_warning = True
             rec.show_exist_altaVL_warning = show_exist_altaVL_warning
+
+    @api.depends('partner_id')
+    def _compute_summary_message(self):
+        Summary = self.env['hr.contract'].suspend_security()
+        for rec in self:
+            summary_id = Summary.search()
+            rec.summary_message = "Tenga en cuenta que la persona %s tuvo un sumario con sanción “Destitución”. Se recomienda que antes de confirmar verifique que sea correcto realizar este movimiento" % rec.full_name
+
 
     @api.model
     def syncronize_ws1(self, log_info=False):
