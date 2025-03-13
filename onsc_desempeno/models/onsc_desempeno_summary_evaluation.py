@@ -197,7 +197,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
             'ignore_security_rules': True,
             'ignore_base_restrict': True,
             'is_from_menu': True,
-            'environment_definition': True,
+            'environment_definition': self.evaluation_type == 'environment_definition',
             'edit': False
         })
         if self.evaluation_type == 'gap_deal':
