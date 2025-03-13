@@ -26,9 +26,11 @@ class HrContract(models.Model):
     _history_model = 'hr.contract.model.history'
     _history_columns = ['date_start', 'date_end']
     _fields_to_exclude_insearch = FIELDS_TO_EXLUDE
+    _parent_name = "parent_id"
 
     def init(self):
-        self._cr.execute("""CREATE INDEX IF NOT EXISTS hr_contract_employee_id ON hr_contract (employee_id)""")
+        self._cr.execute(
+            """CREATE INDEX IF NOT EXISTS hr_contract_employee_id ON hr_contract (employee_id)""")
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -100,19 +102,31 @@ class HrContract(models.Model):
          ('outgoing_commission', 'Comisión saliente'),
          ('incoming_commission', 'Comisión entrante')],
         tracking=True, string='Estado del Contrato', history=True)
-    cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado', history=True)
-    first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name', store=True)
-    second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name', store=True)
+    cs_contract_id = fields.Many2one(
+        'hr.contract', string='Contrato relacionado', history=True, index=True)
+    parent_id = fields.Many2one(
+        'hr.contract',
+        string='Contrato padre',
+        history=True,
+        index=True,
+        store=True,
+        compute="_compute_parent_id"
+    )
+    first_name = fields.Char(string=u'Primer nombre',
+                             related='employee_id.cv_first_name', store=True)
+    second_name = fields.Char(string=u'Segundo nombre',
+                              related='employee_id.cv_second_name', store=True)
     last_name_1 = fields.Char(string=u'Primer apellido', related='employee_id.cv_last_name_1', store=True)
     last_name_2 = fields.Char(string=u'Segundo apellido', related='employee_id.cv_last_name_2', store=True)
     emissor_country_id = fields.Many2one('res.country', string=u'País emisor del documento',
                                          related='employee_id.cv_emissor_country_id', store=True)
     document_type_id = fields.Many2one('onsc.cv.document.type', string=u'Tipo de documento',
                                        related='employee_id.cv_document_type_id', store=True)
-    nro_doc = fields.Char(u'Número de documento', related='employee_id.cv_nro_doc', store=True)
+    nro_doc = fields.Char(u'Número de documento',related='employee_id.cv_nro_doc', store=True)
     program = fields.Char(string='Programa', history=True)
     project = fields.Char(string='Proyecto', history=True)
-    regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', history=True)
+    regime_id = fields.Many2one(
+        'onsc.legajo.regime', string='Régimen', history=True)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', history=True)
     occupation_date = fields.Date(string='Fecha desde Ocupación', history=True)
     is_occupation_visible = fields.Boolean(compute='_compute_is_occupation_visible')
@@ -240,7 +254,8 @@ class HrContract(models.Model):
     @api.depends('employee_id')
     def _compute_legajo_id(self):
         for rec in self.filtered(lambda x: x.employee_id):
-            rec.legajo_id = self.env['onsc.legajo'].sudo().search([('employee_id', '=', rec.employee_id.id)], limit=1)
+            rec.legajo_id = self.env['onsc.legajo'].sudo().search(
+                [('employee_id', '=', rec.employee_id.id)], limit=1)
 
     def test_legajo(self):
         self._compute_legajo_id()
@@ -306,6 +321,11 @@ class HrContract(models.Model):
     def _compute_is_mi_legajo(self):
         for rec in self:
             rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
+
+    def _compute_parent_id(self):
+        for record in self:
+            record.parent_id = self.search(
+                [('cs_contract_id', '=', record.id)], limit=1).id
 
     @api.constrains("reason_description", "resolution_description", "reason_discharge", "reason_deregistration",
                     "resolution_description_deregistration")
@@ -446,6 +466,7 @@ class HrContractHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.contract.model.history'
     _parent_model = 'hr.contract'
+
 
 class HrContractStateTransactionHistory(models.Model):
     _name = 'hr.contract.state.transaction.history'
