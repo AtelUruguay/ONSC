@@ -43,7 +43,7 @@
         <field name="model">onsc.legajo.summary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="0" edit="0" delete="0" copy="0">
                 <group string="Datos del Sumario">
                     <group>
                         <field name="summary_number"/>
