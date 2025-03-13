@@ -78,12 +78,13 @@ class ONSCDesempenoEvaluation(models.Model):
                                                                    toolbar=toolbar,
                                                                    submenu=submenu)
         doc = etree.XML(res['arch'])
-        if 'edit' in self._context and not self._context.get('edit'):
-            for node_form in doc.xpath("//%s" % (view_type)):
-                node_form.set('edit', '0')
-        elif view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
+        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('edit', '1')
+        elif 'edit' in self._context and not self._context.get('edit'):
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('edit', '0')
+
         if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('tracing_plan'):
             for node_form in doc.xpath("//button[@name='button_agree_plan_leader']"):
                 node_form.set(
@@ -699,16 +700,9 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _compute_is_notebook_available(self):
         user_employee = self.env.user.employee_id
-        evaluation_types_evaluator = [
-            'leader_evaluation',
-            'collaborator',
-            'environment_evaluation'
-        ]
-        evaluation_types_evaluated = ['self_evaluation']
         user_restricted = self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue')
         for record in self:
-            cond_available = record.evaluation_type not in evaluation_types_evaluator and record.evaluation_type not in evaluation_types_evaluated
-            if not user_restricted or cond_available:
+            if not user_restricted:
                 record.is_notebook_available = True
             else:
                 is_iam_evaluated = record.evaluated_id.id == user_employee.id
@@ -722,11 +716,14 @@ class ONSCDesempenoEvaluation(models.Model):
                 else:
                     is_am_responsable = False
 
-                is_evaluator_valid = is_iam_evaluator or is_am_responsable or is_am_orig_evaluator
-                cond1 = record.evaluation_type in evaluation_types_evaluator and is_evaluator_valid
-                cond2 = record.evaluation_type in evaluation_types_evaluated and is_iam_evaluated
+                is_eval_valid_cond1 = is_iam_evaluator or is_am_orig_evaluator
+                is_eval_valid_cond2 = is_eval_valid_cond1 or is_am_responsable
 
-                record.is_notebook_available = cond1 or cond2
+                cond1 = record.evaluation_type in ['collaborator', 'environment_evaluation'] and is_eval_valid_cond1
+                cond2 = record.evaluation_type == 'leader_evaluation' and is_eval_valid_cond2
+                cond3 = record.evaluation_type == 'self_evaluation' and is_iam_evaluated
+
+                record.is_notebook_available = cond1 or cond2 or cond3
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
