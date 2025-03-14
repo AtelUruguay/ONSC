@@ -82,7 +82,7 @@ class ONSCDesempenoEvaluation(models.Model):
         if view_type in ['form', ] and self._context.get('is_from_menu') and views_editables:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('edit', '1')
-        elif 'edit' in self._context and not self._context.get('edit'):
+        elif self._context.get('hide_edit'):
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('edit', '0')
 
