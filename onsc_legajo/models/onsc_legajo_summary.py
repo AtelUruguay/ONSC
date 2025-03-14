@@ -66,12 +66,18 @@ class ONSCLegajoSummary(models.Model):
     @api.depends('operating_unit_code', 'operating_unit_name')
     def _compute_display_ue(self):
         for rec in self:
-            rec.display_ue = '%s-%s' % (rec.operating_unit_code or '', rec.operating_unit_name or '')
+            if rec.operating_unit_code or rec.operating_unit_name:
+                rec.display_ue = '%s-%s' % (rec.operating_unit_code or '', rec.operating_unit_name or '')
+            else:
+                rec.display_ue = ''
 
     @api.depends('inciso_code', 'inciso_name')
     def _compute_display_inciso(self):
         for rec in self:
-            rec.display_inciso = '%s-%s' % (rec.inciso_code or '', rec.inciso_name or '')
+            if rec.inciso_code or rec.inciso_name:
+                rec.display_inciso = '%s-%s' % (rec.inciso_code or '', rec.inciso_name or '')
+            else:
+                rec.display_inciso = ''
 
     def _compute_show_button_open_summary(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
