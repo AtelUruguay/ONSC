@@ -78,7 +78,8 @@ class ONSCDesempenoEvaluation(models.Model):
                                                                    toolbar=toolbar,
                                                                    submenu=submenu)
         doc = etree.XML(res['arch'])
-        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
+        views_editables = self._context.get('environment_definition') or self._context.get('development_plan')
+        if view_type in ['form', ] and self._context.get('is_from_menu') and views_editables:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('edit', '1')
         elif 'edit' in self._context and not self._context.get('edit'):
