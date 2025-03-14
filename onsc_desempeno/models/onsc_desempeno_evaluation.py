@@ -830,7 +830,8 @@ class ONSCDesempenoEvaluation(models.Model):
         self.button_reopen_evaluation()
 
     def button_reopen_evaluation(self):
-        if self.evaluation_type not in _EVALUATION_360 and self.filtered(lambda x: x.state != 'finished'):
+        _EVALUATIONS = _EVALUATION_360 + ['tracing_plan']
+        if self.evaluation_type not in _EVALUATIONS and self.filtered(lambda x: x.state != 'finished'):
             raise ValidationError(_("Esta evaluación ha sido modificada. Por favor, vuelva al menú y acceda nuevamente a la misma"))
         self.write({'gap_deal_state': 'no_deal', 'state': 'in_process'})
 
