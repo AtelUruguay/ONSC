@@ -23,6 +23,13 @@
                                     <field name="skill_tooltip"/>
                                 </div>
                             </div>
+                            <field colspan="4" name="degree_id"
+                                   attrs="{'readonly':[('competency_form_edit', '=',True)]}"
+                                   required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field colspan="4"
+                                   name="improvement_areas"
+                                   attrs="{'readonly':[('competency_form_edit', '=',True)]}"
+                                   required="1"/>
                          </group>
                     </group>
                     <div class="alert alert-info" role="alert"
@@ -57,39 +64,10 @@
                                     </group>
                                  </form>
                             </field>
-                            <field name="evaluation_skill_line_ids"
-                                attrs="{'readonly':[('competency_form_edit', '=',True)]}"
-                                options="{'unlink':False, 'link':False}">
-                                <tree editable="bottom">
-                                    <field name="dimension_tooltip" string="" readonly="1"/>
-                                    <field name="dimension_id" readonly="1"
-                                        options="{'fields_to_show': ['definition'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                    <field name="behavior" style="white-space:normal;" readonly="1"/>
-                                    <field name="frequency_id" required="1" options="{'fields_to_show': ['name'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                </tree>
-                                <form string="Dimensiones">
-                                    <group>
-                                        <group>
-                                            <field name="dimension_id"  readonly="1"
-                                                options="{'fields_to_show': ['definition'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                            <field name="behavior" style="white-space:normal;" readonly="1"/>
-                                            <field name="frequency_id" options="{'fields_to_show': ['name'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>  <!-- Permitir la edición -->
-                                        </group>
-                                    </group>
-                                </form>
-                            </field>
                         </page>
                     </notebook>
                     <group colspan="4">
-                        <field colspan="4" name="grade_suggested_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                        <field colspan="4" name="degree_id"
-                                attrs="{'readonly':[('competency_form_edit', '=',True)]}"
-                                required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                        <field colspan="4"
-                                name="improvement_areas"
-                                placeholder="Mínimo 30 caracteres"
-                                attrs="{'readonly':[('competency_form_edit', '=',True)]}"
-                                required="1"/>
+                        <!-- <field colspan="4" name="grade_suggested_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/> -->
                     </group>
                 </sheet>
                <footer>
