@@ -723,7 +723,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 cond2 = record.evaluation_type == 'leader_evaluation' and is_eval_valid_cond2
                 cond3 = record.evaluation_type == 'self_evaluation' and is_iam_evaluated
 
-                record.is_notebook_available = cond1 or cond2 or cond3
+                record.is_notebook_available = cond1 or cond2 or cond3 or record.evaluation_type == 'gap_deal'
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
@@ -829,7 +829,7 @@ class ONSCDesempenoEvaluation(models.Model):
         self.button_reopen_evaluation()
 
     def button_reopen_evaluation(self):
-        if self.filtered(lambda x: x.state != 'finished'):
+        if self.evaluation_type not in _EVALUATION_360 and self.filtered(lambda x: x.state != 'finished'):
             raise ValidationError(_("Esta evaluación ha sido modificada. Por favor, vuelva al menú y acceda nuevamente a la misma"))
         self.write({'gap_deal_state': 'no_deal', 'state': 'in_process'})
 
@@ -998,10 +998,10 @@ class ONSCDesempenoEvaluation(models.Model):
             if not competency.degree_id or not competency.improvement_areas:
                 raise ValidationError(
                     _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
-        for skill_line in competencies.mapped('evaluation_skill_line_ids'):
-            if not skill_line.frequency_id:
-                raise ValidationError(
-                    _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
+        # for skill_line in competencies.mapped('evaluation_skill_line_ids'):
+        #     if not skill_line.frequency_id:
+        #         raise ValidationError(
+        #             _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
 
     def _check_development_plan(self):
         if len(self.development_plan_ids.development_means_ids.ids) == 0:
