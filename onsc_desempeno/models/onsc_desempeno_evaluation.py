@@ -41,12 +41,12 @@ GAP_DEAL_STATES = [
     ('agree', 'Acordado'),
 ]
 
-_EVALUATION_360 = {
+_EVALUATION_360 = [
     'self_evaluation',
     'collaborator',
     'leader_evaluation',
     'environment_evaluation'
-}  # Evaluaciones 360
+  ]  # Evaluaciones 360
 
 
 class ONSCDesempenoEvaluation(models.Model):
