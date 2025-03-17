@@ -233,9 +233,8 @@ class ONSCLegajo(models.Model):
     def _compute_last_sync_rve_date(self):
         Summary = self.env['onsc.legajo.summary'].suspend_security()
         for rec in self:
-            rec.last_sync_rve_date = Summary.search([('legajo_id', '=', rec.id)], limit=1,order="last_update_date desc").last_update_date
-
-
+            rec.last_sync_rve_date = Summary.search([('legajo_id', '=', rec.id)], limit=1,
+                                                    order="last_update_date desc").last_update_date
 
     def button_open_employee(self):
         self.ensure_one()
@@ -296,10 +295,6 @@ class ONSCLegajo(models.Model):
         except Exception as e:
             raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
 
-    def button_open_current_summary(self):
-        action = self.sudo().env.ref('onsc_legajo.onsc_legajo_summary_action').read()[0]
-        action.update({'res_id': self.id})
-        return action
     def _action_milegajo(self):
         ctx = self.env.context.copy()
         ctx['mi_legajo'] = True
