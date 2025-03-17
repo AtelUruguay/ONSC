@@ -41,6 +41,13 @@ GAP_DEAL_STATES = [
     ('agree', 'Acordado'),
 ]
 
+_EVALUATION_360 = [
+    'self_evaluation',
+    'collaborator',
+    'leader_evaluation',
+    'environment_evaluation'
+  ]  # Evaluaciones 360
+
 
 class ONSCDesempenoEvaluation(models.Model):
     _name = 'onsc.desempeno.evaluation'
@@ -68,12 +75,17 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCDesempenoEvaluation, self).fields_view_get(view_id=view_id, view_type=view_type,
-                                                                     toolbar=toolbar,
-                                                                     submenu=submenu)
+                                                                   toolbar=toolbar,
+                                                                   submenu=submenu)
         doc = etree.XML(res['arch'])
-        if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('environment_definition'):
+        views_editables = self._context.get('environment_definition') or self._context.get('development_plan')
+        if view_type in ['form', ] and self._context.get('is_from_menu') and views_editables:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('edit', '1')
+        elif self._context.get('hide_edit'):
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('edit', '0')
+
         if view_type in ['form', ] and self._context.get('is_from_menu') and self._context.get('tracing_plan'):
             for node_form in doc.xpath("//button[@name='button_agree_plan_leader']"):
                 node_form.set(
@@ -533,7 +545,7 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('evaluator_id', '=', environment_id.employee_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ])
-                if leader_evaluations_qty + 1 >= max_environment_evaluation_forms:
+                if leader_evaluations_qty >= max_environment_evaluation_forms:
                     evaluation_type_args = [
                         'environment_evaluation',
                         'self_evaluation',
@@ -689,12 +701,6 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _compute_is_notebook_available(self):
         user_employee = self.env.user.employee_id
-        evaluation_types_evaluator = [
-            'leader_evaluation',
-            'collaborator',
-            'environment_evaluation'
-        ]
-        evaluation_types_evaluated = ['self_evaluation']
         user_restricted = self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue')
         for record in self:
             if not user_restricted:
@@ -711,11 +717,14 @@ class ONSCDesempenoEvaluation(models.Model):
                 else:
                     is_am_responsable = False
 
-                is_evaluator_valid = is_iam_evaluator or is_am_responsable or is_am_orig_evaluator
-                cond1 = record.evaluation_type in evaluation_types_evaluator and is_evaluator_valid
-                cond2 = record.evaluation_type in evaluation_types_evaluated and is_iam_evaluated
+                is_eval_valid_cond1 = is_iam_evaluator or is_am_orig_evaluator
+                is_eval_valid_cond2 = is_eval_valid_cond1 or is_am_responsable
 
-                record.is_notebook_available = cond1 or cond2
+                cond1 = record.evaluation_type in ['collaborator', 'environment_evaluation'] and is_eval_valid_cond1
+                cond2 = record.evaluation_type == 'leader_evaluation' and is_eval_valid_cond2
+                cond3 = record.evaluation_type == 'self_evaluation' and is_iam_evaluated
+
+                record.is_notebook_available = cond1 or cond2 or cond3 or record.evaluation_type == 'gap_deal'
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
@@ -821,9 +830,13 @@ class ONSCDesempenoEvaluation(models.Model):
         self.button_reopen_evaluation()
 
     def button_reopen_evaluation(self):
-        if self.filtered(lambda x: x.state != 'finished'):
+        _EVALUATIONS = _EVALUATION_360 + ['tracing_plan']
+        cond1 = self.filtered(lambda x: x.evaluation_type not in _EVALUATIONS and x.state != 'finished')
+        cond2 = self.filtered(lambda x: x.evaluation_type == 'tracing_plan' and x.state != 'in_process')
+        if cond1 or cond2:
             raise ValidationError(_("Esta evaluación ha sido modificada. Por favor, vuelva al menú y acceda nuevamente a la misma"))
         self.write({'gap_deal_state': 'no_deal', 'state': 'in_process'})
+
 
     def button_reopen_deal(self):
         if self.filtered(lambda x: x.state_gap_deal != 'in_process'):
@@ -989,11 +1002,11 @@ class ONSCDesempenoEvaluation(models.Model):
         for competency in competencies:
             if not competency.degree_id or not competency.improvement_areas:
                 raise ValidationError(
-                    _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
-        for skill_line in competencies.mapped('skill_line_ids'):
-            if not skill_line.frequency_id:
-                raise ValidationError(
-                    _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
+                    _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
+        # for skill_line in competencies.mapped('evaluation_skill_line_ids'):
+        #     if not skill_line.frequency_id:
+        #         raise ValidationError(
+        #             _('Deben estar todas las evaluaciones de competencias completas para poder continuar'))
 
     def _check_development_plan(self):
         if len(self.development_plan_ids.development_means_ids.ids) == 0:
