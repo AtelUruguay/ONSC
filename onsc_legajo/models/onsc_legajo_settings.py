@@ -76,6 +76,11 @@ class ONSCCVSettings(models.TransientModel):
         readonly=False,
         related_sudo=True,
         help='Ingresar la lista de correos electronicos separados por coma')
+    message_block_summary = fields.Boolean(
+        u"Mensaje de sumario bloqueante",
+        related="company_id.message_block_summary",
+        readonly=False,
+        related_sudo=True)
 
     def execute(self):
         return {

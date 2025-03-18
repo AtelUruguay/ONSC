@@ -175,6 +175,12 @@ class ONSCLegajo(models.Model):
                 raise ValidationError(
                     _("La Fecha de presentación de documento digitalizado debe ser mayor a la Fecha de juramento"))
 
+    @api.model
+    def create(self, vals):
+        legajo = super(ONSCLegajo, self).create(vals)
+        self.env['onsc.legajo.summary']._update_legajo_summary(legajo)
+        return legajo
+
     def write(self, vals):
         keys_to_check = {'juramento_bandera_date', 'juramento_bandera_presentacion_date', 'juramento_bandera_file'}
         any_juramento_in_vals = any(key in vals for key in keys_to_check)
@@ -233,9 +239,8 @@ class ONSCLegajo(models.Model):
     def _compute_last_sync_rve_date(self):
         Summary = self.env['onsc.legajo.summary'].suspend_security()
         for rec in self:
-            rec.last_sync_rve_date = Summary.search([('legajo_id', '=', rec.id)], limit=1,order="last_update_date desc").last_update_date
-
-
+            rec.last_sync_rve_date = Summary.search([('legajo_id', '=', rec.id)], limit=1,
+                                                    order="last_update_date desc").last_update_date
 
     def button_open_employee(self):
         self.ensure_one()
@@ -296,10 +301,6 @@ class ONSCLegajo(models.Model):
         except Exception as e:
             raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
 
-    def button_open_current_summary(self):
-        action = self.sudo().env.ref('onsc_legajo.onsc_legajo_summary_action').read()[0]
-        action.update({'res_id': self.id})
-        return action
     def _action_milegajo(self):
         ctx = self.env.context.copy()
         ctx['mi_legajo'] = True

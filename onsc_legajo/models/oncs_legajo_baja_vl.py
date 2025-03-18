@@ -108,6 +108,7 @@ class ONSCLegajoBajaVL(models.Model):
         compute='_compute_is_read_only_description',
         store=True
     )
+    summary_message = fields.Char(string="Mensaje de Sumarios", compute='_compute_summary_message')
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -144,6 +145,14 @@ class ONSCLegajoBajaVL(models.Model):
             else:
                 rec.is_require_extended = False
 
+    @api.depends('contract_id')
+    def _compute_summary_message(self):
+        for rec in self:
+            if rec._has_summary():
+                rec.summary_message = "No se puede ingresar el movimiento. La persona tiene un sumario en proceso. Debe finalizar el proceso del sumario para poder realizar la baja."
+            else:
+                rec.summary_message = False
+
     @api.depends('employee_id')
     def _compute_full_name(self):
         for record in self:
@@ -171,6 +180,8 @@ class ONSCLegajoBajaVL(models.Model):
         for record in self:
             if record.end_date > fields.Date.today():
                 raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
+
+
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -213,6 +224,10 @@ class ONSCLegajoBajaVL(models.Model):
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
         self._message_log(body=_('Envia a SGH'))
+
+        if self._has_summary() and self.env.user.company_id.message_block_summary:
+            raise ValidationError(
+                _("No se puede ingresar el movimiento. La persona tiene un sumario en proceso. Debe finalizar el proceso del sumario para poder realizar la baja."))
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
     def action_aprobado_cgn(self):
@@ -313,3 +328,15 @@ class ONSCLegajoBajaVL(models.Model):
 
     def get_bajavl_name(self):
         return self.employee_id.display_name
+
+    def _has_summary(self):
+        return self.env['onsc.legajo.summary'].suspend_security().search_count([
+            ('country_id', '=', self.employee_id.cv_emissor_country_id.id),
+            ('cv_document_type_id', '=', self.employee_id.cv_document_type_id.id),
+            ('nro_doc', '=', self.employee_id.cv_nro_doc),
+            ('state', '!=', 'C'),
+            ('operating_unit_id','=',self.contract_id.operating_unit_id.id),
+            ('inciso_id','=',self.contract_id.inciso_id.id)
+        ]) > 0
+
+

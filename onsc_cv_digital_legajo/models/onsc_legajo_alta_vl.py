@@ -141,6 +141,12 @@ class ONSCLegajoAltaVL(models.Model):
 
     def action_call_ws4(self):
         self._message_log(body=_('Envia a SGH'))
+        Summary = self.env['onsc.legajo.summary'].suspend_security()
+        if Summary._has_summary(self.cv_emissor_country_id, self.cv_document_type_id,
+                                self.partner_id.cv_nro_doc) and self.env.user.company_id.message_block_summary:
+            raise ValidationError(
+                _("La persona %s tuvo un sumario con sanción “Destitución”."% self.full_name))
+
         return self.syncronize_ws4(log_info=True)
 
     def action_aprobado_cgn(self):
@@ -337,21 +343,22 @@ class ONSCLegajoAltaVL(models.Model):
                     ('partner_id', '=', rec.partner_id.id),
                 ]
                 for alta_vl in self.sudo().search(domain):
-                    if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
-                            ('descriptor1_id', '=', alta_vl.descriptor1_id.id),
-                            ('descriptor2_id', '=', alta_vl.descriptor2_id.id),
-                            ('descriptor3_id', '=', alta_vl.descriptor3_id.id),
-                            ('descriptor4_id', '=', alta_vl.descriptor4_id.id),
-                            ('regime_id', '=', alta_vl.regime_id.id),
-                            ('inciso_id', '=', alta_vl.inciso_id.id),
-                            ('program', '=', alta_vl.program_project_id.programa),
-                            ('project','=', alta_vl.program_project_id.proyecto),
-                            ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
-                            ('legajo_id.emissor_country_id', '=', alta_vl.cv_emissor_country_id.id),
-                            ('legajo_id.document_type_id', '=', alta_vl.cv_document_type_id.id),
-                            ('legajo_id.nro_doc', '=', alta_vl.partner_id.cv_nro_doc),
-                            ('legajo_state', '=', 'active')])):
-                         show_exist_altaVL_warning = True
+                    if alta_vl.state == 'pendiente_auditoria_cgn' or (
+                            alta_vl.state == 'aprobado_cgn' and Contract.search_count([
+                        ('descriptor1_id', '=', alta_vl.descriptor1_id.id),
+                        ('descriptor2_id', '=', alta_vl.descriptor2_id.id),
+                        ('descriptor3_id', '=', alta_vl.descriptor3_id.id),
+                        ('descriptor4_id', '=', alta_vl.descriptor4_id.id),
+                        ('regime_id', '=', alta_vl.regime_id.id),
+                        ('inciso_id', '=', alta_vl.inciso_id.id),
+                        ('program', '=', alta_vl.program_project_id.programa),
+                        ('project', '=', alta_vl.program_project_id.proyecto),
+                        ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
+                        ('legajo_id.emissor_country_id', '=', alta_vl.cv_emissor_country_id.id),
+                        ('legajo_id.document_type_id', '=', alta_vl.cv_document_type_id.id),
+                        ('legajo_id.nro_doc', '=', alta_vl.partner_id.cv_nro_doc),
+                        ('legajo_state', '=', 'active')])):
+                        show_exist_altaVL_warning = True
             rec.show_exist_altaVL_warning = show_exist_altaVL_warning
 
     @api.model

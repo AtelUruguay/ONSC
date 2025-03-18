@@ -131,7 +131,6 @@
                         <field name="start_date_suspension"/>
                         <field name="end_date_suspension"/>
                         <field name="retention_percentage"/>
-                        <field name="penalty_type_id"/>
                         <field name="observations"/>
                     </group>
                 </group>
@@ -158,10 +157,18 @@
      <record id="onsc_legajo_summary_action" model="ir.actions.act_window">
         <field name="name">Sumarios sincronizados</field>
         <field name="res_model">onsc.legajo.summary</field>
-        <field name="view_mode">form,tree</field>
+        <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
-        (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_summary_basic_form')}),
-            (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_summary_tree')}),
+                  (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_summary_tree')}),
+                   (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_summary_basic_form')}),
+            ]"/>
+    </record>
+     <record id="onsc_legajo_summary_form_action" model="ir.actions.act_window">
+        <field name="name">Sumarios sincronizados</field>
+        <field name="res_model">onsc.legajo.summary</field>
+        <field name="view_mode">form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_summary_form')})
             ]"/>
     </record>
 
