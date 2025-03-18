@@ -38,14 +38,20 @@ class ONSCCVSettings(models.TransientModel):
         related_sudo=True
     )
     ws7_new_transforma_reason_description = fields.Char(
-        string='Descripción de Altal por Transformación',
+        string='Descripción de Alta por Transformación',
         related="company_id.ws7_new_transforma_reason_description",
         readonly=False,
         related_sudo=True
     )
     ws7_new_reestructura_reason_description = fields.Char(
-        string='Descripción de Altal por Reestructura',
+        string='Descripción de Alta por Reestructura',
         related="company_id.ws7_new_reestructura_reason_description",
+        readonly=False,
+        related_sudo=True
+    )
+    ws7_new_retroactive_reason_description = fields.Char(
+        string='Descripción de Alta por Retroactivo',
+        related="company_id.ws7_new_retroactive_reason_description",
         readonly=False,
         related_sudo=True
     )

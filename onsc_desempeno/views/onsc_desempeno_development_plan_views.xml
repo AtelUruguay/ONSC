@@ -411,7 +411,6 @@
                                        options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </div>
                             <field name="development_goal"
-                                placeholder="Mínimo 30 caracteres"
                                 attrs="{'required':[('is_required', '=',True)],'readonly':[('should_disable_form_edit', '=',True)]}"/>
                         </group>
                     </group>

@@ -8,7 +8,7 @@
             <form string="Comentarios generales">
                 <group>
                     <field name="evaluation_id" invisible="1"/>
-                    <field name="message" placeholder="Mínimo 30 caracteres"/>
+                    <field name="message"/>
                 </group>
                 <footer>
                     <button string="Confirmar" name="action_confirm" type="object" class="oe_highlight" data-hotkey="s"/>

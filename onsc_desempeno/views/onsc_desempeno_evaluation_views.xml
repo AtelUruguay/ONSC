@@ -80,16 +80,7 @@
                             invisible="context.get('readonly_evaluation', False) is True"
                             attrs="{'invisible': ['|',('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
                             type="action"
-                            icon="fa-lock"/>`
-<!--SE ELIMINA PORQUE YA NO ES NECESARIO-->
-                    <!--                    <button name="button_cancel_gap_deal"-->
-<!--                            class="btn btn-primary"-->
-<!--                            string="Cancelar"-->
-<!--                            confirm="¿Está seguro de que desea cancelar el formulario?"-->
-<!--                            invisible="context.get('readonly_evaluation', False) is True"-->
-<!--                            attrs="{'invisible': ['|',('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"-->
-<!--                            type="object"-->
-<!--                            icon="fa-lock"/>`-->
+                            icon="fa-lock"/>
                     <button name="button_go_back"
                             class="btn btn-primary"
                             string="Volver atrás"
@@ -150,7 +141,6 @@
                         </group>
                     </group>
                     <field name="is_evaluation_change_available" invisible="1"/>
-                    <field name="should_disable_form_edit" invisible="1"/>
                     <field name="is_evaluation_form_active" invisible="1"/>
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
                     <field name="evaluation_type" nolabel="1" invisible="1"/>
@@ -399,9 +389,7 @@
     <record id='onsc_desempeno_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Autoevaluación</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
-        <field name="context">{'is_from_menu': True,'self_evaluation':True, 'search_default_evaluations_filter':
-            1}
-        </field>
+        <field name="context">{'is_from_menu': True,'self_evaluation':True, 'search_default_evaluations_filter':1}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -414,9 +402,7 @@
     <record id='onsc_desempeno_leader_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Evaluación del Líder al Colaborador</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
-        <field name="context">{'is_from_menu': True,'leader_evaluation':True, 'search_default_leader_evaluation_filter':
-            1}
-        </field>
+        <field name="context">{'is_from_menu': True,'leader_evaluation':True, 'search_default_leader_evaluation_filter':1}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -493,6 +479,4 @@
         <field name="view_ids"
                eval="[(5, 0, 0),(0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_evaluation_form')}),]"/>
     </record>
-
-
 </odoo>
