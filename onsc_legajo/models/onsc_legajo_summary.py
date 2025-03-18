@@ -132,6 +132,8 @@ class ONSCLegajoSummary(models.Model):
             country_id (recordset): The country record to match.
             cv_document_type_id (recordset): The document type record to match.
             nro_doc (str): The document number to match.
+            baja_vl(Boolean): Si es baja_vl el criterio de summario es distinto
+            (no tenga un sumario en estado diferente de Confirmado en el Inciso/UE del vínculo)
 
         Returns:
             bool: True if a matching record is found, False otherwise.

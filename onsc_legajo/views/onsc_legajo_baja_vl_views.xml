@@ -45,6 +45,11 @@
                     </header>
                     <sheet>
                         <div name="oe_tittle" class="oe_title"></div>
+                         <div class="alert alert-warning" role="alert" attrs="{'invisible': [('summary_message', '=', False)]}">
+                            <p class="mb-0">
+                                     <field name="summary_message" readonly="1"/>
+                                </p>
+                        </div>
                         <field name="is_error_synchronization" invisible="1"/>
                         <field name="is_ready_send_sgh" invisible="1"/>
                         <field name="should_disable_form_edit" invisible="1"/>

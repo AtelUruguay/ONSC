@@ -210,11 +210,6 @@ class ONSCLegajoAltaVL(models.Model):
                                                inverse_name='alta_vl_id', string="Antecedentes judiciales")
 
     summary_message = fields.Char(string="Mensaje de Sumarios", compute='_compute_summary_message',  store=False, copy=False)
-    show_summary_message = fields.Boolean(
-        string='Mostrar mensaje de advertencia',
-        compute='_compute_summary_message',
-        store=False
-    )
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -352,10 +347,9 @@ class ONSCLegajoAltaVL(models.Model):
         for rec in self:
             if Summary._has_summary(rec.cv_emissor_country_id, rec.cv_document_type_id, rec.partner_id.cv_nro_doc):
                 rec.summary_message = "Tenga en cuenta que la persona %s tuvo un sumario con sanción “Destitución”. Se recomienda que antes de confirmar verifique que sea correcto realizar este movimiento" % rec.full_name
-                rec.show_summary_message = True
             else:
                 rec.summary_message = False
-                rec.show_summary_message = False
+
     @api.constrains("inactivity_years")
     def _check_inactivity_years(self):
         for record in self:
