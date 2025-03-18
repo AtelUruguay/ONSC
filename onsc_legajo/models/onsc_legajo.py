@@ -175,6 +175,12 @@ class ONSCLegajo(models.Model):
                 raise ValidationError(
                     _("La Fecha de presentación de documento digitalizado debe ser mayor a la Fecha de juramento"))
 
+    @api.model
+    def create(self, vals):
+        legajo = super(ONSCLegajo, self).create(vals)
+        self.env['onsc.legajo.summary']._update_legajo_summary(legajo)
+        return legajo
+
     def write(self, vals):
         keys_to_check = {'juramento_bandera_date', 'juramento_bandera_presentacion_date', 'juramento_bandera_file'}
         any_juramento_in_vals = any(key in vals for key in keys_to_check)
