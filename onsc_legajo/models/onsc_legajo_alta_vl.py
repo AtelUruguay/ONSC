@@ -511,9 +511,6 @@ class ONSCLegajoAltaVL(models.Model):
         legajo = self._get_legajo(employee)
         contract = self._get_legajo_contract(employee)
         self._get_legajo_job(contract)
-        Summary = self.env['onsc.legajo.summary'].suspend_security()
-        if Summary._has_summary(legajo.cv_emissor_country_id, legajo.cv_document_type_id, legajo.partner_id.cv_nro_doc):
-            Summary.write({'legajo_id': legajo.id})
         return legajo
 
     def _get_legajo(self, employee):

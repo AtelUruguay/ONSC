@@ -121,13 +121,48 @@ class ONSCLegajoSummary(models.Model):
         return inciso_id, operating_unit_id
 
     def _has_summary(self, country_id, cv_document_type_id, nro_doc):
-        summary = self.suspend_security().search_count([('country_id', '=', country_id.id),
-                                                     ('cv_document_type_id', '=', cv_document_type_id.id),
-                                                     ('nro_doc', '=', nro_doc), ('penalty_type_id.warning', '=', 's')])
-        if len(summary) > 0:
-            return True
+        """
+        Check if a summary exists with the given criteria.
 
-        return False
+        This method searches for records that match the specified country, document type,
+        document number, and penalty type warning. It returns True if at least one record
+        is found, otherwise False.
+
+        Args:
+            country_id (recordset): The country record to match.
+            cv_document_type_id (recordset): The document type record to match.
+            nro_doc (str): The document number to match.
+
+        Returns:
+            bool: True if a matching record is found, False otherwise.
+        """
+        return self.suspend_security().search_count([
+            ('country_id', '=', country_id.id),
+            ('cv_document_type_id', '=', cv_document_type_id.id),
+            ('nro_doc', '=', nro_doc),
+            ('penalty_type_id.warning', '=', 's')
+            ]) > 0
+
+    def _update_empty_legajo_records(self, legajo):
+        """
+        Updates empty legajo records with the given legajo information.
+
+        This method searches for records with matching country, document type,
+        and document number, and updates their legajo_id with the provided legajo's id.
+
+        Args:
+            legajo (record): The legajo record containing the information to update
+                             the empty legajo records.
+
+        Returns:
+            None
+        """
+        self.suspend_security().search([
+            ('country_id', '=', legajo.emissor_country_id.id),
+            ('cv_document_type_id', '=', legajo.document_type_id.id),
+            ('nro_doc', '=', legajo.nro_doc),
+            ('legajo_id','=', False)
+        ]).write({'legajo_id': legajo.id})
 
 
 class ONSCLegajoSummaryComunications(models.Model):
