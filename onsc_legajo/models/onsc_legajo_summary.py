@@ -124,7 +124,7 @@ class ONSCLegajoSummary(models.Model):
         summary = self.suspend_security().search_count([('country_id', '=', country_id.id),
                                                      ('cv_document_type_id', '=', cv_document_type_id.id),
                                                      ('nro_doc', '=', nro_doc), ('penalty_type_id.warning', '=', 's')])
-        if len(summary) == 0:
+        if len(summary) > 0:
             return True
 
         return False
