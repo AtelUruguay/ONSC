@@ -121,10 +121,10 @@ class ONSCLegajoSummary(models.Model):
         return inciso_id, operating_unit_id
 
     def _has_summary(self, country_id, cv_document_type_id, nro_doc):
-        summary_id = self.suspend_security().search([('country_id', '=', country_id.id),
+        summary = self.suspend_security().search_count([('country_id', '=', country_id.id),
                                                      ('cv_document_type_id', '=', cv_document_type_id.id),
                                                      ('nro_doc', '=', nro_doc), ('penalty_type_id.warning', '=', 's')])
-        if summary_id:
+        if len(summary) == 0:
             return True
 
         return False
