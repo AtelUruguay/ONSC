@@ -384,8 +384,6 @@ class ONSCLegajoStagingWS7(models.Model):
             same_ue = second_movement.inciso_id.id == incoming_contract.inciso_id.id and \
                       second_movement.operating_unit_id.id == incoming_contract.operating_unit_id.id
 
-            # GENERA NUEVO CONTRATO (C)
-
             new_contract_status = same_ue and 'active' or 'outgoing_commission'
 
             if record.mov == 'ASCENSO':
@@ -407,6 +405,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
                 archive_contract = False
 
+            # GENERA NUEVO CONTRATO (C)
             new_contract = self._get_contract_copy(
                 contract,
                 second_movement,
@@ -826,7 +825,10 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             vals['state_square_id'] = contract.state_square_id.id
         if link_tocontract:
-            vals['cs_contract_id'] = contract.id
+            if contract.legajo_state == 'incoming_commission':
+                vals['cs_contract_id'] = contract.cs_contract_id.id
+            else:
+                vals['cs_contract_id'] = contract.id
         if movement_description:
             vals['reason_description'] = movement_description
         new_contract = self.env['hr.contract'].suspend_security().create(vals)
