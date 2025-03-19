@@ -75,7 +75,6 @@ class ONSCLegajoDepartment(models.Model):
             department_ids = self.get_uo_tree()
             new_args = [
                 ('department_id', 'in', department_ids),
-
                 ('type', '=', 'active'),
             ]
             user_employee = self.env.user.employee_id
