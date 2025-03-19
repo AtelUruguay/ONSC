@@ -65,6 +65,12 @@ class ONSCLegajoSummary(models.Model):
     show_button_open_summary = fields.Boolean('Mostrar button abrir sumarios ',
                                               compute='_compute_show_button_open_summary')
 
+    def name_get(self):
+        res = []
+        for record in self:
+            res.append((record.id, record.summary_number))
+        return res
+
     @api.depends('operating_unit_code', 'operating_unit_name')
     def _compute_display_ue(self):
         for rec in self:
@@ -95,20 +101,27 @@ class ONSCLegajoSummary(models.Model):
             record.legajo_id = Legajo.search([('emissor_country_id', '=', record.country_id.id),
                                               ('document_type_id', '=', record.cv_document_type_id.id),
                                               ('nro_doc', '=', record.nro_doc)
-                                              ], limit=1)
+                                              ], limit=1).id
 
     @api.depends('inciso_code')
     def _compute_inciso_id(self):
         Inciso = self.env['onsc.catalog.inciso'].suspend_security()
         for record in self:
-            record.inciso_id = Inciso.search([('budget_code', '=', record.inciso_code)], limit=1)
+            inciso_id = Inciso.search([('budget_code', '=', record.inciso_code)], limit=1)
+            if inciso_id:
+                record.inciso_id = inciso_id.id
+                record.inciso_name = inciso_id.name
 
     @api.depends('operating_unit_code','inciso_id')
     def _compute_operating_unit_id(self):
         OperatingUnit = self.env['operating.unit'].suspend_security()
         for record in self:
-            record.operating_unit_id = OperatingUnit.search([('budget_code', '=', record.operating_unit_code),
-                                                             ('inciso_id''=', record.inciso_id)], limit=1)
+            operating_unit_id = OperatingUnit.search([('budget_code', '=', record.operating_unit_code),
+                                                             ('inciso_id','=', record.inciso_id.id)], limit=1)
+
+            if operating_unit_id:
+                record.operating_unit_id = operating_unit_id.id
+                record.operating_unit_name = operating_unit_id.name
 
     def button_open_current_summary(self):
         action = self.sudo().env.ref('onsc_legajo.onsc_legajo_summary_form_action').read()[0]

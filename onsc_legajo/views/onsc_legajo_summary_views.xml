@@ -70,9 +70,9 @@
                                attrs="{'invisible': [('state', '!=', 'C')]}"/>
                         <field name="summary_detail" attrs="{'invisible': [('state', '!=', 'C')]}"/>
                         <field name="suspension"/>
-                        <field name="start_date_suspension" attrs="{'invisible': [('suspension', '!=', 'n')]}"/>
-                        <field name="end_date_suspension" attrs="{'invisible': [('suspension', '!=', 'n')]}"/>
-                        <field name="retention_percentage" attrs="{'invisible': [('suspension', '!=', 'n')]}"/>
+                        <field name="start_date_suspension" attrs="{'invisible': [('suspension', '=', 'n')]}"/>
+                        <field name="end_date_suspension" attrs="{'invisible': [('suspension', '=', 'n')]}"/>
+                        <field name="retention_percentage" attrs="{'invisible': [('suspension', '=', 'n')]}"/>
                         <field name="penalty_type_id"/>
                         <field name="observations"/>
                     </group>
