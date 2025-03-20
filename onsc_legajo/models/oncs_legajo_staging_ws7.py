@@ -397,13 +397,16 @@ class ONSCLegajoStagingWS7(models.Model):
             if second_movement.fecha_vig == contract.date_start:
                 contract_date_end = second_movement.fecha_vig
                 archive_contract = True
+                is_case_3 = False
             elif second_movement.fecha_vig < contract.date_start:
                 contract_date_end = contract.date_start
                 archive_contract = True
                 legajo_state = contract.legajo_state
+                is_case_3 = True
             else:
                 contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
                 archive_contract = False
+                is_case_3 = False
 
             # GENERA NUEVO CONTRATO (C)
             new_contract = self._get_contract_copy(
