@@ -64,7 +64,7 @@ class ONSCLegajoSummary(models.Model):
                                 index=True)
     show_button_open_summary = fields.Boolean('Mostrar button abrir sumarios ',
                                               compute='_compute_show_button_open_summary')
-
+    display_penalty_type = fields.Char(string=u"Tipo de sanción", compute='_compute_display_penalty_type')
     def name_get(self):
         res = []
         for record in self:
@@ -87,11 +87,19 @@ class ONSCLegajoSummary(models.Model):
             else:
                 rec.display_inciso = ''
 
+    @api.depends('penalty_type_id')
+    def _compute_display_penalty_type(self):
+        for rec in self:
+            if rec.penalty_type_id:
+                rec.display_penalty_type = '%s - %s' % (rec.penalty_type_id.sudo().code or '', rec.penalty_type_id.sudo().description or '')
+            else:
+                rec.display_penalty_type = ''
+
     def _compute_show_button_open_summary(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:
-            is_editable_ue = record.operating_unit_id.id == operating_unit_id
-            is_editable_inciso = record.inciso_id.id == inciso_id
+            is_editable_ue = record.operating_unit_id.id == operating_unit_id.id and self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
+            is_editable_inciso = record.inciso_id.id == inciso_id.id and self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
             record.show_button_open_summary = is_editable_ue or is_editable_inciso or record.state == 'C' or record.legajo_id.employee_id.user_id.id == self.env.user.id
 
     @api.depends('country_id', 'cv_document_type_id', 'nro_doc')

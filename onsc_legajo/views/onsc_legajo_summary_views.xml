@@ -49,8 +49,8 @@
                         <field name="summary_number"/>
                         <field name="record_number"/>
                         <field name="last_update_date"/>
-                        <field name="emissor_country"/>
-                        <field name="document_type"/>
+                        <field name="country_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                        <field name="cv_document_type_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                         <field name="nro_doc"/>
                         <field name="inciso_code"/>
                         <field name="inciso_name"/>
@@ -65,9 +65,8 @@
                         <field name="act_date"/>
                         <field name="interrogator_notify_date"/>
                         <field name="summary_notify_date"/>
-                        <field name="penalty_type_id"
-                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               attrs="{'invisible': [('state', '!=', 'C')]}"/>
+                        <field name="display_penalty_type" attrs="{'invisible': [('state', '!=', 'C')]}"/>
+                        <field name="penalty_type_id" invisible="1"/>
                         <field name="summary_detail" attrs="{'invisible': [('state', '!=', 'C')]}"/>
                         <field name="suspension"/>
                         <field name="start_date_suspension" attrs="{'invisible': [('suspension', '=', 'n')]}"/>
