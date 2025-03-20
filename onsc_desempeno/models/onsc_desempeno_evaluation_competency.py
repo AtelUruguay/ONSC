@@ -64,6 +64,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         compute='_compute_grade_suggested',
         store=True
     )
+    is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, related="evaluation_id.is_pilot")
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -92,7 +93,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         EquivalenceGrade = self.env['onsc.desempeno.grade.equivalence']
         for record in self:
             frequency_float_list = []
-            for skill_line_id in record.skill_line_ids:
+            for skill_line_id in record.evaluation_skill_line_ids:
                 frequency_id = skill_line_id.frequency_id
                 if frequency_id and frequency_id.value != float(0):
                     frequency_float_list.append(frequency_id.value)
@@ -136,14 +137,15 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         """
         competencies = self.env['onsc.desempeno.evaluation.competency']
         for skill in skills:
-            skill_lines = skill.skill_line_ids.filtered(lambda r: r.level_id.id == evaluation.level_id.id)
+            skill_lines = skill.skill_line_ids.filtered(lambda r: r.level_id.id == evaluation_id.level_id.id)
             evaluation_skill_lines = [(0, 0, {
                 'dimension_id': skill_line.dimension_id.id,
                 'level_id': skill_line.level_id.id,
                 'behavior': skill_line.behavior,
+                'skill_id': skill.id
             }) for skill_line in skill_lines]
             competencies |= self.create({
-                'evaluation_id': evaluation_id,
+                'evaluation_id': evaluation_id.id,
                 'gap_deal_id': gap_deal_id,
                 'skill_id': skill.id,
                 'skill_line_ids': [(6, 0, skill_lines.ids)],
