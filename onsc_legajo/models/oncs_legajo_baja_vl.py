@@ -226,8 +226,7 @@ class ONSCLegajoBajaVL(models.Model):
         self._message_log(body=_('Envia a SGH'))
 
         if self._has_summary() and self.env.user.company_id.message_block_summary:
-            raise ValidationError(
-                _("No se puede ingresar el movimiento. La persona tiene un sumario en proceso. Debe finalizar el proceso del sumario para poder realizar la baja."))
+            raise ValidationError(self.env.user.company_id.message_baja_vl_summary)
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
     def action_aprobado_cgn(self):
