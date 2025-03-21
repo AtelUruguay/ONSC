@@ -149,7 +149,7 @@ class ONSCLegajoBajaVL(models.Model):
     def _compute_summary_message(self):
         for rec in self:
             if rec._has_summary():
-                rec.summary_message = "No se puede ingresar el movimiento. La persona tiene un sumario en proceso. Debe finalizar el proceso del sumario para poder realizar la baja."
+                rec.summary_message = self.env.user.company_id.message_baja_vl_summary
             else:
                 rec.summary_message = False
 
