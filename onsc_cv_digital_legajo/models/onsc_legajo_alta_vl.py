@@ -145,7 +145,7 @@ class ONSCLegajoAltaVL(models.Model):
         if Summary._has_summary(self.cv_emissor_country_id, self.cv_document_type_id,
                                 self.partner_id.cv_nro_doc) and self.env.user.company_id.message_block_summary:
             raise ValidationError(
-                _("La persona %s tuvo un sumario con sanción “Destitución”."% self.full_name))
+                _("Tenga en cuenta que la persona %s tuvo un sumario con sanción “Destitución”. Se recomienda que antes de confirmar verifique que sea correcto realizar este movimiento."% self.full_name))
 
         return self.syncronize_ws4(log_info=True)
 
