@@ -14,12 +14,10 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            # is_legajo_id_in_base_args = False
-            # for arg in args:
-            #     if (isinstance(arg, tuple) or isinstance(arg, list)) and len(arg) and arg[0] == 'legajo_id':
-            #         is_legajo_id_in_base_args = True
-            # if not is_legajo_id_in_base_args:
-            args = self._get_domain(args)
+            if self._context.get('is_from_padron_report'):
+                args = self._get_padron_domain(args)
+            else:
+                args = self._get_domain(args)
         return super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True))._search(args, offset=offset,
                                                                                             limit=limit, order=order,
                                                                                             count=count,
@@ -28,7 +26,10 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            domain = self._get_domain(domain)
+            if self._context.get('is_from_padron_report'):
+                domain = self._get_padron_domain(domain)
+            else:
+                domain = self._get_domain(domain)
         result = super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True)).read_group(domain, fields, groupby,
                                                                                                  offset=offset,
                                                                                                  limit=limit,
@@ -81,6 +82,31 @@ class ONSCLegajoDepartment(models.Model):
             if user_employee:
                 new_args.append((('employee_id', '!=', user_employee.id)))
             args = expression.AND([new_args, args])
+        return args
+
+    def _get_padron_domain(self, args):
+        is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso')
+        is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue')
+        inciso_id = self._context.get('inciso_id', False)
+        operating_unit_id = self._context.get('operating_unit_id', False)
+        if not inciso_id and not operating_unit_id:
+            return expression.AND([[(True,'=',False)], args])
+
+        if is_inciso_security:
+            contract_ids = self._get_contract_ids()
+            new_args = [
+                ('contract_id', 'in', contract_ids),
+                ('inciso_id', '=', inciso_id)
+            ]
+            if operating_unit_id:
+                new_args.append(('operating_unit_id', '=', operating_unit_id))
+            args = expression.AND([new_args, args])
+        elif is_ue_security:
+            contract_ids = self._get_contract_ids()
+            args = expression.AND([[
+                ('contract_id', 'in', contract_ids),
+                ('operating_unit_id', '=', operating_unit_id)
+            ], args])
         return args
 
     def _get_contract_ids(self):
@@ -148,30 +174,10 @@ class ONSCLegajoDepartment(models.Model):
     nro_doc = fields.Char(u'Número de documento')
 
     public_admin_entry_date = fields.Date(string=u'Fecha de ingreso AP')
-    cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado')
-    max_parent_date_start = fields.Date(string=u'Fecha de ingreso UE', compute='_compute_max_parent_date_start')
+    first_operating_unit_entry_date = fields.Date(string=u'Fecha de ingreso UE')
+
     date_end = fields.Date(string=u'Fecha baja')
     date_to = fields.Date(string=u'Fecha hasta')
-
-    def get_max_parent_date_start_in_operating_unit(self):
-        self.ensure_one()
-        contract = self.contract_id
-        if not contract.parent_id:
-            return contract.date_start
-
-        max_parent_date_start = False
-        level = 1
-        operating_unit_id = self.operating_unit_id.id
-        contract = contract.parent_id
-        while contract and contract.operating_unit_id.id == operating_unit_id and level <= 4:
-            max_parent_date_start = contract.date_start
-            contract = contract.parent_id
-            level += 1
-        return max_parent_date_start
-
-    def _compute_max_parent_date_start(self):
-        for record in self:
-            record.max_parent_date_start = record.get_max_parent_date_start_in_operating_unit()
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -196,8 +202,8 @@ WITH base_contract_view AS (
         contract.descriptor3_id,
         contract.descriptor4_id,
         contract.nro_doc,
-        contract.cs_contract_id,
         contract.public_admin_entry_date,
+        contract.first_operating_unit_entry_date,
         contract.date_end,
         contract.date_end_commission,
         COUNT(hr_job.id) FILTER (WHERE hr_job.active AND (hr_job.end_date IS NULL OR hr_job.end_date > CURRENT_DATE)) AS active_job_qty
