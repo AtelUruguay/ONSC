@@ -136,14 +136,14 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         """
         competencies = self.env['onsc.desempeno.evaluation.competency']
         for skill in skills:
-            skill_lines = skill.skill_line_ids.filtered(lambda r: r.level_id.id == evaluation.level_id.id)
+            skill_lines = skill.skill_line_ids.filtered(lambda r: r.level_id.id == evaluation_id.level_id.id)
             evaluation_skill_lines = [(0, 0, {
                 'dimension_id': skill_line.dimension_id.id,
                 'level_id': skill_line.level_id.id,
                 'behavior': skill_line.behavior,
             }) for skill_line in skill_lines]
             competencies |= self.create({
-                'evaluation_id': evaluation_id,
+                'evaluation_id': evaluation_id.id,
                 'gap_deal_id': gap_deal_id,
                 'skill_id': skill.id,
                 'skill_line_ids': [(6, 0, skill_lines.ids)],
