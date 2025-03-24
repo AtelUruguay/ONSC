@@ -73,13 +73,6 @@ class HrContract(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
-    # @api.model
-    # def _default_state_square_id(self):
-    #     try:
-    #         return self.env.ref('onsc_legajo.onsc_legajo_o')
-    #     except Exception:
-    #         return self.env['onsc.legajo.state.square']
-
     legajo_name = fields.Char(string="Nombre", compute='_compute_legajo_name', store=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True, index=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True, index=True)
@@ -94,7 +87,6 @@ class HrContract(models.Model):
     state_square_id = fields.Many2one(
         'onsc.legajo.state.square',
         string='Estado plaza',
-        # default=lambda s: s._default_state_square_id(),
         history=True)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', history=True)
     call_number = fields.Char(string='Número de llamado', history=True)
