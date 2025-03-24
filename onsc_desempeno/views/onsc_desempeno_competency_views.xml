@@ -82,7 +82,7 @@
                         </page>
                     </notebook>
                     <group colspan="4">
-                        <field colspan="4" name="grade_suggested_id"    attrs="{'invisible': [('is_pilot', '=', True)]}" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                        <field colspan="4" name="grade_suggested_id" attrs="{'invisible': [('is_pilot', '=', True)]}" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                         <field colspan="4" name="degree_id"
                                 attrs="{'readonly':[('competency_form_edit', '=',True)]}"
                                 required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
