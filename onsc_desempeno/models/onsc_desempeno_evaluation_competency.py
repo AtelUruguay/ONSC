@@ -58,12 +58,13 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         compute=lambda s: s._get_value_config('improvement_areas_help_text'),
         default=lambda s: s._get_value_config('improvement_areas_help_text', True)
     )
-    # grade_suggested_id = fields.Many2one(
-    #     'onsc.desempeno.grade.equivalence',
-    #     string='Grado de necesidad de desarrollo sugerido',
-    #     compute='_compute_grade_suggested',
-    #     store=True
-    # )
+    grade_suggested_id = fields.Many2one(
+        'onsc.desempeno.grade.equivalence',
+        string='Grado de necesidad de desarrollo sugerido',
+        compute='_compute_grade_suggested',
+        store=True
+    )
+    is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, related="evaluation_id.is_pilot")
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -87,20 +88,20 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                 condition = record.state not in ['in_process'] or _cond1
             record.competency_form_edit = condition
 
-    # @api.depends('evaluation_skill_line_ids','evaluation_skill_line_ids.frequency_id')
-    # def _compute_grade_suggested(self):
-    #     EquivalenceGrade = self.env['onsc.desempeno.grade.equivalence']
-    #     for record in self:
-    #         frequency_float_list = []
-    #         for skill_line_id in record.skill_line_ids:
-    #             frequency_id = skill_line_id.frequency_id
-    #             if frequency_id and frequency_id.value != float(0):
-    #                 frequency_float_list.append(frequency_id.value)
-    #         if frequency_float_list:
-    #             average_frequency = sum(frequency_float_list) / len(frequency_float_list)
-    #         else:
-    #             average_frequency = float(0)
-    #         record.grade_suggested_id = EquivalenceGrade.get_grade_equivalence(average_frequency)
+    @api.depends('evaluation_skill_line_ids','evaluation_skill_line_ids.frequency_id')
+    def _compute_grade_suggested(self):
+        EquivalenceGrade = self.env['onsc.desempeno.grade.equivalence']
+        for record in self:
+            frequency_float_list = []
+            for skill_line_id in record.evaluation_skill_line_ids:
+                frequency_id = skill_line_id.frequency_id
+                if frequency_id and frequency_id.value != float(0):
+                    frequency_float_list.append(frequency_id.value)
+            if frequency_float_list:
+                average_frequency = sum(frequency_float_list) / len(frequency_float_list)
+            else:
+                average_frequency = float(0)
+            record.grade_suggested_id = EquivalenceGrade.get_grade_equivalence(average_frequency)
 
     def _get_help(self, help_field='', is_default=False):
         _html2construct = HTML_HELP % ('Tooltip')
@@ -141,12 +142,13 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                 'dimension_id': skill_line.dimension_id.id,
                 'level_id': skill_line.level_id.id,
                 'behavior': skill_line.behavior,
+                'skill_id': skill.id
             }) for skill_line in skill_lines]
             competencies |= self.create({
                 'evaluation_id': evaluation_id.id,
                 'gap_deal_id': gap_deal_id,
                 'skill_id': skill.id,
                 'skill_line_ids': [(6, 0, skill_lines.ids)],
-                # 'evaluation_skill_line_ids': evaluation_skill_lines
+                'evaluation_skill_line_ids': evaluation_skill_lines
             })
         return competencies

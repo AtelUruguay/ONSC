@@ -689,12 +689,14 @@ class ONSCDesempenoEvaluationList(models.Model):
             evaluation[0]["uo_id"] = record.current_job_id.department_id.id
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
+
         for competency in record.evaluation_competency_ids:
-            Competency.create({'gap_deal_id': gap_deal.id,
-                               'skill_id': competency.skill_id.id,
-                               'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == record.level_id.id).ids)]
-                               })
+            Competency.set_competencies(competency.skill_id.skill_line_ids,evaluation, gap_deal.id)
+            # Competency.create({'gap_deal_id': gap_deal.id,
+            #                    'skill_id': competency.skill_id.id,
+            #                    'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
+            #                        lambda r: r.level_id.id == record.level_id.id).ids)]
+            #                    })
 
         partners_to_notify |= record.evaluated_id.partner_id
         partners_to_notify |= record.evaluator_id.partner_id
