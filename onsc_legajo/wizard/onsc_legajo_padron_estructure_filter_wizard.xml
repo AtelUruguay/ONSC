@@ -18,10 +18,10 @@
                            attrs="{'readonly': [('is_user_admin', '=', False),('is_user_inciso', '=', False)]}"
                            force_save="1"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    <field name="is_user_admin" invisible="0"/>
-                    <field name="is_user_inciso" invisible="0"/>
-                    <field name="is_user_operating_unit" invisible="0"/>
-                    <field name="is_user_consulta" invisible="0"/>
+                    <field name="is_user_admin" invisible="1"/>
+                    <field name="is_user_inciso" invisible="1"/>
+                    <field name="is_user_operating_unit" invisible="1"/>
+                    <field name="is_user_consulta" invisible="1"/>
                 </group>
                 <footer>
                     <button string="Mostrar" name="action_show" type="object" class="oe_highlight" data-hotkey="m"/>
