@@ -49,8 +49,8 @@
                         <field name="summary_number"/>
                         <field name="record_number"/>
                         <field name="last_update_date"/>
-                        <field name="emissor_country"/>
-                        <field name="document_type"/>
+                        <field name="country_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                        <field name="cv_document_type_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                         <field name="nro_doc"/>
                         <field name="inciso_code"/>
                         <field name="inciso_name"/>
@@ -65,14 +65,13 @@
                         <field name="act_date"/>
                         <field name="interrogator_notify_date"/>
                         <field name="summary_notify_date"/>
-                        <field name="penalty_type_id"
-                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               attrs="{'invisible': [('state', '!=', 'C')]}"/>
+                        <field name="display_penalty_type" attrs="{'invisible': [('state', '!=', 'C')]}"/>
+                        <field name="penalty_type_id" invisible="1"/>
                         <field name="summary_detail" attrs="{'invisible': [('state', '!=', 'C')]}"/>
                         <field name="suspension"/>
-                        <field name="start_date_suspension" attrs="{'invisible': [('suspension', '!=', 'n')]}"/>
-                        <field name="end_date_suspension" attrs="{'invisible': [('suspension', '!=', 'n')]}"/>
-                        <field name="retention_percentage" attrs="{'invisible': [('suspension', '!=', 'n')]}"/>
+                        <field name="start_date_suspension" attrs="{'invisible': [('suspension', '=', 'n')]}"/>
+                        <field name="end_date_suspension" attrs="{'invisible': [('suspension', '=', 'n')]}"/>
+                        <field name="retention_percentage" attrs="{'invisible': [('suspension', '=', 'n')]}"/>
                         <field name="penalty_type_id"/>
                         <field name="observations"/>
                     </group>
@@ -131,7 +130,6 @@
                         <field name="start_date_suspension"/>
                         <field name="end_date_suspension"/>
                         <field name="retention_percentage"/>
-                        <field name="penalty_type_id"/>
                         <field name="observations"/>
                     </group>
                 </group>
@@ -158,10 +156,18 @@
      <record id="onsc_legajo_summary_action" model="ir.actions.act_window">
         <field name="name">Sumarios sincronizados</field>
         <field name="res_model">onsc.legajo.summary</field>
-        <field name="view_mode">form,tree</field>
+        <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
-        (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_summary_basic_form')}),
-            (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_summary_tree')}),
+                  (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_summary_tree')}),
+                   (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_summary_basic_form')}),
+            ]"/>
+    </record>
+     <record id="onsc_legajo_summary_form_action" model="ir.actions.act_window">
+        <field name="name">Sumarios sincronizados</field>
+        <field name="res_model">onsc.legajo.summary</field>
+        <field name="view_mode">form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_summary_form')})
             ]"/>
     </record>
 

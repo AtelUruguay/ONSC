@@ -29,9 +29,12 @@ class ResCompany(models.Model):
     ws7_latency_inseconds = fields.Integer(
         string='Latencia(segundos)')
     mass_upload_record_limit = fields.Integer(u"Límite Cantidad de Registros")
-    ws7_email_list = fields.Char(string='Correos electronicos', widget='email',)
+    ws7_email_list = fields.Char(string='Correos electronicos', widget='email', )
+    message_block_summary = fields.Boolean(u"Mensaje de sumario bloqueante")
+    message_baja_vl_summary = fields.Char(u"Mensaje de baja de vinculo laboral")
 
     def write(self, vals):
-        if all('ws7' or 'mass_upload_record_limit' in key for key in vals.keys()):
+        if all('ws7' or 'mass_upload_record_limit' or 'message_block_summary' or 'message_baja_vl_summary' in key for
+               key in vals.keys()):
             return super(ResCompany, self.suspend_security()).write(vals)
         return super(ResCompany, self).write(vals)
