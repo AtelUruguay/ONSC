@@ -14,12 +14,10 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            # is_legajo_id_in_base_args = False
-            # for arg in args:
-            #     if (isinstance(arg, tuple) or isinstance(arg, list)) and len(arg) and arg[0] == 'legajo_id':
-            #         is_legajo_id_in_base_args = True
-            # if not is_legajo_id_in_base_args:
-            args = self._get_domain(args)
+            if self._context.get('is_from_padron_report'):
+                args = self._get_padron_domain(args)
+            else:
+                args = self._get_domain(args)
         return super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True))._search(args, offset=offset,
                                                                                             limit=limit, order=order,
                                                                                             count=count,
@@ -28,7 +26,10 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            domain = self._get_domain(domain)
+            if self._context.get('is_from_padron_report'):
+                domain = self._get_padron_domain(domain)
+            else:
+                domain = self._get_domain(domain)
         result = super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True)).read_group(domain, fields, groupby,
                                                                                                  offset=offset,
                                                                                                  limit=limit,
@@ -75,13 +76,37 @@ class ONSCLegajoDepartment(models.Model):
             department_ids = self.get_uo_tree()
             new_args = [
                 ('department_id', 'in', department_ids),
-
                 ('type', '=', 'active'),
             ]
             user_employee = self.env.user.employee_id
             if user_employee:
                 new_args.append((('employee_id', '!=', user_employee.id)))
             args = expression.AND([new_args, args])
+        return args
+
+    def _get_padron_domain(self, args):
+        is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso')
+        is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue')
+        inciso_id = self._context.get('inciso_id', False)
+        operating_unit_id = self._context.get('operating_unit_id', False)
+        if not inciso_id and not operating_unit_id:
+            return expression.AND([[(True,'=',False)], args])
+
+        if is_inciso_security:
+            contract_ids = self._get_contract_ids()
+            new_args = [
+                ('contract_id', 'in', contract_ids),
+                ('inciso_id', '=', inciso_id)
+            ]
+            if operating_unit_id:
+                new_args.append(('operating_unit_id', '=', operating_unit_id))
+            args = expression.AND([new_args, args])
+        elif is_ue_security:
+            contract_ids = self._get_contract_ids()
+            args = expression.AND([[
+                ('contract_id', 'in', contract_ids),
+                ('operating_unit_id', '=', operating_unit_id)
+            ], args])
         return args
 
     def _get_contract_ids(self):
@@ -148,11 +173,47 @@ class ONSCLegajoDepartment(models.Model):
     level_5 = fields.Many2one('hr.department', string='Nivel 5')
     nro_doc = fields.Char(u'Número de documento')
 
+    public_admin_entry_date = fields.Date(string=u'Fecha de ingreso AP')
+    first_operating_unit_entry_date = fields.Date(string=u'Fecha de ingreso UE')
+
+    date_end = fields.Date(string=u'Fecha baja')
+    date_to = fields.Date(string=u'Fecha hasta')
+
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
+WITH base_contract_view AS (
+    SELECT
+        contract.legajo_id,
+        contract.id AS contract_id,
+        contract.legajo_state AS contract_legajo_state,
+        contract.inciso_id,
+        contract.operating_unit_id,
+        contract.employee_id,
+        'active' AS type,
+        contract.inciso_origin_id,
+        contract.operating_unit_origin_id,
+        contract.inciso_dest_id,
+        contract.operating_unit_dest_id,
+        contract.regime_id,
+        contract.commission_regime_id,
+        contract.descriptor1_id,
+        contract.descriptor2_id,
+        contract.descriptor3_id,
+        contract.descriptor4_id,
+        contract.nro_doc,
+        contract.public_admin_entry_date,
+        contract.first_operating_unit_entry_date,
+        contract.date_end,
+        contract.date_end_commission,
+        COUNT(hr_job.id) FILTER (WHERE hr_job.active AND (hr_job.end_date IS NULL OR hr_job.end_date > CURRENT_DATE)) AS active_job_qty
+    FROM hr_contract contract
+    LEFT JOIN hr_job ON hr_job.contract_id = contract.id
+    WHERE contract.legajo_id IS NOT NULL
+    GROUP BY contract.id
+)
 SELECT
-    row_number() OVER(ORDER BY legajo_id, contract_id, type, main_query.job_id) AS id,
+    ROW_NUMBER() OVER(ORDER BY main_query.legajo_id, main_query.contract_id, main_query.type, main_query.job_id) AS id,
     main_query.*,
     jh.level_0 AS organigram_joker,
     jh.level_0,
@@ -161,117 +222,50 @@ SELECT
     jh.level_3,
     jh.level_4,
     jh.level_5
-FROM
-(SELECT
-    base_contract_view.*,
-    NULL AS job_id,
-    NULL AS job_name,
-    NULL AS security_job_id,
-    NULL AS department_id,
-    NULL AS hierarchical_level_id,
-    NULL AS start_date,
-    NULL AS end_date,
-    NULL AS is_uo_manager
-FROM
-(SELECT
-    contract.legajo_id AS legajo_id,
-    contract.id AS contract_id,
-    contract.legajo_state AS contract_legajo_state,
-    contract.inciso_id,
-    contract.operating_unit_id,
-    contract.employee_id,
-    'active' AS type,
-    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
-    contract.inciso_origin_id AS inciso_origin_id,
-    contract.operating_unit_origin_id AS operating_unit_origin_id,
-    contract.inciso_dest_id AS inciso_dest_id,
-    contract.operating_unit_dest_id AS operating_unit_dest_id,
-    contract.regime_id AS regime_id,
-    contract.commission_regime_id AS commission_regime_id,
-    contract.descriptor1_id AS descriptor1_id,
-    contract.descriptor2_id AS descriptor2_id,
-    contract.descriptor3_id AS descriptor3_id,
-    contract.descriptor4_id AS descriptor4_id,
-    contract.nro_doc
-FROM
-    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
-WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty = 0
-UNION ALL
---CONTRATO ACTIVO CON PUESTOS ACTIVOS
-SELECT
-    base_contract_view.*,
-    hr_job.id AS job_id,
-    hr_job.name AS job_name,
-    hr_job.security_job_id AS security_job_id,
-    hr_job.department_id AS department_id,
-    hr_job.hierarchical_level_id,
-    hr_job.start_date AS start_date,
-    hr_job.end_date AS end_date,
-    hr_job.is_uo_manager as is_uo_manager
-FROM
- (SELECT
-    contract.legajo_id AS legajo_id,
-    contract.id AS contract_id,
-    contract.legajo_state AS contract_legajo_state,
-    contract.inciso_id,
-    contract.operating_unit_id,
-    contract.employee_id,
-    'active' AS type,
-    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
-    contract.inciso_origin_id AS inciso_origin_id,
-    contract.operating_unit_origin_id AS operating_unit_origin_id,
-    contract.inciso_dest_id AS inciso_dest_id,
-    contract.operating_unit_dest_id AS operating_unit_dest_id,
-    contract.regime_id AS regime_id,
-    contract.commission_regime_id AS commission_regime_id,
-    contract.descriptor1_id AS descriptor1_id,
-    contract.descriptor2_id AS descriptor2_id,
-    contract.descriptor3_id AS descriptor3_id,
-    contract.descriptor4_id AS descriptor4_id,
-    contract.nro_doc
-FROM
-    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
-LEFT JOIN hr_job ON hr_job.contract_id = base_contract_view.contract_id
-WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty > 0 AND (end_date IS NULL OR end_date > CURRENT_DATE)
---CONTRATO SALIENTE TOMAR EL ULTIMO PUESTO
-UNION ALL
-SELECT
-    base_contract_view.*,
-    (SELECT id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_id,
-    (SELECT name FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_name,
-    (SELECT security_job_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS security_job_id,
-    (SELECT department_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS department_id,
-    (SELECT hierarchical_level_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS hierarchical_level_id,
-    (SELECT start_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS start_date,
-    (SELECT end_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS end_date,
-    (SELECT is_uo_manager FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS is_uo_manager
-FROM
-(SELECT
-    contract.legajo_id AS legajo_id,
-    contract.id AS contract_id,
-    contract.legajo_state AS contract_legajo_state,
-    contract.inciso_id,
-    contract.operating_unit_id,
-    contract.employee_id,
-    'active' AS type,
-    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty,
-    contract.inciso_origin_id AS inciso_origin_id,
-    contract.operating_unit_origin_id AS operating_unit_origin_id,
-    contract.inciso_dest_id AS inciso_dest_id,
-    contract.operating_unit_dest_id AS operating_unit_dest_id,
-    contract.regime_id AS regime_id,
-    contract.commission_regime_id AS commission_regime_id,
-    contract.descriptor1_id AS descriptor1_id,
-    contract.descriptor2_id AS descriptor2_id,
-    contract.descriptor3_id AS descriptor3_id,
-    contract.descriptor4_id AS descriptor4_id,
-    contract.nro_doc
-FROM
-    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
-WHERE contract_legajo_state = 'outgoing_commission') AS main_query
-LEFT JOIN
-onsc_legajo_job_hierarchy AS jh
-ON main_query.job_id = jh.job_id)''' % (self._table,))
+FROM (
+    -- CONTRATO ACTIVO SIN PUESTOS
+    SELECT
+        bc.*,
+        NULL AS job_id,
+        NULL AS job_name,
+        NULL AS security_job_id,
+        NULL AS department_id,
+        NULL AS hierarchical_level_id,
+        NULL AS start_date,
+        NULL AS end_date,
+        NULL AS is_uo_manager
+    FROM base_contract_view bc
+    WHERE bc.contract_legajo_state IN ('active','incoming_commission','reserved') AND bc.active_job_qty = 0
+
+    UNION ALL
+
+    -- CONTRATO ACTIVO CON PUESTOS ACTIVOS
+    SELECT
+        bc.*, j.id AS job_id, j.name AS job_name, j.security_job_id, j.department_id,
+        j.hierarchical_level_id, j.start_date, j.end_date, j.is_uo_manager
+    FROM base_contract_view bc
+    JOIN hr_job j ON j.contract_id = bc.contract_id
+    WHERE bc.contract_legajo_state IN ('active','incoming_commission','reserved')
+        AND bc.active_job_qty > 0
+        AND (j.end_date IS NULL OR j.end_date > CURRENT_DATE)
+
+    UNION ALL
+
+    -- CONTRATO SALIENTE TOMANDO EL ÚLTIMO PUESTO
+    SELECT
+        bc.*, j.id AS job_id, j.name AS job_name, j.security_job_id, j.department_id,
+        j.hierarchical_level_id, j.start_date, j.end_date, j.is_uo_manager
+    FROM base_contract_view bc
+    LEFT JOIN LATERAL (
+        SELECT * FROM hr_job
+        WHERE hr_job.contract_id = bc.contract_id
+        ORDER BY hr_job.end_date DESC NULLS LAST, hr_job.id DESC
+        LIMIT 1
+    ) j ON TRUE
+    WHERE bc.contract_legajo_state = 'outgoing_commission'
+) AS main_query
+LEFT JOIN onsc_legajo_job_hierarchy AS jh ON main_query.job_id = jh.job_id
+)''' % (self._table,))
 
     def get_uo_tree(self, contract=False):
         Department = self.env['hr.department'].sudo()

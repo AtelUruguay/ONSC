@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import json
+import logging
 
 from lxml import etree
 
@@ -7,6 +8,8 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from odoo.addons.onsc_base.onsc_useful_tools import to_timestamp as to_timestamp
+
+_logger = logging.getLogger(__name__)
 
 _CUSTOM_ORDER = {
     'confirm': 1,
@@ -26,9 +29,11 @@ class HrContract(models.Model):
     _history_model = 'hr.contract.model.history'
     _history_columns = ['date_start', 'date_end']
     _fields_to_exclude_insearch = FIELDS_TO_EXLUDE
+    _parent_name = "parent_id"
 
     def init(self):
-        self._cr.execute("""CREATE INDEX IF NOT EXISTS hr_contract_employee_id ON hr_contract (employee_id)""")
+        self._cr.execute(
+            """CREATE INDEX IF NOT EXISTS hr_contract_employee_id ON hr_contract (employee_id)""")
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -100,19 +105,37 @@ class HrContract(models.Model):
          ('outgoing_commission', 'Comisión saliente'),
          ('incoming_commission', 'Comisión entrante')],
         tracking=True, string='Estado del Contrato', history=True)
-    cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado', history=True)
-    first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name', store=True)
-    second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name', store=True)
+    cs_contract_id = fields.Many2one(
+        'hr.contract', string='Contrato relacionado', history=True, index=True)
+    parent_id = fields.Many2one(
+        'hr.contract',
+        string='Contrato padre',
+        history=True,
+        index=True,
+        store=True,
+        compute="_compute_parent_id"
+    )
+    first_operating_unit_parent_id = fields.Many2one(
+        'hr.contract',
+        string='Contrato origen misma UE',
+        history=True,
+        index=True,
+    )
+    first_name = fields.Char(string=u'Primer nombre',
+                             related='employee_id.cv_first_name', store=True)
+    second_name = fields.Char(string=u'Segundo nombre',
+                              related='employee_id.cv_second_name', store=True)
     last_name_1 = fields.Char(string=u'Primer apellido', related='employee_id.cv_last_name_1', store=True)
     last_name_2 = fields.Char(string=u'Segundo apellido', related='employee_id.cv_last_name_2', store=True)
     emissor_country_id = fields.Many2one('res.country', string=u'País emisor del documento',
                                          related='employee_id.cv_emissor_country_id', store=True)
     document_type_id = fields.Many2one('onsc.cv.document.type', string=u'Tipo de documento',
                                        related='employee_id.cv_document_type_id', store=True)
-    nro_doc = fields.Char(u'Número de documento', related='employee_id.cv_nro_doc', store=True)
+    nro_doc = fields.Char(u'Número de documento',related='employee_id.cv_nro_doc', store=True)
     program = fields.Char(string='Programa', history=True)
     project = fields.Char(string='Proyecto', history=True)
-    regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', history=True)
+    regime_id = fields.Many2one(
+        'onsc.legajo.regime', string='Régimen', history=True)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', history=True)
     occupation_date = fields.Date(string='Fecha desde Ocupación', history=True)
     is_occupation_visible = fields.Boolean(compute='_compute_is_occupation_visible')
@@ -198,7 +221,7 @@ class HrContract(models.Model):
         string='Departamento donde desempeña funciones',
         copy=False, history=True)
 
-    legajo_id = fields.Many2one('onsc.legajo', string='Legajo', compute='_compute_legajo_id', store=True)
+    legajo_id = fields.Many2one('onsc.legajo', string='Legajo', compute='_compute_legajo_id', store=True, index=True)
     show_law_legajo_legend = fields.Boolean(
         string='¿Mostrar leyenda de legajo?',
         compute='_compute_show_law_legajo_legend'
@@ -216,6 +239,8 @@ class HrContract(models.Model):
                                              string="Unidad ejecutora Destino",
                                              domain="[('inciso_id','=', inciso_dest_id)]",
                                              history=True)
+    public_admin_entry_date = fields.Date(string=u'Fecha de ingreso a la administración pública', related='legajo_id.public_admin_entry_date', store=True)
+    first_operating_unit_entry_date = fields.Date(string=u'Fecha de ingreso UE')
 
     def name_get(self):
         res = []
@@ -239,7 +264,8 @@ class HrContract(models.Model):
     @api.depends('employee_id')
     def _compute_legajo_id(self):
         for rec in self.filtered(lambda x: x.employee_id):
-            rec.legajo_id = self.env['onsc.legajo'].sudo().search([('employee_id', '=', rec.employee_id.id)], limit=1)
+            rec.legajo_id = self.env['onsc.legajo'].sudo().search(
+                [('employee_id', '=', rec.employee_id.id)], limit=1)
 
     def test_legajo(self):
         self._compute_legajo_id()
@@ -306,6 +332,11 @@ class HrContract(models.Model):
         for rec in self:
             rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
 
+    def _compute_parent_id(self):
+        for record in self:
+            record.parent_id = self.search(
+                [('cs_contract_id', '=', record.id)], limit=1).id
+
     @api.constrains("reason_description", "resolution_description", "reason_discharge", "reason_deregistration",
                     "resolution_description_deregistration")
     def _check_len_description(self):
@@ -332,7 +363,10 @@ class HrContract(models.Model):
             vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
         if 'legajo_state' in vals.keys() and 'state_square_id' not in vals.keys():
             vals['state_square_id'] = self._get_state_square(vals.get('legajo_state'))
-        return super(HrContract, self).create(vals)
+        contract = super(HrContract, self).create(vals)
+        if contract.cs_contract_id:
+            contract.cs_contract_id._update_traceability()
+        return contract
 
     def write(self, values):
         if 'legajo_state' in values.keys():
@@ -348,9 +382,10 @@ class HrContract(models.Model):
                         'from_state': previous_state,
                         'to_state': new_state,
                     })
-
         result = super(HrContract, self.suspend_security()).write(values)
         self._notify_sgh(values)
+        if values.get('cs_contract_id'):
+            self[0].cs_contract_id._update_traceability()
         return result
 
     def button_update_occupation(self):
@@ -427,8 +462,7 @@ class HrContract(models.Model):
         else:
             return self.env['onsc.legajo.state.square']
 
-            # LEGAJO REPORT UTILITIES
-
+    # LEGAJO REPORT UTILITIES
     def _get_role_assignments_sorted(self, only_most_recent=False):
         current_jobs = self.job_ids.filtered(lambda x: not x.end_date or x.end_date > fields.Date.today())
 
@@ -440,11 +474,30 @@ class HrContract(models.Model):
         else:
             return role_assignments_sorted.role_assignment_id
 
+    def _update_traceability(self, use_limit=0):
+        if not self._context.get('no_update_parent'):
+            self._compute_parent_id()
+        counter = 1
+        for rec in self:
+            _logger.info('******************CARGA DATOS CONTRATO %s-%s' % (counter, rec.id))
+            counter += 1
+            limit = 1
+            current_contract = rec
+            while current_contract.parent_id and current_contract.operating_unit_id == current_contract.parent_id.operating_unit_id and (use_limit == 0 or limit < use_limit):
+                if use_limit:
+                    limit += 1
+                current_contract = current_contract.parent_id
+            rec.first_operating_unit_parent_id = current_contract.id
+            if rec.id != current_contract.id:
+                _logger.info('******************CON JERAQUIA %s' % (rec.id))
+            rec.first_operating_unit_entry_date = current_contract.date_start
+        return True
 
 class HrContractHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.contract.model.history'
     _parent_model = 'hr.contract'
+
 
 class HrContractStateTransactionHistory(models.Model):
     _name = 'hr.contract.state.transaction.history'
