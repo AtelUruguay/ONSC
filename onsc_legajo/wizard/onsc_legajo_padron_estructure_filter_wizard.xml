@@ -13,11 +13,11 @@
                            force_save="1"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="operating_unit_id"
-                           required="1"
                            domain="[('inciso_id', '=', inciso_id)]"
-                           attrs="{'readonly': [('is_user_admin', '=', False),('is_user_inciso', '=', False)]}"
+                           attrs="{'readonly': [('is_user_admin', '=', False),('is_user_inciso', '=', False)],'required': [('is_user_operating_unit', '=', True)]}"
                            force_save="1"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="date"/>
                     <field name="is_user_admin" invisible="1"/>
                     <field name="is_user_inciso" invisible="1"/>
                     <field name="is_user_operating_unit" invisible="1"/>
