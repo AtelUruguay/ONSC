@@ -19,6 +19,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         'operating.unit',
         string='Unidad Ejecutora'
     )
+    date = fields.Date(string='Fecha', required=True, default=lambda self: fields.Date.today())
 
     def _is_group_admin_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
@@ -29,15 +30,18 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     def _is_group_ue_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue')
 
-    def _is_group_admin_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
-
     def action_show(self):
-        action = self.env.ref('onsc_legajo.onsc_legajo_department_contract_extended_action').sudo().read()[0]
+        action = self.env.ref('onsc_legajo.onsc_legajo_padron_action').sudo().read()[0]
         # Obtener el contexto original de la acción (puede estar como cadena JSON)
-        original_context = safe_eval(action.get('context', '{}'))  # Convierte la cadena en dict si es necesario
+        original_context = safe_eval(action.get('context', '{}'))
 
         # Fusionar el contexto original con el contexto actual y los nuevos valores
-        new_context = {**original_context, **self.env.context, 'operating_unit_id': self.operating_unit_id.id, 'inciso_id': self.inciso_id.id}
+        new_context = {
+            **original_context,
+            **self.env.context,
+            'operating_unit_id': self.operating_unit_id.id,
+            'inciso_id': self.inciso_id.id,
+            'date': self.date,
+        }
         action['context'] = new_context
         return action
