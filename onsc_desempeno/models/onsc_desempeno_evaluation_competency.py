@@ -91,7 +91,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
             record.is_pilot = is_pilot
             record.competency_form_edit = condition
 
-    @api.depends('evaluation_skill_line_ids','evaluation_skill_line_ids.frequency_id')
+    @api.depends('evaluation_skill_line_ids', 'evaluation_skill_line_ids.frequency_id')
     def _compute_grade_suggested(self):
         EquivalenceGrade = self.env['onsc.desempeno.grade.equivalence']
         for record in self:
