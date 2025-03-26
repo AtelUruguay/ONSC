@@ -19,6 +19,7 @@ ONSC CV Digital - Legajo
         'data/ir_cron_data.xml',
         'data/onsc_legajo_report_config_data.xml',
         'data/report_paperformat_data.xml',
+        'data/onsc_cv_minimal_rules.xml',
         'wizard/views/onsc_legajo_report_wizard_views.xml',
         'views/res_partner_views.xml',
         'views/onsc_cv_documentary_validation_config_views.xml',
