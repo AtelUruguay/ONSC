@@ -14,27 +14,29 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            if self._context.get('is_from_padron_report'):
-                args = self._get_padron_domain(args)
-            else:
-                args = self._get_domain(args)
-        return super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True))._search(args, offset=offset,
-                                                                                            limit=limit, order=order,
-                                                                                            count=count,
-                                                                                            access_rights_uid=access_rights_uid)
+            args = self._get_domain(args)
+        return super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True))._search(
+            args,
+            offset=offset,
+            limit=limit,
+            order=order,
+            count=count,
+            access_rights_uid=access_rights_uid
+        )
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            if self._context.get('is_from_padron_report'):
-                domain = self._get_padron_domain(domain)
-            else:
-                domain = self._get_domain(domain)
-        result = super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True)).read_group(domain, fields, groupby,
-                                                                                                 offset=offset,
-                                                                                                 limit=limit,
-                                                                                                 orderby=orderby,
-                                                                                                 lazy=lazy)
+            domain = self._get_domain(domain)
+        result = super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True)).read_group(
+            domain,
+            fields,
+            groupby,
+            offset=offset,
+            limit=limit,
+            orderby=orderby,
+            lazy=lazy
+        )
         for res in result:
             count_key, count_key_value = next(iter(res.items()))
             group_key_str = count_key.split('_count')[0]
@@ -82,31 +84,6 @@ class ONSCLegajoDepartment(models.Model):
             if user_employee:
                 new_args.append((('employee_id', '!=', user_employee.id)))
             args = expression.AND([new_args, args])
-        return args
-
-    def _get_padron_domain(self, args):
-        is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso')
-        is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue')
-        inciso_id = self._context.get('inciso_id', False)
-        operating_unit_id = self._context.get('operating_unit_id', False)
-        if not inciso_id and not operating_unit_id:
-            return expression.AND([[(True,'=',False)], args])
-
-        if is_inciso_security:
-            contract_ids = self._get_contract_ids()
-            new_args = [
-                ('contract_id', 'in', contract_ids),
-                ('inciso_id', '=', inciso_id)
-            ]
-            if operating_unit_id:
-                new_args.append(('operating_unit_id', '=', operating_unit_id))
-            args = expression.AND([new_args, args])
-        elif is_ue_security:
-            contract_ids = self._get_contract_ids()
-            args = expression.AND([[
-                ('contract_id', 'in', contract_ids),
-                ('operating_unit_id', '=', operating_unit_id)
-            ], args])
         return args
 
     def _get_contract_ids(self):
@@ -177,7 +154,7 @@ class ONSCLegajoDepartment(models.Model):
     first_operating_unit_entry_date = fields.Date(string=u'Fecha de ingreso UE')
 
     date_end = fields.Date(string=u'Fecha baja')
-    date_to = fields.Date(string=u'Fecha hasta')
+    date_end_commission = fields.Date(string=u'Fecha hasta')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)

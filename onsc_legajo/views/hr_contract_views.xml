@@ -36,11 +36,11 @@
                     <group name="top_info">
                         <group name="top_info_left">
                             <field name="name" invisible="1"/>
-                            <field name="nro_doc" />
-                            <field name="first_name" />
-                            <field name="second_name" />
-                            <field name="last_name_1" />
-                            <field name="last_name_2" />
+                            <field name="nro_doc"/>
+                            <field name="first_name"/>
+                            <field name="second_name"/>
+                            <field name="last_name_1"/>
+                            <field name="last_name_2"/>
                             <field name="eff_date" string="Fecha efectiva"/>
                             <field name="date_start" string="Fecha de alta"/>
                             <field name="date_end" string="Fecha de baja"/>
@@ -57,9 +57,10 @@
                             <field name="wage" invisible="1"/>
                             <field name="income_mechanism_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="call_number" />
+                            <field name="call_number"/>
                             <field name="cs_contract_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <!-- TODO: HIDE NEXT -->
                             <field name="parent_id"
                                 context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form', 'show_descriptors': True}"/>
                             <field name="first_operating_unit_entry_date"/>
@@ -110,7 +111,7 @@
                             <field name="operating_unit_dest_id"
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="graduation_date" />
+                            <field name="graduation_date"/>
                             <field name="is_occupation_visible" invisible="1"/>
                             <field name="position" required="1"/>
                             <field name="workplace" required="1"/>
@@ -124,15 +125,15 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="type_norm_discharge"/>
                             <field name="norm_number_discharge"/>
-                            <field name="norm_year_discharge" />
+                            <field name="norm_year_discharge"/>
                             <field name="norm_article_discharge"/>
                             <field name="resolution_description"/>
                             <field name="resolution_date"/>
                             <field name="resolution_type"/>
                             <field name="contract_expiration_date"/>
                             <field name="additional_information"/>
-                            <field name="code_day" />
-                            <field name="description_day" />
+                            <field name="code_day"/>
+                            <field name="description_day"/>
                             <field name="retributive_day_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="retributive_day_description"/>
@@ -220,10 +221,18 @@
                 <field name="legajo_name"/>
                 <field name="employee_id" string="Funcionario" widget="many2one_avatar_employee"/>
                 <field name="job_ids" widget="many2many_tags"/>
-                <field name="date_start" />
-                <field name="date_end" />
+                <field name="date_start"/>
+                <field name="date_end"/>
                 <field name="company_id" groups="base.group_multi_company" invisible="1"/>
-                <field name="legajo_state" />
+                <field name="legajo_state"/>
+                <field name="cs_contract_id"
+                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                <!-- TODO: HIDE NEXT -->
+                <field name="parent_id"
+                    context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form', 'show_descriptors': True}"/>
+                <field name="first_operating_unit_entry_date"/>
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
             </tree>
         </field>
     </record>

@@ -328,13 +328,13 @@ class ONSCLegajo(models.Model):
 
     def _get_abstract_config_security(self):
         return self.user_has_groups(
-            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador,onsc_legajo.group_legajo_hr_admin')
+            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador,onsc_legajo.group_legajo_hr_admin,onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
 
     def _get_abstract_inciso_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso')
 
     def _get_abstract_ue_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_ue,onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue')
 
     # INTELIGENCIA DE ENTIDAD
     def _get_legajo(
