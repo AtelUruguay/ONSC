@@ -64,7 +64,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         compute='_compute_grade_suggested',
         store=True
     )
-    is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, related="evaluation_id.is_pilot")
+    is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, compute='_compute_competency_form_edit')
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -83,9 +83,12 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                 _cond1 = record.gap_deal_id.state_gap_deal != 'in_process' or record.gap_deal_id.gap_deal_state != 'no_deal'
                 _cond2 = record.gap_deal_id.evaluator_id.id != user_employee_id and record.gap_deal_id.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
+                is_pilot = record.gap_deal_id.is_pilot
             else:
                 _cond1 = record.evaluation_id.evaluator_id.id != user_employee_id or record.evaluation_id.locked
                 condition = record.state not in ['in_process'] or _cond1
+                is_pilot = record.evaluation_id.is_pilot
+            record.is_pilot = is_pilot
             record.competency_form_edit = condition
 
     @api.depends('evaluation_skill_line_ids','evaluation_skill_line_ids.frequency_id')
