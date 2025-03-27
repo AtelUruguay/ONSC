@@ -21,7 +21,6 @@
                     <field name="operating_unit_id" string="Unidad ejecutora" optional="hide"/>
                     <field name="contract_id" string="Contrato" optional="hide"/>
                     <field name="job_start_date"/>
-                    <field name="job_end_date"/>
                     <field name="inciso_origin_id" optional="hide"/>
                     <field name="operating_unit_origin_id" optional="hide"/>
                     <field name="inciso_dest_id" optional="hide"/>
