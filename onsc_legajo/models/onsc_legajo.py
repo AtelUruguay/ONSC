@@ -178,7 +178,7 @@ class ONSCLegajo(models.Model):
     @api.model
     def create(self, vals):
         legajo = super(ONSCLegajo, self).create(vals)
-        self.env['onsc.legajo.summary']._update_legajo_summary(legajo)
+        self.env['onsc.legajo.summary']._update_empty_legajo_records(legajo)
         return legajo
 
     def write(self, vals):
