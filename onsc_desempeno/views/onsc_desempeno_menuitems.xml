@@ -169,7 +169,7 @@
             action="action_onsc_desempeno_frequency_equivalence"
             parent="onsc_desempeno_catalog_menu"
             groups="onsc_desempeno.group_desempeno_administrador"
-            sequence="25"/>
+            sequence="6"/>
 
       <menuitem id="onsc_desempeno_config_score_menu"
             name="Puntajes"
