@@ -111,4 +111,15 @@
         <field name="numbercall">-1</field>
         <field name="active">True</field>
     </record>
+
+    <record id="legajo_summary" model="ir.cron">
+        <field name="name">Legajo: Carga de sumarios - RVE</field>
+        <field name="model_id" ref="model_onsc_legajo_abstract_summary"/>
+        <field name="state">code</field>
+        <field name="code">model.syncronize(days=5)</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
 </odoo>

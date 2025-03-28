@@ -32,6 +32,10 @@ class ResCompany(models.Model):
     ws7_email_list = fields.Char(string='Correos electronicos', widget='email', )
     message_block_summary = fields.Boolean(u"Mensaje de sumario bloqueante")
     message_baja_vl_summary = fields.Char(u"Mensaje de baja de vinculo laboral")
+    summary_date_from = fields.Datetime(
+        string='Fecha/hora desde')
+    summary_latency_inseconds = fields.Integer(
+        string='Latencia(segundos)')
 
     def write(self, vals):
         if all('ws7' or 'mass_upload_record_limit' or 'message_block_summary' or 'message_baja_vl_summary' in key for
