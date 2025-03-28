@@ -128,12 +128,12 @@
             parent="onsc_desempeno_catalog_menu"
             groups="onsc_desempeno.group_desempeno_administrador"
             sequence="5" />
-      <!-- <menuitem id="onsc_desempeno_grade_equivalence_menu"
+      <menuitem id="onsc_desempeno_grade_equivalence_menu"
             name="Equivalencia de Grado de necesidad de desarrollo"
             action="action_onsc_desempeno_grade_equivalence"
             parent="onsc_desempeno_catalog_menu"
             groups="onsc_desempeno.group_desempeno_administrador"
-            sequence="6" /> -->
+            sequence="6" />
       <menuitem id="onsc_desempeno_degree_progress_menu"
             name="Grados de avance"
             action="onsc_desempeno_degree_progress_action"
@@ -164,12 +164,12 @@
             parent="onsc_desempeno_catalog_menu"
             groups="onsc_desempeno.group_desempeno_administrador"
             sequence="20" />
-      <!-- <menuitem id="onsc_desempeno_frenquency_equivalence_menu"
-            name="Tabla de equivalencia"
+      <menuitem id="onsc_desempeno_frenquency_equivalence_menu"
+            name="Frecuencias de comportamiento"
             action="action_onsc_desempeno_frequency_equivalence"
             parent="onsc_desempeno_catalog_menu"
             groups="onsc_desempeno.group_desempeno_administrador"
-            sequence="25"/> -->
+            sequence="25"/>
 
       <menuitem id="onsc_desempeno_config_score_menu"
             name="Puntajes"

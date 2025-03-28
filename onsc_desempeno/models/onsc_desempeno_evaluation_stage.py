@@ -250,7 +250,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
             competency.write({'consolidate_id': consolidate.id, 'order': number})
 
     def _set_comment_to_consolidated(self, evaluation, consolidate):
-        if consolidate:
+        if consolidate and evaluation.general_comments :
             consolidate.write({
                 'comment_ids': [(0, 0, {
                     'name': evaluation.general_comments,
