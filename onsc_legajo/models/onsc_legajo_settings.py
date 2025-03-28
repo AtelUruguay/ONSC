@@ -85,6 +85,18 @@ class ONSCCVSettings(models.TransientModel):
                                           related="company_id.message_baja_vl_summary",
                                           readonly=False,
                                           related_sudo=True)
+    summary_date_from = fields.Datetime(
+        string='Fecha/hora desde',
+        related="company_id.summary_date_from",
+        readonly=False,
+        related_sudo=True
+    )
+    summary_latency_inseconds = fields.Integer(
+        string='Latencia(segundos)',
+        related="company_id.summary_latency_inseconds",
+        readonly=False,
+        related_sudo=True
+    )
 
     def execute(self):
         return {
