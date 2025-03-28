@@ -433,7 +433,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
             'state': 'draft',
         })
-        Competency.set_competencies( skills,evaluation)
+        Competency.set_competencies(skills, evaluation)
 
         # for skill in skills:
         #     Competency.create({'evaluation_id': evaluation.id,
