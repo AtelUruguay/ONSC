@@ -23,13 +23,14 @@ class ONSCLegajoSummary(models.Model):
         'onsc.legajo.abstract.opaddmodify.security'
     ]
 
+    key = fields.Char(string="Llave")
     last_update_date = fields.Date(string="Última actualización", readonly=True)
     emissor_country = fields.Char(u'País emisor del documento')
     document_type = fields.Char(u'Tipo de documento')
     nro_doc = fields.Char(u'Número de documento')
     inciso_code = fields.Integer("Inciso")
     inciso_name = fields.Char("Nombre Inciso")
-    operating_unit_code = fields.Char("UE")
+    operating_unit_code = fields.Integer("UE")
     operating_unit_name = fields.Char("Nombre UE")
     regime = fields.Char("Regimen")
     relationship_date = fields.Date(u"Fecha del vínculo")
@@ -53,6 +54,7 @@ class ONSCLegajoSummary(models.Model):
     record_number = fields.Char(u'Número de expediente')
     instructor_doc_number = fields.Char("Número documento")
     observations = fields.Char("Observaciones")
+
     display_inciso = fields.Char('Inciso', compute='_compute_display_inciso')
     display_ue = fields.Char('UE', compute='_compute_display_ue')
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', compute='_compute_inciso_id', store=True)
@@ -65,6 +67,7 @@ class ONSCLegajoSummary(models.Model):
     show_button_open_summary = fields.Boolean('Mostrar button abrir sumarios ',
                                               compute='_compute_show_button_open_summary')
     display_penalty_type = fields.Char(string=u"Tipo de sanción", compute='_compute_display_penalty_type')
+
     def name_get(self):
         res = []
         for record in self:
@@ -124,6 +127,7 @@ class ONSCLegajoSummary(models.Model):
     def _compute_operating_unit_id(self):
         OperatingUnit = self.env['operating.unit'].suspend_security()
         for record in self:
+
             operating_unit_id = OperatingUnit.search([('budget_code', '=', record.operating_unit_code),
                                                              ('inciso_id','=', record.inciso_id.id)], limit=1)
 
