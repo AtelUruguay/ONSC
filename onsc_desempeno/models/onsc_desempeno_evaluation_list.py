@@ -363,7 +363,8 @@ class ONSCDesempenoEvaluationList(models.Model):
                         'line_ids': [(0, 0, {'job_id': manage_job.id})]
                     }
                     evaluation_lists |= EvaluationList.create(evaluation_vals)
-            elif manage_job and parent_evaluation_list and not parent_evaluation_list.with_context(active_test=False).line_ids.filtered(
+            elif manage_job and parent_evaluation_list and not parent_evaluation_list.with_context(
+                    active_test=False).line_ids.filtered(
                     lambda x: x.employee_id.id == evaluation_list.manager_id.id):
                 parent_evaluation_list.write({'line_ids': [(0, 0, {'job_id': manage_job.id})]})
 
@@ -689,9 +690,8 @@ class ONSCDesempenoEvaluationList(models.Model):
             evaluation[0]["uo_id"] = record.current_job_id.department_id.id
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
-
         for competency in record.evaluation_competency_ids:
-            Competency.set_competencies(competency.skill_id.skill_line_ids,evaluation, gap_deal.id)
+            Competency.set_competencies(competency.skill_id, gap_deal, gap_deal.id)
             # Competency.create({'gap_deal_id': gap_deal.id,
             #                    'skill_id': competency.skill_id.id,
             #                    'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
