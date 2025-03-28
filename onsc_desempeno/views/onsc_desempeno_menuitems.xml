@@ -165,7 +165,7 @@
             groups="onsc_desempeno.group_desempeno_administrador"
             sequence="20" />
       <menuitem id="onsc_desempeno_frenquency_equivalence_menu"
-            name="Tabla de equivalencia"
+            name="Frecuencias de comportamiento"
             action="action_onsc_desempeno_frequency_equivalence"
             parent="onsc_desempeno_catalog_menu"
             groups="onsc_desempeno.group_desempeno_administrador"
