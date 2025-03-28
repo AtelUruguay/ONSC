@@ -110,7 +110,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
 
     skill_id = fields.Many2one(related='competency_id.skill_id', string='Competencia')
     agreed_activities = fields.Text('Actividades acordadas', required=True)
-    comments = fields.Text('Comentarios', required=True)
+    comments = fields.Text('Comentarios')
     detail_activities = fields.Text('Detalle de actividades', required=True)
     means_id = fields.Many2one('onsc.desempeno.development.means', string='Medio de desarrollo',
                                required=True)
