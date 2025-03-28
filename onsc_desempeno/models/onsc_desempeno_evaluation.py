@@ -983,12 +983,8 @@ class ONSCDesempenoEvaluation(models.Model):
                     'general_cycle_id': rec.general_cycle_id.id,
                     'state_gap_deal': 'draft',
                 })
-                for skill in skills:
-                    Competency.create({'evaluation_id': evaluation.id,
-                                       'skill_id': skill.id,
-                                       'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
-                                           lambda r: r.level_id.id == evaluation.level_id.id).ids)]
-                                       })
+                Competency.set_competencies(skills, evaluation)
+
             email_template_id = self.env.ref('onsc_desempeno.email_template_evaluacion_entorno')
             for partner in selected_random_environment.mapped('partner_id'):
                 email_template_id.with_context(date_end=rec.sudo().evaluation_stage_id.end_date.strftime('%d-%m-%Y')).send_mail(
