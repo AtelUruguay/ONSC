@@ -701,7 +701,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _compute_is_notebook_available(self):
         user_employee = self.env.user.employee_id
-        user_restricted = self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue')
+        user_restricted = self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_administrador')
         for record in self:
             if not user_restricted:
                 record.is_notebook_available = True
@@ -724,7 +724,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 cond2 = record.evaluation_type == 'leader_evaluation' and is_eval_valid_cond2
                 cond3 = record.evaluation_type == 'self_evaluation' and is_iam_evaluated
 
-                record.is_notebook_available = cond1 or cond2 or cond3 or record.evaluation_type == 'gap_deal'
+                record.is_notebook_available = cond1 or cond2 or cond3 or record.evaluation_type in ('gap_deal','environment_definition')
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
