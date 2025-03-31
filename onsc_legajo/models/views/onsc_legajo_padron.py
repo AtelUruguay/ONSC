@@ -157,8 +157,10 @@ class ONSCLegajoPadron(models.Model):
     job_name = fields.Char(string='Nombre del puesto', compute='_compute_contract_info')
     security_job_id = fields.Many2one('onsc.legajo.security.job', string="Seguridad de puesto", compute='_compute_contract_info')
     department_id = fields.Many2one('hr.department', string="UO", compute='_compute_contract_info')
-    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", compute='_compute_contract_info')
+    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel de UO", compute='_compute_contract_info')
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', compute='_compute_contract_info')
+
+
     job_start_date = fields.Date(string='Fecha desde (Puesto)', compute='_compute_contract_info')
     job_end_date = fields.Date(string='Fecha hasta (Puesto)', compute='_compute_contract_info')
     # CONTRACT COMPUTED INFO - HISTORICAL DATA
@@ -182,21 +184,21 @@ class ONSCLegajoPadron(models.Model):
     )
     operating_unit_dest_id = fields.Many2one(
         "operating.unit",
-        string="Unidad ejecutora Destino",
+        string="Unidad ejecutora destino",
         compute='_compute_contract_info'
     )
-    date_end = fields.Date(string=u'Fecha baja', compute='_compute_contract_info')
-    date_end_commission = fields.Date(string=u'Fecha hasta', compute='_compute_contract_info')
-
-    # COMO VAN EN LA VISTA
-    reason_description = fields.Char(string='Descripción del motivo alta')
-    reason_deregistration = fields.Char(string='Descripción del motivo baja')
-    income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso')
-    causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso")
-    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission")
+    date_start = fields.Date(string=u'Fecha de alta', compute='_compute_contract_info')
+    date_end = fields.Date(string=u'Fecha de baja', compute='_compute_contract_info')
+    date_end_commission = fields.Date(string=u'Fecha hasta de la comisión', compute='_compute_contract_info')
+    reason_description = fields.Char(string='Motivo de alta', compute='_compute_contract_info')
+    reason_deregistration = fields.Char(string='Motivo de baja', compute='_compute_contract_info')
+    income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', compute='_compute_contract_info')
+    causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso", compute='_compute_contract_info')
+    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission", string="Motivo de extinción de la comisión", compute='_compute_contract_info')
     legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
-        string='Departamento donde desempeña funciones')
+        string='Departamento donde desempeña funciones', compute='_compute_contract_info')
+
     # JOB COMPUTED INFO
     # organigram_joker = fields.Many2one('hr.department', string='Organigrama')
     level_0 = fields.Many2one('hr.department', string='Nivel 0', compute='_compute_contract_info')
@@ -342,6 +344,7 @@ class ONSCLegajoPadron(models.Model):
                 'operating_unit_origin_id': contract.operating_unit_origin_id.id,
                 'inciso_dest_id': contract.inciso_dest_id.id,
                 'operating_unit_dest_id': contract.operating_unit_dest_id.id,
+                'date_start': contract.date_start,
                 'date_end': contract.date_end,
                 'date_end_commission': contract.date_end_commission,
                 'reason_description': contract.reason_description,
@@ -364,6 +367,7 @@ class ONSCLegajoPadron(models.Model):
                 'operating_unit_origin_id': history_data.get('operating_unit_origin_id', contract.operating_unit_origin_id.id),
                 'inciso_dest_id': history_data.get('inciso_dest_id', contract.inciso_dest_id.id),
                 'operating_unit_dest_id': history_data.get('operating_unit_dest_id', contract.operating_unit_dest_id.id),
+                'date_start': history_data.get('date_start', contract.date_start),
                 'date_end': history_data.get('date_end', contract.date_end),
                 'date_end_commission': history_data.get('date_end_commission', contract.date_end_commission),
                 'reason_description': history_data.get('reason_description', contract.reason_description),
