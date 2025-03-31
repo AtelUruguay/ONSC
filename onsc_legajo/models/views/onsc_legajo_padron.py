@@ -62,7 +62,7 @@ class ONSCLegajoPadron(models.Model):
         contract_ids = self._get_contract_ids(inciso_id, operating_unit_id)
         args = expression.AND([[
             ('contract_id', 'in', contract_ids),
-            ('contract_id','=',37)
+            # ('contract_id','=',37)
         ], args])
         return args
 
@@ -76,7 +76,7 @@ class ONSCLegajoPadron(models.Model):
 
     def _get_hierarchy_available_contract(self, inciso_id=False, operating_unit_id=False, date=False):
         available_contracts = self.env['hr.contract']
-        # base_employee_domain = [('id', '!=', self.env.user.employee_id.id)]
+        base_employee_domain = [('id', '!=', self.env.user.employee_id.id)]
         base_employee_domain = []
         employee_domain = []
         if date:
