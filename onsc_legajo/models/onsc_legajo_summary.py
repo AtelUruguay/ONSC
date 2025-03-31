@@ -196,7 +196,7 @@ class ONSCLegajoSummaryComunications(models.Model):
     _name = "onsc.legajo.summary.communications"
     _description = 'Comunicaciones del sumario'
 
-    summary_id = fields.Many2one("onsc.legajo.summary", string=u"Sumario", required=True, index=True)
+    summary_id = fields.Many2one("onsc.legajo.summary", string=u"Sumario", required=True, index=True, ondelete='cascade')
     communication_date = fields.Date("Fecha")
     instance = fields.Char("Instancia")
     communication_type = fields.Char(u"Tipo de comunicación")

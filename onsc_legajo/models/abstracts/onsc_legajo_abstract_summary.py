@@ -35,7 +35,7 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
             paFechaDesde += datetime.timedelta(hours=int(tz_delta))
 
         if days == 0:
-            days = 3650
+            days = 700
 
         if days and days > 0:
             paFechaHasta = paFechaDesde + datetime.timedelta(days=days)
