@@ -150,12 +150,6 @@ class ONSCLegajoDepartment(models.Model):
     level_5 = fields.Many2one('hr.department', string='Nivel 5')
     nro_doc = fields.Char(u'Número de documento')
 
-    public_admin_entry_date = fields.Date(string=u'Fecha de ingreso AP')
-    first_operating_unit_entry_date = fields.Date(string=u'Fecha de ingreso UE')
-
-    date_end = fields.Date(string=u'Fecha baja')
-    date_end_commission = fields.Date(string=u'Fecha hasta')
-
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
@@ -179,10 +173,6 @@ WITH base_contract_view AS (
         contract.descriptor3_id,
         contract.descriptor4_id,
         contract.nro_doc,
-        contract.public_admin_entry_date,
-        contract.first_operating_unit_entry_date,
-        contract.date_end,
-        contract.date_end_commission,
         COUNT(hr_job.id) FILTER (WHERE hr_job.active AND (hr_job.end_date IS NULL OR hr_job.end_date > CURRENT_DATE)) AS active_job_qty
     FROM hr_contract contract
     LEFT JOIN hr_job ON hr_job.contract_id = contract.id

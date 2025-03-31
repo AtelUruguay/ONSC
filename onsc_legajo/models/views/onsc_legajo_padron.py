@@ -62,6 +62,7 @@ class ONSCLegajoPadron(models.Model):
         contract_ids = self._get_contract_ids(inciso_id, operating_unit_id)
         args = expression.AND([[
             ('contract_id', 'in', contract_ids),
+            ('contract_id','=',37)
         ], args])
         return args
 
@@ -140,22 +141,9 @@ class ONSCLegajoPadron(models.Model):
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
     employee_id = fields.Many2one('hr.employee', string="Funcionario")
     type = fields.Selection(string='Tipo', selection=[('active', 'Activo'), ('egresed', 'Egresado')])
-    regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen')
-    commission_regime_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen comisión')
-    descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1')
-    descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2')
-    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3')
-
-    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen')
-    operating_unit_origin_id = fields.Many2one("operating.unit",
-                                               string="Unidad ejecutora origen")
-    inciso_dest_id = fields.Many2one('onsc.catalog.inciso', string='Inciso destino')
-    operating_unit_dest_id = fields.Many2one("operating.unit", string="Unidad ejecutora Destino")
     nro_doc = fields.Char(u'Número de documento')
     public_admin_entry_date = fields.Date(string=u'Fecha de ingreso AP')
     first_operating_unit_entry_date = fields.Date(string=u'Fecha de ingreso UE')
-    date_end = fields.Date(string=u'Fecha baja')
-    date_end_commission = fields.Date(string=u'Fecha hasta')
 
     # CONTRACT COMPUTED INFO
     contract_legajo_state = fields.Selection([
@@ -169,22 +157,56 @@ class ONSCLegajoPadron(models.Model):
     job_name = fields.Char(string='Nombre del puesto', compute='_compute_contract_info')
     security_job_id = fields.Many2one('onsc.legajo.security.job', string="Seguridad de puesto", compute='_compute_contract_info')
     department_id = fields.Many2one('hr.department', string="UO", compute='_compute_contract_info')
-    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", compute='_compute_contract_info')
+    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel de UO", compute='_compute_contract_info')
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', compute='_compute_contract_info')
-    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4', compute='_compute_contract_info')
 
-    # JOB COMPUTED INFO
+
     job_start_date = fields.Date(string='Fecha desde (Puesto)', compute='_compute_contract_info')
     job_end_date = fields.Date(string='Fecha hasta (Puesto)', compute='_compute_contract_info')
+    # CONTRACT COMPUTED INFO - HISTORICAL DATA
+    descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', compute='_compute_contract_info', search='_search_descriptor1_id')
+    descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2', compute='_compute_contract_info')
+    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', compute='_compute_contract_info')
+    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4', compute='_compute_contract_info')
 
+    regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', compute='_compute_contract_info')
+    commission_regime_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen comisión', compute='_compute_contract_info')
+    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen', compute='_compute_contract_info')
+    operating_unit_origin_id = fields.Many2one(
+        "operating.unit",
+        string="Unidad ejecutora origen",
+        compute='_compute_contract_info'
+    )
+    inciso_dest_id = fields.Many2one(
+        'onsc.catalog.inciso',
+        string='Inciso destino',
+        compute='_compute_contract_info'
+    )
+    operating_unit_dest_id = fields.Many2one(
+        "operating.unit",
+        string="Unidad ejecutora destino",
+        compute='_compute_contract_info'
+    )
+    date_start = fields.Date(string=u'Fecha de alta', compute='_compute_contract_info')
+    date_end = fields.Date(string=u'Fecha de baja', compute='_compute_contract_info')
+    date_end_commission = fields.Date(string=u'Fecha hasta de la comisión', compute='_compute_contract_info')
+    reason_description = fields.Char(string='Motivo de alta', compute='_compute_contract_info')
+    reason_deregistration = fields.Char(string='Motivo de baja', compute='_compute_contract_info')
+    income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', compute='_compute_contract_info')
+    causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso", compute='_compute_contract_info')
+    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission", string="Motivo de extinción de la comisión", compute='_compute_contract_info')
+    legajo_state_id = fields.Many2one(
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones', compute='_compute_contract_info')
 
+    # JOB COMPUTED INFO
     # organigram_joker = fields.Many2one('hr.department', string='Organigrama')
-    # level_0 = fields.Many2one('hr.department', string='Nivel 0')
-    # level_1 = fields.Many2one('hr.department', string='Nivel 1')
-    # level_2 = fields.Many2one('hr.department', string='Nivel 2')
-    # level_3 = fields.Many2one('hr.department', string='Nivel 3')
-    # level_4 = fields.Many2one('hr.department', string='Nivel 4')
-    # level_5 = fields.Many2one('hr.department', string='Nivel 5')
+    level_0 = fields.Many2one('hr.department', string='Nivel 0', compute='_compute_contract_info')
+    level_1 = fields.Many2one('hr.department', string='Nivel 1', compute='_compute_contract_info')
+    level_2 = fields.Many2one('hr.department', string='Nivel 2', compute='_compute_contract_info')
+    level_3 = fields.Many2one('hr.department', string='Nivel 3', compute='_compute_contract_info')
+    level_4 = fields.Many2one('hr.department', string='Nivel 4', compute='_compute_contract_info')
+    level_5 = fields.Many2one('hr.department', string='Nivel 5', compute='_compute_contract_info')
 
 
     def _get_last_states_dict(self, contract_ids, date):
@@ -251,8 +273,9 @@ class ONSCLegajoPadron(models.Model):
                 j.hierarchical_level_id,
                 j.is_uo_manager,
                 j.start_date,
-                j.end_date
-            FROM hr_job j
+                j.end_date,
+                jh.*
+            FROM hr_job j LEFT JOIN onsc_legajo_job_hierarchy AS jh ON j.id = jh.job_id
             WHERE j.contract_id IN %s
                 AND j.start_date <= %s::DATE  -- La fecha de inicio debe ser anterior o igual al target_date
                 AND (j.end_date IS NULL OR j.end_date >= %s::DATE)  -- Si end_date es NULL o mayor/igual, sigue vigente
@@ -266,15 +289,19 @@ class ONSCLegajoPadron(models.Model):
                                      'is_uo_manager':rec['is_uo_manager'],
                                      'job_start_date':rec['start_date'],
                                      'job_end_date':rec['end_date'],
-                                     } for rec in result}
+                                     'level_0': rec['level_0'],
+                                     'level_1': rec['level_1'],
+                                     'level_2': rec['level_2'],
+                                     'level_3': rec['level_3'],
+                                     'level_4': rec['level_4'],
+                                     'level_5': rec['level_5'],
+                                    } for rec in result}
 
     def _compute_contract_info(self):
         contract_ids = self.mapped('contract_id.id')
         _date = self._context.get('date', fields.Date.today())
         if isinstance(_date, str):  # Si viene como string, lo convertimos
             _date = fields.Date.from_string(_date)
-
-        history_contracts = self.env['hr.contract'].with_context(as_of_date = _date).search([('id', 'in', contract_ids)])
 
         last_states = self._get_last_states_dict(contract_ids, _date)
         current_jobs = self._get_contracts_jobs_dict(contract_ids, _date)
@@ -290,9 +317,66 @@ class ONSCLegajoPadron(models.Model):
             record.is_uo_manager = job_dict.get('is_uo_manager', False)
             record.job_start_date = job_dict.get('job_start_date', False)
             record.job_end_date = job_dict.get('job_end_date', False)
-            # HISTORICAL DATA
-            record.descriptor4_id = history_contracts.filtered(lambda c: c.id == record.contract_id.id).descriptor4_id.id
+            record.level_0 = job_dict.get('level_0', False)
+            record.level_1 = job_dict.get('level_1', False)
+            record.level_2 = job_dict.get('level_2', False)
+            record.level_3 = job_dict.get('level_3', False)
+            record.level_4 = job_dict.get('level_4', False)
+            record.level_5 = job_dict.get('level_5', False)
 
+            # Obtener datos históricos o actuales del contrato
+            contract_data = self._get_historical_contract_data(record.contract_id, _date)
+            # Asignar valores
+            for field, value in contract_data.items():
+                setattr(record, field, value)
+
+    def _get_historical_contract_data(self, contract, _date):
+        contract = contract.sudo()
+        if contract.eff_date <= _date:
+            return {
+                'descriptor1_id': contract.descriptor1_id.id,
+                'descriptor2_id': contract.descriptor2_id.id,
+                'descriptor3_id': contract.descriptor3_id.id,
+                'descriptor4_id': contract.descriptor4_id.id,
+                'regime_id': contract.regime_id.id,
+                'commission_regime_id': contract.commission_regime_id.id,
+                'inciso_origin_id': contract.inciso_origin_id.id,
+                'operating_unit_origin_id': contract.operating_unit_origin_id.id,
+                'inciso_dest_id': contract.inciso_dest_id.id,
+                'operating_unit_dest_id': contract.operating_unit_dest_id.id,
+                'date_start': contract.date_start,
+                'date_end': contract.date_end,
+                'date_end_commission': contract.date_end_commission,
+                'reason_description': contract.reason_description,
+                'reason_deregistration': contract.reason_deregistration,
+                'income_mechanism_id': contract.income_mechanism_id.id,
+                'causes_discharge_id': contract.causes_discharge_id.id,
+                'extinction_commission_id': contract.extinction_commission_id.id,
+                'legajo_state_id': contract.legajo_state_id.id,
+            }
+        else:
+            history_data = contract.with_context(as_of_date=_date).sudo().read_history(as_of_date=_date)
+            return {
+                'descriptor1_id': history_data.get('descriptor1_id', contract.descriptor1_id.id),
+                'descriptor2_id': history_data.get('descriptor2_id', contract.descriptor2_id.id),
+                'descriptor3_id': history_data.get('descriptor3_id', contract.descriptor3_id.id),
+                'descriptor4_id': history_data.get('descriptor4_id', contract.descriptor4_id.id),
+                'regime_id': history_data.get('regime_id', contract.regime_id.id),
+                'commission_regime_id': history_data.get('commission_regime_id', contract.commission_regime_id.id),
+                'inciso_origin_id': history_data.get('inciso_origin_id', contract.inciso_origin_id.id),
+                'operating_unit_origin_id': history_data.get('operating_unit_origin_id', contract.operating_unit_origin_id.id),
+                'inciso_dest_id': history_data.get('inciso_dest_id', contract.inciso_dest_id.id),
+                'operating_unit_dest_id': history_data.get('operating_unit_dest_id', contract.operating_unit_dest_id.id),
+                'date_start': history_data.get('date_start', contract.date_start),
+                'date_end': history_data.get('date_end', contract.date_end),
+                'date_end_commission': history_data.get('date_end_commission', contract.date_end_commission),
+                'reason_description': history_data.get('reason_description', contract.reason_description),
+                'reason_deregistration': history_data.get('reason_deregistration', contract.reason_deregistration),
+                'income_mechanism_id': history_data.get('income_mechanism_id', contract.income_mechanism_id.id),
+                'causes_discharge_id': history_data.get('causes_discharge_id', contract.causes_discharge_id.id),
+                'extinction_commission_id': history_data.get('extinction_commission_id', contract.extinction_commission_id.id),
+                'legajo_state_id': history_data.get('legajo_state_id', contract.legajo_state_id.id),
+            }
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -329,3 +413,7 @@ SELECT
     bc.*
 FROM base_contract_view bc
 )''' % (self._table,))
+
+    def _search_descriptor1_id(self, operator, value):
+        valid_contracts = self.env['hr.contract'].search([('descriptor1_id', operator, value)])
+        return [('contract_id', 'in', valid_contracts.ids)]

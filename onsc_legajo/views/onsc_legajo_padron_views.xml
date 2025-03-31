@@ -14,29 +14,38 @@
                         decoration-success="contract_legajo_state == 'active'"
                         decoration-info="contract_legajo_state == 'incoming_commission'"
                         decoration-warning="contract_legajo_state in ['outgoing_commission', 'reserved', 'baja']"/>
-                    <field name="job_name" string="Puesto" optional="show"/>
-                    <field name="security_job_id" optional="show"/>
+                    <field name="inciso_id" string="Inciso" optional="show"/>
+                    <field name="operating_unit_id" string="Unidad ejecutora" optional="show"/>
+                    <field name="department_id" string="UO" optional="show"/>
+                    <field name="date_start" optional="show"/>
+                    <field name="regime_id" optional="show"/>
+                    <field name="commission_regime_id" optional="show"/>
+                    <field name="date_end" optional="show"/>
+
+                    <field name="job_name" string="Puesto" optional="hide"/>
+                    <field name="security_job_id" optional="hide"/>
                     <field name="hierarchical_level_id" string="Nivel jerárquico" optional="hide"/>
-                    <field name="department_id" string="UO" optional="hide"/>
-                    <field name="operating_unit_id" string="Unidad ejecutora" optional="hide"/>
                     <field name="contract_id" string="Contrato" optional="hide"/>
-                    <field name="job_start_date"/>
-                    <field name="job_end_date"/>
                     <field name="inciso_origin_id" optional="hide"/>
                     <field name="operating_unit_origin_id" optional="hide"/>
                     <field name="inciso_dest_id" optional="hide"/>
                     <field name="operating_unit_dest_id" optional="hide"/>
-                    <field name="is_uo_manager" optional="show"/>
-                    <field name="regime_id" optional="show"/>
-                    <field name="commission_regime_id" optional="show"/>
-                    <field name="date_end" optional="show"/>
-                    <field name="date_end_commission" optional="show"/>
+                    <field name="is_uo_manager" optional="hide"/>
                     <field name="descriptor1_id" optional="hide"/>
                     <field name="descriptor2_id" optional="hide"/>
                     <field name="descriptor3_id" optional="hide"/>
                     <field name="descriptor4_id" optional="hide"/>
                     <field name="public_admin_entry_date" optional="hide"/>
                     <field name="first_operating_unit_entry_date" optional="hide"/>
+                    <field name="date_end_commission" optional="hide"/>
+                    <field name="reason_description" optional="hide"/>
+                    <field name="reason_deregistration" optional="hide"/>
+                    <field name="income_mechanism_id" optional="hide"/>
+                    <field name="causes_discharge_id" optional="hide"/>
+                    <field name="extinction_commission_id" optional="hide"/>
+                    <field name="legajo_state_id" optional="hide"/>
+
+
                     <field name="type" invisible="1"/>
                 </tree>
             </field>
