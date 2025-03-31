@@ -108,6 +108,23 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                     long_description
                 )
                 return long_description
+        elif hasattr(response, 'Ok'):
+            if response.Ok:
+                return self._populate_from_syncronization(response)
+            else:
+                error = IntegrationError.search([
+                    ('integration_code', '=', integration_error.integration_code),
+                    ('code_error', '=', str(response.codigo))
+                ], limit=1)
+                long_description = '%s - Código: %s' % (
+                    tools.ustr(response.mensaje), str(response.codigo))
+                self._process_response_witherror(
+                    response,
+                    origin_name,
+                    error or integration_error,
+                    long_description
+                )
+                return long_description
         elif len(response) > 0 and isinstance(response, list):
             return self._populate_from_syncronization(response)
         elif always_return_result:

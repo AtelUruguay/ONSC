@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class ONSCDesempenoDegree(models.Model):
     _name = 'onsc.desempeno.degree'
-    _description = 'Grado de necesidad de desarrollo'
+    _description = 'Equivalencia de Grado de necesidad de desarrollo'
 
     name = fields.Char(string="Nombre-Frecuencia del comportamiento", compute="_compute_name", store=True)
     description = fields.Char(string="Nombre de la necesidad de desarrollo", required=True)

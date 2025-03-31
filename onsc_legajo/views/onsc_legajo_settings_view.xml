@@ -112,23 +112,29 @@
                                             <label for="mass_upload_record_limit" string="Límite cantidad de registros" class="col-md-5 o_light_label"/>
                                             <field name="mass_upload_record_limit"/>
                                         </div>
-
-
                                     </div>
                                     <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de sumarios</h6>
                                     <div class="content-group">
-                                       <div style="font-size:15pt; margin-bottom:0pt;margin-top:0pt;flex-wrap: wrap;margin-right: -16px;margin-left: -16px;"  valign="center">
+                                        <div style="font-size:15pt; margin-bottom:0pt;margin-top:0pt;flex-wrap: wrap;margin-right: -16px;margin-left: -16px;"  valign="center">
                                             <label for="message_block_summary" string="Mensaje de sumario bloqueante" class="col-md-5 o_light_label"/>
                                             <field name="message_block_summary"/>
                                         </div>
-                                          <div class="row">
+                                        <div class="row">
                                             <label for="message_baja_vl_summary" string="Mensaje de baja de vinculo laboral" class="col-md-5 o_light_label"/>
                                             <field name="message_baja_vl_summary"/>
                                         </div>
-
                                     </div>
-
-
+                                    <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de parámetros de integración de Sumarios</h6>
+                                    <div class="content-group">
+                                        <div class="row">
+                                            <label for="summary_date_from" string="Fecha/hora desde" class="col-md-3 o_light_label"/>
+                                            <field name="summary_date_from" required="1"/>
+                                        </div>
+                                        <div class="row">
+                                            <label for="summary_latency_inseconds" string="Latencia (segundos)" class="col-md-3 o_light_label"/>
+                                            <field name="summary_latency_inseconds"  required="1"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

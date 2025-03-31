@@ -14,3 +14,4 @@ from . import onsc_legajo_abstract_ws6_1
 from . import onsc_legajo_abstract_ws6_2
 from . import onsc_legajo_abstract_ws7
 from . import onsc_legajo_abstract_ws_rve
+from . import onsc_legajo_abstract_summary
