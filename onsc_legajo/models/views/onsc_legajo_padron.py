@@ -76,7 +76,8 @@ class ONSCLegajoPadron(models.Model):
 
     def _get_hierarchy_available_contract(self, inciso_id=False, operating_unit_id=False, date=False):
         available_contracts = self.env['hr.contract']
-        base_employee_domain = [('id', '!=', self.env.user.employee_id.id)]
+        # base_employee_domain = [('id', '!=', self.env.user.employee_id.id)]
+        base_employee_domain = []
         employee_domain = []
         if date:
             employee_domain = expression.AND([[
