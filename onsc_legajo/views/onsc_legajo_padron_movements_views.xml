@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="onsc_legajo_padron_movements_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.padron.movements.tree</field>
+            <field name="model">onsc.legajo.padron.movements</field>
+            <field name="arch" type="xml">
+                <tree string="Movimientos de altas y bajas"
+                    decoration-muted="type == 'egresed' or contract_legajo_state == 'baja'"
+                    decoration-it="type == 'egresed' or contract_legajo_state == 'baja'">
+                    <field name="nro_doc" optional="show"/>
+                    <field name="legajo_id" string="Funcionario" optional="show"/>
+                    <field name="contract_legajo_state" widget="badge"
+                        decoration-success="contract_legajo_state == 'active'"
+                        decoration-info="contract_legajo_state == 'incoming_commission'"
+                        decoration-warning="contract_legajo_state in ['outgoing_commission', 'reserved', 'baja']"/>
+                    <field name="inciso_id" string="Inciso" optional="show"/>
+                    <field name="operating_unit_id" string="Unidad ejecutora" optional="show"/>
+                    <field name="public_admin_entry_date" optional="hide"/>
+                    <field name="first_operating_unit_entry_date" optional="hide"/>
+                    <field name="type" invisible="1"/>
+                    <field name="history_id"/>
+                    <field name="transaction_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id='onsc_legajo_padron_movements_action' model='ir.actions.act_window'>
+            <field name="name">Movimientos de altas y bajas</field>
+            <field name="res_model">onsc.legajo.padron.movements</field>
+            <field name="view_mode">tree</field>
+            <field name="target">main</field>
+            <field name="context">{
+                'is_from_menu':True,
+                'is_legajo':True,
+                'active_test': False,
+                'ignore_base_restrict': True,
+                'is_from_padron_report': True
+            }</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_padron_movements_tree')})]"/>
+            <!-- <field name="search_view_id" ref="onsc_legajo.onsc_legajo_padron_search"/> -->
+            <field name="limit">1500</field>
+        </record>
+    </data>
+</odoo>

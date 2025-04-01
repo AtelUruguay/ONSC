@@ -1,0 +1,175 @@
+# -*- coding: utf-8 -*-
+
+from odoo import fields, models, tools, api
+from odoo.osv import expression
+from odoo.tools import func
+
+
+class ONSCLegajoPadron(models.Model):
+    _name = "onsc.legajo.padron.movements"
+    _description = "Legajo - Padrón: Movimientos"
+    _auto = False
+    _order = "legajo_id"
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
+            args = self._get_domain(args)
+        return super(ONSCLegajoPadron, self.with_context(avoid_recursion=True))._search(
+            args,
+            offset=offset,
+            limit=limit,
+            order=order,
+            count=count,
+            access_rights_uid=access_rights_uid
+        )
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
+            domain = self._get_domain(domain)
+        result = super(ONSCLegajoPadron, self.with_context(avoid_recursion=True)).read_group(
+            domain,
+            fields,
+            groupby,
+            offset=offset,
+            limit=limit,
+            orderby=orderby,
+            lazy=lazy
+        )
+        for res in result:
+            count_key, count_key_value = next(iter(res.items()))
+            group_key_str = count_key.split('_count')[0]
+            group_key = res.get(group_key_str)
+            if not group_key:
+                res[group_key_str] = (0, func.lazy(
+                    lambda: self.fields_get().get(group_key_str).get('string') or 'Nivel'))
+        return result
+
+    def _is_group_responsable_uo_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
+
+    def _get_domain(self, args):
+        is_consult_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
+        is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_inciso')
+        is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_ue')
+        inciso_id = self._context.get('inciso_id', False)
+        operating_unit_id = self._context.get('operating_unit_id', False)
+        is_any_group = is_consult_security or is_inciso_security or is_ue_security
+        is_any_hierarchy = inciso_id or operating_unit_id
+        if not is_any_group or not is_any_hierarchy:
+            return expression.AND([[(True,'=',False)], args])
+        date_from=self._context.get('date_from', fields.Date.today())
+        date_to=self._context.get('date_to', fields.Date.today())
+        args = expression.AND([self._get_hierarchy_domain(date_from, date_to, inciso_id, operating_unit_id), args])
+        # records = self.with_context(avoid_recursion=True).read_group(
+        #     args,
+        #     ['contract_id', 'contract_legajo_state', 'transaction_date:max'],
+        #     ['contract_id']
+        # )
+        return args
+
+    def _get_hierarchy_domain(self, date_from, date_to, inciso_id=False, operating_unit_id=False):
+        _domain = [
+            ('transaction_date', '>=', date_from),
+            ('transaction_date', '<=', date_to),
+        ]
+        if operating_unit_id:
+            _domain = expression.AND([[('operating_unit_id', '=', operating_unit_id)], _domain])
+        else:
+            _domain = expression.AND([[('inciso_id', '=', inciso_id)], _domain])
+        return _domain
+
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCLegajoPadron, self).fields_get(allfields, attributes)
+        hide = ['end_date', 'employee_id', 'job_id', 'type', 'active_job_qty', 'start_date']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
+
+    # CONTRACT INFO
+    legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
+    contract_id = fields.Many2one('hr.contract', string="Contrato")
+    history_id = fields.Many2one('hr.contract.state.transaction.history', string="Transacción")
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
+    employee_id = fields.Many2one('hr.employee', string="Funcionario")
+    type = fields.Selection(string='Tipo', selection=[('active', 'Activo'), ('egresed', 'Egresado')])
+    nro_doc = fields.Char(u'Número de documento')
+    date_start = fields.Date(string=u'Fecha de alta')
+    public_admin_entry_date = fields.Date(string=u'Fecha de ingreso AP')
+    first_operating_unit_entry_date = fields.Date(string=u'Fecha de ingreso UE')
+    from_state = fields.Selection([
+        ('active', 'Activo'),
+        ('baja', 'Baja'),
+        ('reserved', 'Reservado'),
+        ('outgoing_commission', 'Comisión saliente'),
+        ('incoming_commission', 'Comisión entrante')], string='Estado del contrato')
+    contract_legajo_state = fields.Selection([
+        ('active', 'Activo'),
+        ('baja', 'Baja'),
+        ('reserved', 'Reservado'),
+        ('outgoing_commission', 'Comisión saliente'),
+        ('incoming_commission', 'Comisión entrante')], string='Estado del contrato')
+    transaction_date = fields.Date(string='Fecha de transacción')
+
+    def init(self):
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
+-- ALTAS
+SELECT
+    history.id AS id,
+    history.id AS history_id,
+    contract.id AS contract_id,
+    contract.legajo_id,
+    contract.inciso_id,
+    contract.operating_unit_id,
+    contract.employee_id,
+    contract.date_start,
+    'active' AS type,
+    contract.nro_doc,
+    contract.public_admin_entry_date,
+    contract.first_operating_unit_entry_date,
+    history.from_state,
+    history.to_state AS contract_legajo_state,
+    history.transaction_date::DATE
+FROM hr_contract contract
+LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
+LEFT JOIN hr_contract contract_parent ON contract.id = contract_parent.cs_contract_id AND contract.operating_unit_id = contract_parent.operating_unit_id AND contract_parent.active = True
+WHERE
+    contract.legajo_id IS NOT NULL AND
+    contract_parent.id IS NULL AND
+    history.to_state = 'active'
+UNION ALL
+SELECT
+    history.id AS id,
+    history.id AS history_id,
+    contract.id AS contract_id,
+    contract.legajo_id,
+    contract.inciso_id,
+    contract.operating_unit_id,
+    contract.employee_id,
+    contract.date_start,
+    'active' AS type,
+    contract.nro_doc,
+    contract.public_admin_entry_date,
+    contract.first_operating_unit_entry_date,
+    history.from_state,
+    history.to_state AS contract_legajo_state,
+    history.transaction_date::DATE
+FROM hr_contract contract
+LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
+WHERE
+    contract.legajo_id IS NOT NULL AND
+    history.to_state = 'incoming_commission'
+-- BAJAS
+
+)''' % (self._table,))
+
+    def _search_descriptor1_id(self, operator, value):
+        valid_contracts = self.env['hr.contract'].search([('descriptor1_id', operator, value)])
+        return [('contract_id', 'in', valid_contracts.ids)]

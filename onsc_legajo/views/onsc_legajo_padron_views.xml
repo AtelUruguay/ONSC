@@ -5,7 +5,7 @@
             <field name="name">onsc.legajo.padron.tree</field>
             <field name="model">onsc.legajo.padron</field>
             <field name="arch" type="xml">
-                <tree string="Padrón"
+                <tree string="Padrón por Inciso, UE y UO"
                     decoration-muted="type == 'egresed' or contract_legajo_state == 'baja'"
                     decoration-it="type == 'egresed' or contract_legajo_state == 'baja'">
                     <field name="nro_doc" optional="show"/>
@@ -55,7 +55,7 @@
             <field name="name">onsc.legajo.padron.search</field>
             <field name="model">onsc.legajo.padron</field>
             <field name="arch" type="xml">
-                <search string="Legajos">
+                <search string="Padrón por Inciso, UE y UO">
                     <field name="legajo_id" string="Funcionario"/>
                     <field name="contract_id" string="Contrato"/>
                     <field name="department_id" string="UO"/>
@@ -79,7 +79,7 @@
         </record>
 
         <record id='onsc_legajo_padron_action' model='ir.actions.act_window'>
-            <field name="name">Padrón</field>
+            <field name="name">Padrón por Inciso, UE y UO</field>
             <field name="res_model">onsc.legajo.padron</field>
             <field name="view_mode">tree</field>
             <field name="target">main</field>

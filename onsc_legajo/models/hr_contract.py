@@ -510,6 +510,9 @@ class HrContractStateTransactionHistory(models.Model):
          ('incoming_commission', 'Comisión entrante')],
         string='Estado destino del Contrato', required=False)
     contract_id = fields.Many2one('hr.contract', string='Contrato', required=True, index=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id', store=True)
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", related='contract_id.operating_unit_id',
+                                         store=True)
     transaction_date = fields.Datetime(string='Fecha')
 
     create_uid = fields.Many2one('res.users', string='Creado por')
