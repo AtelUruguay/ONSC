@@ -178,7 +178,7 @@ class ONSCLegajoMassCambioUO(models.Model):
     def button_search(self):
         self.ensure_one()
         if not self.employee_id and not self.department_id and not self.is_not_uo:
-            raise ValidationError(_("Es necesario completar al menos uno de los filtro."))
+            raise ValidationError(_("Es necesario completar al menos uno de los filtros."))
 
         self.line_ids.filtered(lambda x: not x.is_included).unlink()
         self._search_contracts()
