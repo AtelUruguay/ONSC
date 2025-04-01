@@ -116,7 +116,7 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
             'key': key,
             'summary_number': operation.SumNum,
             'record_number': operation.SumExpNum,
-            'nro_doc': '62678152',
+            'nro_doc': operation.PerDocNum,
             'document_type': operation.DocTpoDsc,
             'emissor_country': operation.PaiNom,
             'inciso_code': int(operation.IncisoCod) if operation.IncisoCod else None,
