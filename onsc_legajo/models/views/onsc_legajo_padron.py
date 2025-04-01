@@ -121,7 +121,7 @@ class ONSCLegajoPadron(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoPadron, self).fields_get(allfields, attributes)
-        hide = ['end_date', 'employee_id', 'job_id', 'type', 'active_job_qty', 'start_date']
+        hide = ['end_date', 'employee_id', 'job_id', 'type', 'active_job_qty', 'job_end_date']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
@@ -162,8 +162,8 @@ class ONSCLegajoPadron(models.Model):
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', compute='_compute_contract_info')
 
 
-    job_start_date = fields.Date(string='Fecha desde (Puesto)', compute='_compute_contract_info')
-    job_end_date = fields.Date(string='Fecha hasta (Puesto)', compute='_compute_contract_info')
+    job_start_date = fields.Date(string='Fecha desde', compute='_compute_contract_info')
+    job_end_date = fields.Date(string='Fecha hasta', compute='_compute_contract_info')
     # CONTRACT COMPUTED INFO - HISTORICAL DATA
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', compute='_compute_contract_info', search='_search_descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2', compute='_compute_contract_info')

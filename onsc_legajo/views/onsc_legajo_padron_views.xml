@@ -24,6 +24,7 @@
 
                     <field name="job_name" string="Puesto" optional="hide"/>
                     <field name="security_job_id" optional="hide"/>
+                    <field name="job_start_date" optional="hide"/>
                     <field name="hierarchical_level_id" string="Nivel jerárquico" optional="hide"/>
                     <field name="contract_id" string="Contrato" optional="hide"/>
                     <field name="inciso_origin_id" optional="hide"/>
