@@ -358,25 +358,25 @@ class ONSCLegajoPadron(models.Model):
         else:
             history_data = contract.with_context(as_of_date=_date).sudo().read_history(as_of_date=_date)
             return {
-                'descriptor1_id': history_data.get('descriptor1_id', contract.descriptor1_id.id),
-                'descriptor2_id': history_data.get('descriptor2_id', contract.descriptor2_id.id),
-                'descriptor3_id': history_data.get('descriptor3_id', contract.descriptor3_id.id),
-                'descriptor4_id': history_data.get('descriptor4_id', contract.descriptor4_id.id),
-                'regime_id': history_data.get('regime_id', contract.regime_id.id),
-                'commission_regime_id': history_data.get('commission_regime_id', contract.commission_regime_id.id),
-                'inciso_origin_id': history_data.get('inciso_origin_id', contract.inciso_origin_id.id),
-                'operating_unit_origin_id': history_data.get('operating_unit_origin_id', contract.operating_unit_origin_id.id),
-                'inciso_dest_id': history_data.get('inciso_dest_id', contract.inciso_dest_id.id),
-                'operating_unit_dest_id': history_data.get('operating_unit_dest_id', contract.operating_unit_dest_id.id),
+                'descriptor1_id': history_data.get('descriptor1_id', [contract.descriptor1_id.id])[0],
+                'descriptor2_id': history_data.get('descriptor2_id', [contract.descriptor2_id.id])[0],
+                'descriptor3_id': history_data.get('descriptor3_id', [contract.descriptor3_id.id])[0],
+                'descriptor4_id': history_data.get('descriptor4_id', [contract.descriptor4_id.id])[0],
+                'regime_id': history_data.get('regime_id', [contract.regime_id.id])[0],
+                'commission_regime_id': history_data.get('commission_regime_id', [contract.commission_regime_id.id])[0],
+                'inciso_origin_id': history_data.get('inciso_origin_id', [contract.inciso_origin_id.id])[0],
+                'operating_unit_origin_id': history_data.get('operating_unit_origin_id', [contract.operating_unit_origin_id.id])[0],
+                'inciso_dest_id': history_data.get('inciso_dest_id', [contract.inciso_dest_id.id])[0],
+                'operating_unit_dest_id': history_data.get('operating_unit_dest_id', [contract.operating_unit_dest_id.id])[0],
                 'date_start': history_data.get('date_start', contract.date_start),
                 'date_end': history_data.get('date_end', contract.date_end),
                 'date_end_commission': history_data.get('date_end_commission', contract.date_end_commission),
                 'reason_description': history_data.get('reason_description', contract.reason_description),
                 'reason_deregistration': history_data.get('reason_deregistration', contract.reason_deregistration),
-                'income_mechanism_id': history_data.get('income_mechanism_id', contract.income_mechanism_id.id),
-                'causes_discharge_id': history_data.get('causes_discharge_id', contract.causes_discharge_id.id),
-                'extinction_commission_id': history_data.get('extinction_commission_id', contract.extinction_commission_id.id),
-                'legajo_state_id': history_data.get('legajo_state_id', contract.legajo_state_id.id),
+                'income_mechanism_id': history_data.get('income_mechanism_id', [contract.income_mechanism_id.id])[0],
+                'causes_discharge_id': history_data.get('causes_discharge_id', [contract.causes_discharge_id.id])[0],
+                'extinction_commission_id': history_data.get('extinction_commission_id', [contract.extinction_commission_id.id])[0],
+                'legajo_state_id': history_data.get('legajo_state_id', [contract.legajo_state_id.id])[0],
             }
 
     def init(self):
@@ -392,21 +392,9 @@ WITH base_contract_view AS (
         contract.operating_unit_id,
         contract.employee_id,
         'active' AS type,
-        contract.inciso_origin_id,
-        contract.operating_unit_origin_id,
-        contract.inciso_dest_id,
-        contract.operating_unit_dest_id,
-        contract.regime_id,
-        contract.commission_regime_id,
-        contract.descriptor1_id,
-        contract.descriptor2_id,
-        contract.descriptor3_id,
-        --contract.descriptor4_id,
         contract.nro_doc,
         contract.public_admin_entry_date,
-        contract.first_operating_unit_entry_date,
-        contract.date_end,
-        contract.date_end_commission
+        contract.first_operating_unit_entry_date
     FROM hr_contract contract
     WHERE contract.legajo_id IS NOT NULL
 )
