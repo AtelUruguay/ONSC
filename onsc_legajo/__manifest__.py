@@ -36,6 +36,7 @@ ONSC - Legajo
         "wizard/onsc_legajo_padron_estructure_filter_wizard.xml",
         "views/onsc_legajo_department_views.xml",
         "views/onsc_legajo_padron_views.xml",
+        "views/onsc_legajo_padron_movements_views.xml",
         "views/onsc_legajo_vote_registry_pending.xml",
         "views/onsc_legajo_settings_view.xml",
         "views/catalogs/onsc_catalog_descriptors.xml",

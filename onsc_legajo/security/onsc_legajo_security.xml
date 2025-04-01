@@ -427,5 +427,30 @@
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
+        <!-- REPORTE: Ejecutar consulta Movimientos de altas y bajas -->
+
+        <record id="group_legajo_report_padron_movements_inciso" model="res.groups">
+            <field name="name">Reporte (Movimientos de altas y bajas) por Inciso</field>
+            <field name="comment">Reporte (Movimientos de altas y bajas) por Inciso</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+
+        <record id="group_legajo_report_padron_movements_ue" model="res.groups">
+            <field name="name">Reporte (Movimientos de altas y bajas) por UE</field>
+            <field name="comment">Reporte (Movimientos de altas y bajas) por UE</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+
+        <record id="group_legajo_report_padron_movements_consult" model="res.groups">
+            <field name="name">Reporte (Movimientos de altas y bajas) consulta</field>
+            <field name="comment">Reporte (Movimientos de altas y bajas) consulta</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
     </data>
 </odoo>

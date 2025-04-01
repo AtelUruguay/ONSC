@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- PADRON -->
 
     <record id="view_onsc_legajo_padron_estructure_filter_wizard_form" model="ir.ui.view">
         <field name="name">onsc.legajo.padron.estructure.filter.wizard.form</field>
@@ -36,6 +37,47 @@
         <field name="res_model">onsc.legajo.padron.estructure.filter.wizard</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_onsc_legajo_padron_estructure_filter_wizard_form"/>
+        <field name="context">{}</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Ejecutar consulta Movimientos de altas y bajas -->
+    <record id="view_onsc_legajo_padron_estructure_movements_filter_wizard_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.padron.estructure.movements.filter.wizard.form</field>
+        <field name="model">onsc.legajo.padron.estructure.movements.filter.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Estructura a mostrar">
+                <group>
+                    <field name="inciso_id"
+                           required="1"
+                           attrs="{'readonly': [('is_user_admin', '=', False)]}"
+                           force_save="1"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="operating_unit_id"
+                           domain="[('inciso_id', '=', inciso_id)]"
+                           attrs="{'readonly': [('is_user_admin', '=', False),('is_user_inciso', '=', False)],'required': [('is_user_operating_unit', '=', True)]}"
+                           force_save="1"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="is_user_admin" invisible="1"/>
+                    <field name="is_user_inciso" invisible="1"/>
+                    <field name="is_user_operating_unit" invisible="1"/>
+                    <field name="is_user_consulta" invisible="1"/>
+                </group>
+                <footer>
+                    <button string="Mostrar" name="action_show" type="object" class="oe_highlight" data-hotkey="m"/>
+                    <button string="Cancelar" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_onsc_legajo_padron_estructure_movements_filter_wizard_form" model="ir.actions.act_window">
+        <field name="name">Estructura a mostrar</field>
+        <field name="res_model">onsc.legajo.padron.estructure.movements.filter.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_onsc_legajo_padron_estructure_movements_filter_wizard_form"/>
         <field name="context">{}</field>
         <field name="target">new</field>
     </record>
