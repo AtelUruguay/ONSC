@@ -705,10 +705,11 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _compute_is_notebook_available(self):
         user_employee = self.env.user.employee_id
+        is_user_desempeno_admin = self.user_has_groups('onsc_desempeno.group_desempeno_superadmin')
         user_restricted = self.user_has_groups(
             'onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_administrador')
         for record in self:
-            if not user_restricted:
+            if not user_restricted or is_user_desempeno_admin:
                 record.is_notebook_available = True
             else:
                 is_iam_evaluated = record.evaluated_id.id == user_employee.id
