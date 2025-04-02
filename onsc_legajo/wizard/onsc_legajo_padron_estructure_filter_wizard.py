@@ -22,6 +22,12 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     )
     date = fields.Date(string='Fecha', required=True, default=lambda self: fields.Date.today())
 
+    @api.onchange('date')
+    def _onchange_dates(self):
+        if self.date and self.date > fields.Date.today():
+            self.date = fields.Date.today()
+            return cv_warning(_("La fecha no puede ser mayor a la fecha actual."))
+
     def _is_group_admin_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
 
@@ -96,5 +102,7 @@ class ONSCLegajoPadronEstructureMovementsFilterWizard(models.TransientModel):
             'date_from': self.date_from,
             'date_to': self.date_to,
         }
+        if not self.operating_unit_id:
+            new_context['search_default_group_operating_unit_id'] = True
         action['context'] = new_context
         return action
