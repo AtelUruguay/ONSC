@@ -99,31 +99,10 @@ class ONSCLegajoUtils(models.AbstractModel):
                                      'level_5': rec['level_5'],
                                     } for rec in result}
 
-    def _get_historical_contract_data(self, contract, _date):
-        contract = contract.sudo()
-        if contract.eff_date <= _date:
-            return {
-                'descriptor1_id': contract.descriptor1_id.id,
-                'descriptor2_id': contract.descriptor2_id.id,
-                'descriptor3_id': contract.descriptor3_id.id,
-                'descriptor4_id': contract.descriptor4_id.id,
-                'regime_id': contract.regime_id.id,
-                'commission_regime_id': contract.commission_regime_id.id,
-                'inciso_origin_id': contract.inciso_origin_id.id,
-                'operating_unit_origin_id': contract.operating_unit_origin_id.id,
-                'inciso_dest_id': contract.inciso_dest_id.id,
-                'operating_unit_dest_id': contract.operating_unit_dest_id.id,
-                'date_start': contract.date_start,
-                'date_end': contract.date_end,
-                'date_end_commission': contract.date_end_commission,
-                'reason_description': contract.reason_description,
-                'reason_deregistration': contract.reason_deregistration,
-                'income_mechanism_id': contract.income_mechanism_id.id,
-                'causes_discharge_id': contract.causes_discharge_id.id,
-                'extinction_commission_id': contract.extinction_commission_id.id,
-                'legajo_state_id': contract.legajo_state_id.id,
-            }
-        else:
+    def _get_historical_contract_data(self, contract_dict, _date):
+        if contract_dict.get('eff_date') > _date:
+            contract_id = contract_dict.get('contract_id') or contract_dict.get('id')
+            contract = self.env['hr.contract'].browse(contract_id)
             history_data = contract.with_context(as_of_date=_date).sudo().read_history(as_of_date=_date)
             return {
                 'descriptor1_id': history_data.get('descriptor1_id', [contract.descriptor1_id.id])[0],
@@ -146,3 +125,5 @@ class ONSCLegajoUtils(models.AbstractModel):
                 'extinction_commission_id': history_data.get('extinction_commission_id', [contract.extinction_commission_id.id])[0],
                 'legajo_state_id': history_data.get('legajo_state_id', [contract.legajo_state_id.id])[0],
             }
+        else:
+            return {}

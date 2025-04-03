@@ -60,16 +60,18 @@
                     <field name="legajo_id" string="Funcionario"/>
                     <field name="contract_id" string="Contrato"/>
                     <field name="department_id" string="UO"/>
-                    <!-- <field name="security_job_id"/> -->
-                    <!-- <field name="contract_legajo_state"/> -->
-                    <!-- <field name="job_name"/> -->
+                    <field name="security_job_id"/>
+                    <field name="contract_legajo_state"/>
+                    <field name="job_name"/>
                     <group string="Agrupar por">
                         <filter name="group_operating_unit_id" string="Unidad ejecutora"
                             context="{'group_by': 'operating_unit_id'}"/>
-                        <!-- <filter name="group_department_id" string="Unidad organizativa"
-                            context="{'group_by': 'department_id'}"/> -->
+                        <filter name="group_department_id" string="Unidad organizativa"
+                            context="{'group_by': 'department_id'}"/>
                         <filter name="group_legajo_id" string="Funcionario"
                             context="{'group_by': 'legajo_id'}"/>
+                        <filter name="group_legajo_state" string="Estado del contrato"
+                            context="{'group_by': 'contract_legajo_state'}"/>
                     </group>
                 </search>
             </field>
