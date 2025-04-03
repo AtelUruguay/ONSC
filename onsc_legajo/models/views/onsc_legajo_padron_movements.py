@@ -8,46 +8,45 @@ from odoo.tools import func
 class ONSCLegajoPadron(models.Model):
     _name = "onsc.legajo.padron.movements"
     _description = "Legajo - Padrón: Movimientos"
-    _auto = False
     _order = "legajo_id"
 
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            args = self._get_domain(args)
-        return super(ONSCLegajoPadron, self.with_context(avoid_recursion=True))._search(
-            args,
-            offset=offset,
-            limit=limit,
-            order=order,
-            count=count,
-            access_rights_uid=access_rights_uid
-        )
+    # # @api.model
+    # # def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+    # #     if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
+    # #         args = self._get_domain(args)
+    # #     return super(ONSCLegajoPadron, self.with_context(avoid_recursion=True))._search(
+    # #         args,
+    # #         offset=offset,
+    # #         limit=limit,
+    # #         order=order,
+    # #         count=count,
+    # #         access_rights_uid=access_rights_uid
+    # #     )
 
-    @api.model
-    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            domain = self._get_domain(domain)
-        result = super(ONSCLegajoPadron, self.with_context(avoid_recursion=True)).read_group(
-            domain,
-            fields,
-            groupby,
-            offset=offset,
-            limit=limit,
-            orderby=orderby,
-            lazy=lazy
-        )
-        for res in result:
-            count_key, count_key_value = next(iter(res.items()))
-            group_key_str = count_key.split('_count')[0]
-            group_key = res.get(group_key_str)
-            if not group_key:
-                res[group_key_str] = (0, func.lazy(
-                    lambda: self.fields_get().get(group_key_str).get('string') or 'Nivel'))
-        return result
+    # # @api.model
+    # # def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+    # #     if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
+    # #         domain = self._get_domain(domain)
+    # #     result = super(ONSCLegajoPadron, self.with_context(avoid_recursion=True)).read_group(
+    # #         domain,
+    # #         fields,
+    # #         groupby,
+    # #         offset=offset,
+    # #         limit=limit,
+    # #         orderby=orderby,
+    # #         lazy=lazy
+    # #     )
+    # #     for res in result:
+    # #         count_key, count_key_value = next(iter(res.items()))
+    # #         group_key_str = count_key.split('_count')[0]
+    # #         group_key = res.get(group_key_str)
+    # #         if not group_key:
+    # #             res[group_key_str] = (0, func.lazy(
+    # #                 lambda: self.fields_get().get(group_key_str).get('string') or 'Nivel'))
+    # #     return result
 
-    def _is_group_responsable_uo_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
+    # # def _is_group_responsable_uo_security(self):
+    #     return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
 
     def _get_domain(self, args):
         is_consult_security = self.user_has_groups('onsc_legajo.group_legajo_report_padron_inciso_ue_uo_consult')
@@ -78,13 +77,16 @@ class ONSCLegajoPadron(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoPadron, self).fields_get(allfields, attributes)
-        hide = ['end_date', 'employee_id', 'job_id', 'type', 'active_job_qty', 'history_id', ]
+        hide = ['end_date', 'employee_id', 'job_id', 'type', 'active_job_qty', 'job_end_date', 'token', 'report_user_id', 'create_uid', 'write_uid', 'create_date', 'write_date', 'history_id']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
                 res[field]['searchable'] = False
                 res[field]['sortable'] = False
         return res
+
+    token = fields.Char(string='Token', index=True)
+    report_user_id = fields.Integer(string='Usuario que dió origen al reporte', index=True)
 
     # CONTRACT INFO
     legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
@@ -113,60 +115,59 @@ class ONSCLegajoPadron(models.Model):
     transaction_date = fields.Date(string='Fecha de transacción (PARA TEST)')
 
     # CONTRACT COMPUTED INFO
-    job_id = fields.Many2one('hr.job', string="Puesto", compute='_compute_contract_info')
-    job_name = fields.Char(string='Nombre del puesto', compute='_compute_contract_info')
-    security_job_id = fields.Many2one('onsc.legajo.security.job', string="Seguridad de puesto", compute='_compute_contract_info')
-    department_id = fields.Many2one('hr.department', string="UO", compute='_compute_contract_info')
-    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel de UO", compute='_compute_contract_info')
-    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', compute='_compute_contract_info')
+    job_id = fields.Many2one('hr.job', string="Puesto")
+    job_name = fields.Char(string='Nombre del puesto')
+    security_job_id = fields.Many2one('onsc.legajo.security.job', string="Seguridad de puesto")
+    department_id = fields.Many2one('hr.department', string="UO")
+    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel de UO")
+    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?')
 
-
-    job_start_date = fields.Date(string='Fecha desde', compute='_compute_contract_info')
-    job_end_date = fields.Date(string='Fecha hasta', compute='_compute_contract_info')
+    job_start_date = fields.Date(string='Fecha desde')
+    job_end_date = fields.Date(string='Fecha hasta')
     # CONTRACT COMPUTED INFO - HISTORICAL DATA
-    descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', compute='_compute_contract_info', search='_search_descriptor1_id')
-    descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2', compute='_compute_contract_info')
-    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', compute='_compute_contract_info')
-    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4', compute='_compute_contract_info')
+    descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',)
+    descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2')
+    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3')
+    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4')
 
-    regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', compute='_compute_contract_info')
-    commission_regime_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen comisión', compute='_compute_contract_info')
-    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen', compute='_compute_contract_info')
+    regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen')
+    commission_regime_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen comisión')
+    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen')
     operating_unit_origin_id = fields.Many2one(
         "operating.unit",
         string="Unidad ejecutora origen",
-        compute='_compute_contract_info'
+
     )
     inciso_dest_id = fields.Many2one(
         'onsc.catalog.inciso',
         string='Inciso destino',
-        compute='_compute_contract_info'
+
     )
     operating_unit_dest_id = fields.Many2one(
         "operating.unit",
         string="Unidad ejecutora destino",
-        compute='_compute_contract_info'
+
     )
-    date_start = fields.Date(string=u'Fecha de alta', compute='_compute_contract_info')
-    date_end = fields.Date(string=u'Fecha de baja', compute='_compute_contract_info')
-    date_end_commission = fields.Date(string=u'Fecha hasta de la comisión', compute='_compute_contract_info')
-    reason_description = fields.Char(string='Motivo de alta', compute='_compute_contract_info')
-    reason_deregistration = fields.Char(string='Motivo de baja', compute='_compute_contract_info')
-    income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', compute='_compute_contract_info')
-    causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso", compute='_compute_contract_info')
-    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission", string="Motivo de extinción de la comisión", compute='_compute_contract_info')
+    date_start = fields.Date(string=u'Fecha de alta')
+    date_end = fields.Date(string=u'Fecha de baja')
+    date_end_commission = fields.Date(string=u'Fecha hasta de la comisión')
+    reason_description = fields.Char(string='Motivo de alta')
+    reason_deregistration = fields.Char(string='Motivo de baja')
+    income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso')
+    causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso")
+    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission", string="Motivo de extinción de la comisión")
     legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
-        string='Departamento donde desempeña funciones', compute='_compute_contract_info')
+        string='Departamento donde desempeña funciones')
 
     # JOB COMPUTED INFO
     # organigram_joker = fields.Many2one('hr.department', string='Organigrama')
-    level_0 = fields.Many2one('hr.department', string='Nivel 0', compute='_compute_contract_info')
-    level_1 = fields.Many2one('hr.department', string='Nivel 1', compute='_compute_contract_info')
-    level_2 = fields.Many2one('hr.department', string='Nivel 2', compute='_compute_contract_info')
-    level_3 = fields.Many2one('hr.department', string='Nivel 3', compute='_compute_contract_info')
-    level_4 = fields.Many2one('hr.department', string='Nivel 4', compute='_compute_contract_info')
-    level_5 = fields.Many2one('hr.department', string='Nivel 5', compute='_compute_contract_info')
+    level_0 = fields.Many2one('hr.department', string='Nivel 0')
+    level_1 = fields.Many2one('hr.department', string='Nivel 1')
+    level_2 = fields.Many2one('hr.department', string='Nivel 2')
+    level_3 = fields.Many2one('hr.department', string='Nivel 3')
+    level_4 = fields.Many2one('hr.department', string='Nivel 4')
+    level_5 = fields.Many2one('hr.department', string='Nivel 5')
 
     def _compute_contract_info(self):
         LegajoUtils = self.env['onsc.legajo.utils']
@@ -198,106 +199,106 @@ class ONSCLegajoPadron(models.Model):
             for field, value in contract_data.items():
                 setattr(record, field, value)
 
-    def init(self):
-        tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
--- ALTAS
-SELECT
-    history.id AS id,
-    history.id AS history_id,
-    contract.id AS contract_id,
-    contract.legajo_id,
-    contract.inciso_id,
-    contract.operating_unit_id,
-    contract.employee_id,
-    contract.date_start,
-    'active' AS type,
-    contract.nro_doc,
-    contract.public_admin_entry_date,
-    contract.first_operating_unit_entry_date,
-    history.from_state,
-    history.to_state AS contract_legajo_state,
-    history.transaction_date::DATE
-FROM hr_contract contract
-LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
-LEFT JOIN hr_contract contract_parent ON contract.id = contract_parent.cs_contract_id AND contract.operating_unit_id = contract_parent.operating_unit_id AND contract_parent.active = True
-WHERE
-    contract.legajo_id IS NOT NULL AND
-    contract_parent.id IS NULL AND
-    history.to_state = 'active'
-UNION ALL
-SELECT
-    history.id AS id,
-    history.id AS history_id,
-    contract.id AS contract_id,
-    contract.legajo_id,
-    contract.inciso_id,
-    contract.operating_unit_id,
-    contract.employee_id,
-    contract.date_start,
-    'active' AS type,
-    contract.nro_doc,
-    contract.public_admin_entry_date,
-    contract.first_operating_unit_entry_date,
-    history.from_state,
-    history.to_state AS contract_legajo_state,
-    history.transaction_date::DATE
-FROM hr_contract contract
-LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
-WHERE
-    contract.legajo_id IS NOT NULL AND
-    history.to_state = 'incoming_commission'
--- BAJAS
-UNION ALL
-SELECT
-    history.id AS id,
-    history.id AS history_id,
-    contract.id AS contract_id,
-    contract.legajo_id,
-    contract.inciso_id,
-    contract.operating_unit_id,
-    contract.employee_id,
-    contract.date_start,
-    'active' AS type,
-    contract.nro_doc,
-    contract.public_admin_entry_date,
-    contract.first_operating_unit_entry_date,
-    history.from_state,
-    history.to_state AS contract_legajo_state,
-    history.transaction_date::DATE
-FROM hr_contract contract
-LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
-WHERE
-    contract.legajo_id IS NOT NULL AND
-    history.from_state = 'incoming_commission' AND
-    history.to_state = 'baja'
-UNION ALL
-SELECT
-    history.id AS id,
-    history.id AS history_id,
-    contract.id AS contract_id,
-    contract.legajo_id,
-    contract.inciso_id,
-    contract.operating_unit_id,
-    contract.employee_id,
-    contract.date_start,
-    'active' AS type,
-    contract.nro_doc,
-    contract.public_admin_entry_date,
-    contract.first_operating_unit_entry_date,
-    history.from_state,
-    history.to_state AS contract_legajo_state,
-    history.transaction_date::DATE
-FROM hr_contract contract
-LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
-LEFT JOIN hr_contract contract_destination ON contract.cs_contract_id = contract_destination.id AND contract.operating_unit_id = contract_destination.operating_unit_id AND contract_destination.active = True
-WHERE
-    contract.legajo_id IS NOT NULL AND
-    contract_destination.id IS NULL AND
-    history.from_state = 'active' AND
-    history.to_state = 'baja'
-)''' % (self._table,))
+#     def init(self):
+#         tools.drop_view_if_exists(self.env.cr, self._table)
+#         self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
+# -- ALTAS
+# SELECT
+#     history.id AS id,
+#     history.id AS history_id,
+#     contract.id AS contract_id,
+#     contract.legajo_id,
+#     contract.inciso_id,
+#     contract.operating_unit_id,
+#     contract.employee_id,
+#     contract.date_start,
+#     'active' AS type,
+#     contract.nro_doc,
+#     contract.public_admin_entry_date,
+#     contract.first_operating_unit_entry_date,
+#     history.from_state,
+#     history.to_state AS contract_legajo_state,
+#     history.transaction_date::DATE
+# FROM hr_contract contract
+# LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
+# LEFT JOIN hr_contract contract_parent ON contract.id = contract_parent.cs_contract_id AND contract.operating_unit_id = contract_parent.operating_unit_id AND contract_parent.active = True
+# WHERE
+#     contract.legajo_id IS NOT NULL AND
+#     contract_parent.id IS NULL AND
+#     history.to_state = 'active'
+# UNION ALL
+# SELECT
+#     history.id AS id,
+#     history.id AS history_id,
+#     contract.id AS contract_id,
+#     contract.legajo_id,
+#     contract.inciso_id,
+#     contract.operating_unit_id,
+#     contract.employee_id,
+#     contract.date_start,
+#     'active' AS type,
+#     contract.nro_doc,
+#     contract.public_admin_entry_date,
+#     contract.first_operating_unit_entry_date,
+#     history.from_state,
+#     history.to_state AS contract_legajo_state,
+#     history.transaction_date::DATE
+# FROM hr_contract contract
+# LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
+# WHERE
+#     contract.legajo_id IS NOT NULL AND
+#     history.to_state = 'incoming_commission'
+# -- BAJAS
+# UNION ALL
+# SELECT
+#     history.id AS id,
+#     history.id AS history_id,
+#     contract.id AS contract_id,
+#     contract.legajo_id,
+#     contract.inciso_id,
+#     contract.operating_unit_id,
+#     contract.employee_id,
+#     contract.date_start,
+#     'active' AS type,
+#     contract.nro_doc,
+#     contract.public_admin_entry_date,
+#     contract.first_operating_unit_entry_date,
+#     history.from_state,
+#     history.to_state AS contract_legajo_state,
+#     history.transaction_date::DATE
+# FROM hr_contract contract
+# LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
+# WHERE
+#     contract.legajo_id IS NOT NULL AND
+#     history.from_state = 'incoming_commission' AND
+#     history.to_state = 'baja'
+# UNION ALL
+# SELECT
+#     history.id AS id,
+#     history.id AS history_id,
+#     contract.id AS contract_id,
+#     contract.legajo_id,
+#     contract.inciso_id,
+#     contract.operating_unit_id,
+#     contract.employee_id,
+#     contract.date_start,
+#     'active' AS type,
+#     contract.nro_doc,
+#     contract.public_admin_entry_date,
+#     contract.first_operating_unit_entry_date,
+#     history.from_state,
+#     history.to_state AS contract_legajo_state,
+#     history.transaction_date::DATE
+# FROM hr_contract contract
+# LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
+# LEFT JOIN hr_contract contract_destination ON contract.cs_contract_id = contract_destination.id AND contract.operating_unit_id = contract_destination.operating_unit_id AND contract_destination.active = True
+# WHERE
+#     contract.legajo_id IS NOT NULL AND
+#     contract_destination.id IS NULL AND
+#     history.from_state = 'active' AND
+#     history.to_state = 'baja'
+# )''' % (self._table,))
 
-    def _search_descriptor1_id(self, operator, value):
-        valid_contracts = self.env['hr.contract'].search([('descriptor1_id', operator, value)])
-        return [('contract_id', 'in', valid_contracts.ids)]
+#     def _search_descriptor1_id(self, operator, value):
+#         valid_contracts = self.env['hr.contract'].search([('descriptor1_id', operator, value)])
+#         return [('contract_id', 'in', valid_contracts.ids)]
