@@ -200,4 +200,15 @@
             parent="onsc_desempeno_config_menu"
             groups="onsc_desempeno.group_desempeno_configurador_escalafones,onsc_desempeno.group_desempeno_administrador"
             sequence="10" />
+
+      <menuitem id="onsc_desempeno_development_reporte_menu"
+                name="Reportes"
+                parent="onsc_desempeno_root_menu"
+                sequence="41"/>
+      <menuitem id="onsc_desempeno_development_comp_brecha_menu"
+                name="Competencias por brecha"
+                action="action_onsc_desempeno_brecha_form"
+                parent="onsc_desempeno_development_reporte_menu"
+                groups="onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_reportes"
+                sequence="1"/>
 </odoo>

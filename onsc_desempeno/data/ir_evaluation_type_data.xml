@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="evaluation_type_self" model="evaluation.type">
+            <field name="name">Autoevaluación</field>
+            <field name="code">self_evaluation</field>
+        </record>
+
+        <record id="evaluation_type_leader" model="evaluation.type">
+            <field name="name">Evaluación de líder</field>
+            <field name="code">leader_evaluation</field>
+        </record>
+
+        <record id="evaluation_type_collaborator" model="evaluation.type">
+            <field name="name">Evaluación de colaborador/a</field>
+            <field name="code">collaborator</field>
+        </record>
+
+        <record id="evaluation_type_environment" model="evaluation.type">
+            <field name="name">Evaluación de entorno</field>
+            <field name="code">environment_evaluation</field>
+        </record>
+
+        <record id="evaluation_type_gap_deal" model="evaluation.type">
+            <field name="name">Acuerdo de Brecha</field>
+            <field name="code">gap_deal</field>
+        </record>
+    </data>
+</odoo>

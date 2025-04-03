@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_report_competencia_brecha_pivot" model="ir.ui.view">
+        <field name="name">report.competencia.brecha.pivot</field>
+        <field name="model">report.competencia.brecha</field>
+        <field name="arch" type="xml">
+            <pivot string="Reporte de Competencias por Brecha">
+                <field name="comp_id" type="row"/>
+                <field name="grado_id" type="row"/>
+                <field name="cant" type="measure"/>
+                <field name="porcent" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_report_competencia_brecha" model="ir.actions.act_window">
+        <field name="name">Reporte de Competencias por Brecha</field>
+        <field name="res_model">report.competencia.brecha</field>
+        <field name="view_mode">pivot</field>
+        <field name="help" type="html">
+            <p>Analiza las competencias ordenadas según el grado de necesidad de desarrollo.</p>
+        </field>
+    </record>
+</odoo>
