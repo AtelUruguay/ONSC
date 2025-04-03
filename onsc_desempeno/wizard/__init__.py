@@ -6,3 +6,4 @@ from . import onsc_desempeno_extend_deadline_wizard
 from . import onsc_desempeno_evaluator_cancel_wizard
 from . import onsc_desempeno_evaluation_report_wizard
 from . import onsc_desempeno_general_note
+from . import onsc_desempeno_brecha_wizard

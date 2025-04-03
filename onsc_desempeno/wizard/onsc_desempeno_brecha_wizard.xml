@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_desempeno_brecha_report_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.report.wizard</field>
+        <field name="model">onsc.desempeno.brecha.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="general_cycle_ids" required="1" widget="many2many_tags"
+                           context="{'active_test': False}"
+                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="inciso_edit" invisible="1"/>
+                    <field name="inciso_ids_domain" invisible="1"/>
+                    <field name="operating_unit_edit" invisible="1"/>
+                    <field name="operating_unit_ids_domain" invisible="1"/>
+                    <field name="inciso_ids" domain="inciso_ids_domain" required="1" widget="many2many_tags"
+                           attrs="{'readonly': [('inciso_edit', '=', False)]}"
+                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="operating_unit_ids" domain="operating_unit_ids_domain" widget="many2many_tags"
+                           attrs="{'readonly': [('operating_unit_edit', '=', False)]}" string="UE"
+                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="uo_ids" string="UO" widget="many2many_tags" options="{'no_create': True}"/>
+                    <field name="niveles_ids" string="Nivel del evaluado" widget="many2many_tags"
+                           options="{'no_create': True}"/>
+                    <field name="evaluation_type" string="Tipo evaluación" widget="many2many_checkboxes"/>
+                    <field name="state" invisible="1"/>
+                </group>
+                <footer>
+                    <button string="Consultar" name="action_report_comp_brecha" type="object" class="oe_highlight"/>
+                    <button string="Cancelar" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_onsc_desempeno_brecha_form" model="ir.actions.act_window">
+        <field name="name">Competencias por Brecha</field>
+        <field name="res_model">onsc.desempeno.brecha.wizard</field>
+        <field name="view_id" ref="onsc_desempeno_brecha_report_form"/>
+        <field name="view_mode">form</field>
+        <field name="context">{'competencias_brecha': True}</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
