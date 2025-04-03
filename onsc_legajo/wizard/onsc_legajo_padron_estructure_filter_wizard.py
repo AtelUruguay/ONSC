@@ -100,6 +100,7 @@ SELECT
     contract.eff_date
 FROM hr_contract contract
 WHERE
+    contract.active IS TRUE AND
     contract.legajo_id IS NOT NULL AND
     contract.inciso_id = %s AND
     contract.date_start <= '%s' AND
@@ -273,6 +274,7 @@ FROM hr_contract contract
 LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
 LEFT JOIN hr_contract contract_parent ON contract.id = contract_parent.cs_contract_id AND contract.operating_unit_id = contract_parent.operating_unit_id AND contract_parent.active = True
 WHERE
+    contract.active IS TRUE AND
     contract.legajo_id IS NOT NULL AND
     contract_parent.id IS NULL AND
     history.to_state = 'active' AND
