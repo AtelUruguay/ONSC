@@ -202,7 +202,7 @@ class ONSCLegajoMassCambioUO(models.Model):
         if self.employee_id:
             contracts = self._get_contracts(employee_id=self.employee_id.id)
         elif self.department_id:
-            contracts = self._get_contracts(department_id=self.department_id.id)
+            contracts = self._get_contracts(department_id=self.department_id)
         elif self.is_not_uo:
             contracts = self._get_contracts_sin_uo()
         else:
@@ -248,9 +248,14 @@ class ONSCLegajoMassCambioUO(models.Model):
             return self.env['hr.contract'].sudo().search(args)
         elif department_id:
             today = fields.Date.today()
+            if isinstance(department_id, int):
+                department = self.env['hr.department'].sudo().browse(department_id)
+            else:
+                department = department_id
             args = [
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
-                ('department_id', '=', department_id),
+                ('contract_id.operating_unit_id','=',department.operating_unit_id.id),
+                ('department_id', '=', department.id),
                 '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)
             ]
             if employee_id:
