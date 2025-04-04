@@ -227,7 +227,6 @@
                 <field name="legajo_state"/>
                 <field name="cs_contract_id"
                         options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                <!-- TODO: HIDE NEXT -->
                 <field name="parent_id"
                     context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form', 'show_descriptors': True}"/>
                 <field name="first_operating_unit_entry_date"/>

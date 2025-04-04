@@ -326,8 +326,10 @@ class HrContract(models.Model):
 
     def _compute_parent_id(self):
         for record in self:
-            record.parent_id = self.search(
-                [('cs_contract_id', '=', record.id)], limit=1).id
+            record.parent_id = self.search([
+                ('cs_contract_id', '=', record.id),
+                ('legajo_state', '=', 'baja'),
+            ], limit=1).id
 
     @api.constrains("reason_description", "resolution_description", "reason_discharge", "reason_deregistration",
                     "resolution_description_deregistration")
