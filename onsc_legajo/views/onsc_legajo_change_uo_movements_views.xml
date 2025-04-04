@@ -21,7 +21,7 @@
             </field>
         </record>
 
-        <record id="onsc_legajo_padron_movements_search" model="ir.ui.view">
+        <record id="onsc_legajo_change_uo_movements_search" model="ir.ui.view">
             <field name="name">onsc.legajo.change.uo.movements.search</field>
             <field name="model">onsc.legajo.change.uo.movements</field>
             <field name="arch" type="xml">
