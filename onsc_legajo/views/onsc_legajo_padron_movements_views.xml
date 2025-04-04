@@ -60,6 +60,10 @@
                     <field name="contract_legajo_state"/>
                     <field name="job_name"/>
                     <group string="Agrupar por">
+                        <!-- <filter string="Comisiones de servicio" name="filter_comisiones"
+                            domain="[('contract_legajo_state','in',['outgoing_commission','incoming_commission'])]"/>
+                        <filter string="Altas y bajas del Inciso" name="filter_altas_bajas_inciso"
+                            domain="[('contract_legajo_state','not in',['outgoing_commission','incoming_commission'])]"/> -->
                         <filter name="group_operating_unit_id" string="Unidad ejecutora"
                             context="{'group_by': 'operating_unit_id'}"/>
                         <filter name="group_department_id" string="Unidad organizativa"
