@@ -77,7 +77,7 @@ class ONSCLegajoPadron(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoPadron, self).fields_get(allfields, attributes)
-        hide = ['end_date', 'employee_id', 'job_id', 'type', 'active_job_qty', 'job_end_date', 'token', 'report_user_id', 'create_uid', 'write_uid', 'create_date', 'write_date', 'history_id']
+        hide = ['from_state', 'end_date', 'employee_id', 'job_id', 'type', 'active_job_qty', 'job_end_date', 'token', 'report_user_id', 'create_uid', 'write_uid', 'create_date', 'write_date', 'history_id']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
