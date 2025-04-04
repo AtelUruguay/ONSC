@@ -5,9 +5,7 @@
             <field name="name">onsc.legajo.padron.tree</field>
             <field name="model">onsc.legajo.padron</field>
             <field name="arch" type="xml">
-                <tree string="Padrón por Inciso, UE y UO"
-                    decoration-muted="type == 'egresed' or contract_legajo_state == 'baja'"
-                    decoration-it="type == 'egresed' or contract_legajo_state == 'baja'">
+                <tree string="Padrón por Inciso, UE y UO">
                     <field name="nro_doc" optional="show"/>
                     <field name="legajo_id" string="Funcionario" optional="show"/>
                     <field name="contract_legajo_state" widget="badge"
@@ -45,8 +43,6 @@
                     <field name="causes_discharge_id" optional="hide"/>
                     <field name="extinction_commission_id" optional="hide"/>
                     <field name="legajo_state_id" optional="hide"/>
-
-
                     <field name="type" invisible="1"/>
                 </tree>
             </field>
