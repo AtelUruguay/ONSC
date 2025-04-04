@@ -452,5 +452,28 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
+
+        <!-- REPORTES Cambios de UO-->
+        <record id="group_legajo_report_change_uo_inciso" model="res.groups">
+            <field name="name">Reporte (Movimientos dentro de la UE) por Inciso</field>
+            <field name="comment">Reporte (Movimientos dentro de la UE) por Inciso</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_report_change_uo_ue" model="res.groups">
+            <field name="name">Reporte (Movimientos dentro de la UE) por UE</field>
+            <field name="comment">Reporte (Movimientos dentro de la UE) por UE</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_report_change_uo_consult" model="res.groups">
+            <field name="name">Reporte (Movimientos dentro de la UE) Consulta</field>
+            <field name="comment">Reporte (Movimientos dentro de la UE) Consulta</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
     </data>
 </odoo>

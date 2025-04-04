@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+
 from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
-
-from odoo.exceptions import UserError, ValidationError
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 _logger = logging.getLogger(__name__)
 
@@ -80,16 +79,28 @@ class ONSCLegajoPadronEstructureMovementsFilterWizard(models.TransientModel):
             return cv_warning(_("La fecha hasta no puede ser mayor a la fecha actual."))
 
     def _is_group_admin_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_report_padron_movements_consult')
+        if self._context.get('is_change_uo'):
+            return self.user_has_groups('onsc_legajo.group_legajo_report_change_uo_consult')
+        else:
+            return self.user_has_groups('onsc_legajo.group_legajo_report_padron_movements_consult')
 
     def _is_group_inciso_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_report_padron_movements_inciso')
+        if self._context.get('is_change_uo'):
+            return self.user_has_groups('onsc_legajo.group_legajo_report_change_uo_inciso')
+        else:
+            return self.user_has_groups('onsc_legajo.group_legajo_report_padron_movements_inciso')
 
     def _is_group_ue_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_report_padron_movements_ue')
+        if self._context.get('is_change_uo'):
+            return self.user_has_groups('onsc_legajo.group_legajo_report_change_uo_ue')
+        else:
+            return self.user_has_groups('onsc_legajo.group_legajo_report_padron_movements_ue')
 
     def action_show(self):
-        action = self.env.ref('onsc_legajo.onsc_legajo_padron_movements_action').sudo().read()[0]
+        if self._context.get('is_change_uo'):
+            action = self.env.ref('onsc_legajo.onsc_legajo_change_uo_movements_action').sudo().read()[0]
+        else:
+            action = self.env.ref('onsc_legajo.onsc_legajo_padron_movements_action').sudo().read()[0]
         # Obtener el contexto original de la acción (puede estar como cadena JSON)
         original_context = safe_eval(action.get('context', '{}'))
 

@@ -84,6 +84,12 @@
               name="Reportes"
               parent="onsc_legajo.onsc_legajo_root_menu"
               sequence="10"/>
+        <menuitem id="onsc_legajo_report_chnage_uo_menu"
+              name="Cambios de UO"
+              parent="onsc_legajo.onsc_legajo_report_menu"
+              action="action_onsc_legajo_chnage_uo_movements_filter_wizard_form"
+              groups="onsc_legajo.group_legajo_report_change_uo_inciso,onsc_legajo.group_legajo_report_change_uo_ue,onsc_legajo.group_legajo_report_change_uo_consult"
+              sequence="5"/>
         <menuitem id="onsc_legajo_report_padron_movements_menu"
               name="Movimientos de altas y bajas"
               parent="onsc_legajo.onsc_legajo_report_menu"

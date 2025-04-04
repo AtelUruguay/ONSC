@@ -7,3 +7,4 @@ from . import onsc_legajo_department
 from . import onsc_legajo_padron
 from . import onsc_legajo_padron_movements
 from . import onsc_legajo_vote_registry_pending
+from . import onsc_legajo_change_uo_movements
