@@ -116,42 +116,12 @@ class ONSCLegajoPadron(models.Model):
     legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones')
+    is_inciso_commission = fields.Boolean(string='¿La comisión es dentro del mismo inciso?')
 
     # JOB COMPUTED INFO
-    # organigram_joker = fields.Many2one('hr.department', string='Organigrama')
     level_0 = fields.Many2one('hr.department', string='Nivel 0')
     level_1 = fields.Many2one('hr.department', string='Nivel 1')
     level_2 = fields.Many2one('hr.department', string='Nivel 2')
     level_3 = fields.Many2one('hr.department', string='Nivel 3')
     level_4 = fields.Many2one('hr.department', string='Nivel 4')
     level_5 = fields.Many2one('hr.department', string='Nivel 5')
-
-    def _compute_contract_info(self):
-        LegajoUtils = self.env['onsc.legajo.utils']
-        _date = self._context.get('date', fields.Date.today())
-        if isinstance(_date, str):  # Si viene como string, lo convertimos
-            _date = fields.Date.from_string(_date)
-
-        for record in self:
-            current_jobs = LegajoUtils._get_contracts_jobs_dict([record.contract_id.id], record.transaction_date)
-            job_dict = current_jobs.get(record.contract_id.id, {})
-            record.job_id = job_dict.get('job_id', False)
-            record.job_name = job_dict.get('job_name', False)
-            record.security_job_id = job_dict.get('security_job_id', False)
-            record.department_id = job_dict.get('department_id', False)
-            record.hierarchical_level_id = job_dict.get('hierarchical_level_id', False)
-            record.is_uo_manager = job_dict.get('is_uo_manager', False)
-            record.job_start_date = job_dict.get('job_start_date', False)
-            record.job_end_date = job_dict.get('job_end_date', False)
-            record.level_0 = job_dict.get('level_0', False)
-            record.level_1 = job_dict.get('level_1', False)
-            record.level_2 = job_dict.get('level_2', False)
-            record.level_3 = job_dict.get('level_3', False)
-            record.level_4 = job_dict.get('level_4', False)
-            record.level_5 = job_dict.get('level_5', False)
-
-            # Obtener datos históricos o actuales del contrato
-            contract_data = LegajoUtils._get_historical_contract_data(record.contract_id, _date)
-            # Asignar valores
-            for field, value in contract_data.items():
-                setattr(record, field, value)
