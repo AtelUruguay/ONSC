@@ -81,4 +81,15 @@
         <field name="context">{}</field>
         <field name="target">new</field>
     </record>
+
+     <record id="action_onsc_legajo_chnage_uo_movements_filter_wizard_form" model="ir.actions.act_window">
+        <field name="name">Filtro Reporte Cambios de UO</field>
+        <field name="res_model">onsc.legajo.padron.estructure.movements.filter.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_onsc_legajo_padron_estructure_movements_filter_wizard_form"/>
+        <field name="context">{'is_change_uo': True}</field>
+        <field name="target">new</field>
+    </record>
+
+
 </odoo>

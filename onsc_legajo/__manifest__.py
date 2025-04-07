@@ -77,7 +77,8 @@ ONSC - Legajo
         "views/onsc_legajo_mass_cambio_uo_views.xml",
         "views/onsc_legajo_summary_views.xml",
         "views/onsc_legajo_menuitems.xml",
-        "views/hr_contract_transaction_history_views.xml"
+        "views/hr_contract_transaction_history_views.xml",
+        "views/onsc_legajo_change_uo_movements_views.xml"
     ],
     'assets': {
         'web.assets_backend': [
