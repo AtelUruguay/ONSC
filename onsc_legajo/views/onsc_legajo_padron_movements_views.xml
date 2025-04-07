@@ -5,9 +5,7 @@
             <field name="name">onsc.legajo.padron.movements.tree</field>
             <field name="model">onsc.legajo.padron.movements</field>
             <field name="arch" type="xml">
-                <tree string="Movimientos de altas y bajas"
-                    decoration-muted="type == 'egresed' or contract_legajo_state == 'baja'"
-                    decoration-it="type == 'egresed' or contract_legajo_state == 'baja'">
+                <tree string="Movimientos de altas y bajas">
                     <field name="nro_doc" optional="show"/>
                     <field name="legajo_id" string="Funcionario" optional="show"/>
                     <field name="contract_legajo_state" widget="badge"
@@ -46,8 +44,7 @@
                     <field name="extinction_commission_id" optional="hide"/>
                     <field name="legajo_state_id" optional="hide"/>
                     <field name="type" invisible="1"/>
-                    <field name="history_id"/>
-                    <field name="transaction_date"/>
+                    <field name="is_inciso_commission" invisible="1"/>
                 </tree>
             </field>
         </record>
@@ -60,16 +57,22 @@
                     <field name="legajo_id" string="Funcionario"/>
                     <field name="contract_id" string="Contrato"/>
                     <field name="department_id" string="UO"/>
-                    <!-- <field name="security_job_id"/> -->
-                    <!-- <field name="contract_legajo_state"/> -->
-                    <!-- <field name="job_name"/> -->
+                    <field name="security_job_id"/>
+                    <field name="contract_legajo_state"/>
+                    <field name="job_name"/>
                     <group string="Agrupar por">
+                        <filter string="Comisiones de servicio" name="filter_inciso_comission"
+                            domain="[('is_inciso_commission','=',True)]"/>
+                        <filter string="Altas y bajas del Inciso" name="filter_altas_bajas_inciso"
+                            domain="['|',('contract_legajo_state','in',['active','baja']),'&amp;',('contract_legajo_state','=','incoming_commission'),('is_inciso_commission','=',False)]"/>
                         <filter name="group_operating_unit_id" string="Unidad ejecutora"
                             context="{'group_by': 'operating_unit_id'}"/>
-                        <!-- <filter name="group_department_id" string="Unidad organizativa"
-                            context="{'group_by': 'department_id'}"/> -->
+                        <filter name="group_department_id" string="Unidad organizativa"
+                            context="{'group_by': 'department_id'}"/>
                         <filter name="group_legajo_id" string="Funcionario"
                             context="{'group_by': 'legajo_id'}"/>
+                        <filter name="group_legajo_state" string="Estado del contrato"
+                            context="{'group_by': 'contract_legajo_state'}"/>
                     </group>
                 </search>
             </field>
@@ -89,7 +92,7 @@
             }</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_padron_movements_tree')})]"/>
-            <!-- <field name="search_view_id" ref="onsc_legajo.onsc_legajo_padron_search"/> -->
+            <field name="search_view_id" ref="onsc_legajo.onsc_legajo_padron_movements_search"/>
             <field name="limit">1500</field>
         </record>
     </data>

@@ -64,5 +64,12 @@
             <field name="category_id" ref="module_category_onsc_desempeno"/>
         </record>
 
+        <!-- INTERNAL USER FOR ADMIN PURPOSES -->
+        <record id="group_desempeno_superadmin" model="res.groups">
+            <field name="name">Desempeño - Admin</field>
+            <field name="comment">Desempeño - Admin</field>
+            <field name="category_id" ref="module_category_onsc_desempeno"/>
+        </record>
+
     </data>
 </odoo>
