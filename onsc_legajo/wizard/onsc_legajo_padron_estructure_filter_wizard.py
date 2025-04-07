@@ -212,9 +212,10 @@ class ONSCLegajoPadronEstructureMovementsFilterWizard(models.TransientModel):
             return self.user_has_groups('onsc_legajo.group_legajo_report_padron_movements_ue')
 
     def action_show(self):
-        original_context = safe_eval(action.get('context', '{}'))
+
         if self._context.get('is_change_uo'):
             action = self.env.ref('onsc_legajo.onsc_legajo_change_uo_movements_action').sudo().read()[0]
+            original_context = safe_eval(action.get('context', '{}'))
             new_context = {
                 **original_context,
                 **self.env.context,
@@ -225,6 +226,7 @@ class ONSCLegajoPadronEstructureMovementsFilterWizard(models.TransientModel):
             }
         else:
             action = self.env.ref('onsc_legajo.onsc_legajo_padron_movements_action').sudo().read()[0]
+            original_context = safe_eval(action.get('context', '{}'))
             _token = str(uuid.uuid4())
             new_context = {
                 **original_context,
