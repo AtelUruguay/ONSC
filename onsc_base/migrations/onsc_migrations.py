@@ -183,6 +183,7 @@ class ONSCMigrations(models.Model):
                     'to_state': to_state_key,
                 })
         StateTransactionHistory.create(bulked_vals)
+        _logger.info('Lote %s, cantidad de mensajes %s' % (lote, len(messages)))
 
     def _ler_2_1_01_contract(self, lote=1, lote_size=1000):
         HrContract = self.env['hr.contract'].with_context(active_test=False).sudo()
@@ -202,3 +203,4 @@ class ONSCMigrations(models.Model):
                 'to_state': to_state,
             })
         StateTransactionHistory.create(bulked_vals)
+        _logger.info('Lote %s' % (lote))

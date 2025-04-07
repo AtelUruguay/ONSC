@@ -269,7 +269,8 @@ SELECT
     contract.eff_date,
     history.from_state,
     history.to_state AS contract_legajo_state,
-    history.transaction_date::DATE
+    history.transaction_date::DATE,
+    False AS is_inciso_commission
 FROM hr_contract contract
 LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
 LEFT JOIN hr_contract contract_parent ON contract.id = contract_parent.cs_contract_id AND contract.operating_unit_id = contract_parent.operating_unit_id AND contract_parent.active = True
@@ -318,7 +319,8 @@ SELECT
     contract.eff_date,
     history.from_state,
     history.to_state AS contract_legajo_state,
-    history.transaction_date::DATE
+    history.transaction_date::DATE,
+    (SELECT COUNT(id) FROM hr_contract WHERE id = contract.cs_contract_id AND inciso_id = contract.inciso_id AND active = True AND legajo_state = 'outgoing_commission') > 0 AS is_inciso_commission
 FROM hr_contract contract
 LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
 WHERE
@@ -364,7 +366,8 @@ SELECT
     contract.eff_date,
     history.from_state,
     history.to_state AS contract_legajo_state,
-    history.transaction_date::DATE
+    history.transaction_date::DATE,
+    (SELECT COUNT(id) FROM hr_contract WHERE id = contract.cs_contract_id AND inciso_id = contract.inciso_id AND active = True AND legajo_state = 'outgoing_commission') > 0 AS is_inciso_commission
 FROM hr_contract contract
 LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
 WHERE
@@ -411,7 +414,8 @@ SELECT
     contract.eff_date,
     history.from_state,
     history.to_state AS contract_legajo_state,
-    history.transaction_date::DATE
+    history.transaction_date::DATE,
+    False AS is_inciso_commission
 FROM hr_contract contract
 LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
 LEFT JOIN hr_contract contract_destination ON contract.cs_contract_id = contract_destination.id AND contract.operating_unit_id = contract_destination.operating_unit_id AND contract_destination.active = True
@@ -474,9 +478,6 @@ UNION ALL
         self.env.cr.execute('''DELETE FROM onsc_legajo_padron_movements WHERE report_user_id = %s''' % (self.env.user.id,))
         self.env.cr.execute(_sql)
         contract_records = self.env.cr.dictfetchall()
-        contract_ids = [row['contract_id'] for row in contract_records]
-        # last_states = LegajoUtils._get_last_states_dict(contract_ids, date)
-        # current_jobs = LegajoUtils._get_contracts_jobs_dict(contract_ids, date)
         bulked_vals = []
         user_id = self.env.user.id
         for result in contract_records:

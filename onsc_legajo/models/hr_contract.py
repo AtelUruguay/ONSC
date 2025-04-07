@@ -485,6 +485,7 @@ class HrContract(models.Model):
             if rec.id != current_contract.id:
                 _logger.info('******************CON JERAQUIA %s' % (rec.id))
             rec.first_operating_unit_entry_date = current_contract.date_start
+        _logger.info('CRON: UPDATE  TRACEABILITY FIN')
         return True
 
 class HrContractHistory(models.Model):

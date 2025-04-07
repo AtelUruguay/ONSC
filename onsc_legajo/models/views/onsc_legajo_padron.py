@@ -115,6 +115,7 @@ class ONSCLegajoPadron(models.Model):
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones')
 
+
     # JOB COMPUTED INFO
     # organigram_joker = fields.Many2one('hr.department', string='Organigrama')
     level_0 = fields.Many2one('hr.department', string='Nivel 0')
