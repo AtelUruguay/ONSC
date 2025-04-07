@@ -212,34 +212,39 @@ class ONSCLegajoPadronEstructureMovementsFilterWizard(models.TransientModel):
             return self.user_has_groups('onsc_legajo.group_legajo_report_padron_movements_ue')
 
     def action_show(self):
+        original_context = safe_eval(action.get('context', '{}'))
         if self._context.get('is_change_uo'):
             action = self.env.ref('onsc_legajo.onsc_legajo_change_uo_movements_action').sudo().read()[0]
+            new_context = {
+                **original_context,
+                **self.env.context,
+                'operating_unit_id': self.operating_unit_id.id,
+                'inciso_id': self.inciso_id.id,
+                'date_from': self.date_from,
+                'date_to': self.date_to
+            }
         else:
             action = self.env.ref('onsc_legajo.onsc_legajo_padron_movements_action').sudo().read()[0]
-        # Obtener el contexto original de la acción (puede estar como cadena JSON)
-        original_context = safe_eval(action.get('context', '{}'))
-        _token = str(uuid.uuid4())
-        self._set_info(
-            _token,
-            self.date_from,
-            self.date_to,
-            self.inciso_id,
-            self.operating_unit_id)
-
-        # Fusionar el contexto original con el contexto actual y los nuevos valores
-        new_context = {
-            **original_context,
-            **self.env.context,
-            'operating_unit_id': self.operating_unit_id.id,
-            'inciso_id': self.inciso_id.id,
-            'date_from': self.date_from,
-            'date_to': self.date_to,
-            'token': _token,
-        }
+            _token = str(uuid.uuid4())
+            new_context = {
+                **original_context,
+                **self.env.context,
+                'operating_unit_id': self.operating_unit_id.id,
+                'inciso_id': self.inciso_id.id,
+                'date_from': self.date_from,
+                'date_to': self.date_to,
+                'token': _token,
+            }
+            self._set_info(
+                _token,
+                self.date_from,
+                self.date_to,
+                self.inciso_id,
+                self.operating_unit_id)
+            action['domain'] = [('token', '=', _token)]
         if not self.operating_unit_id:
             new_context['search_default_group_operating_unit_id'] = True
         action['context'] = new_context
-        action['domain'] = [('token', '=', _token)]
         return action
 
     def _get_base_sql(self, token, date_from, date_to, inciso, operating_unit=False):
