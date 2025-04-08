@@ -80,7 +80,8 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
             onsc_legajo_integration_error_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_summary_9004")
             try:
-                self._populate_staging(serialize_object(response.Sdtinfosum).get('SDTInfoSumarios.SDTInfoSumariosItem'))
+                if response.Sdtinfosum:
+                    self._populate_staging(serialize_object(response.Sdtinfosum).get('SDTInfoSumarios.SDTInfoSumariosItem'))
                 self.env.user.company_id.sudo().write({
                     'summary_date_from': self.env.context.get('date_to')
                 })
