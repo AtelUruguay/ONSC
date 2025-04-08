@@ -19,7 +19,9 @@
                     <field name="operating_unit_ids" domain="operating_unit_ids_domain" widget="many2many_tags"
                            attrs="{'readonly': [('operating_unit_edit', '=', False)]}" string="UE"
                            options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    <field name="uo_ids" string="UO" widget="many2many_tags" options="{'no_create': True}"/>
+                    <field name="uo_ids" string="UO" widget="many2many_tags" domain="uo_ids_domain"
+                           options="{'no_create': True}"/>
+                    <field name="uo_ids_domain" invisible="1"/>
                     <field name="niveles_ids" string="Nivel del evaluado" widget="many2many_tags"
                            options="{'no_create': True}"/>
                     <field name="evaluation_type" string="Tipo evaluación" widget="many2many_checkboxes"/>

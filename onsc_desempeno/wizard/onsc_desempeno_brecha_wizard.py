@@ -54,17 +54,26 @@ class ONSCOrganizationalWizard(models.TransientModel):
             return employee.job_id.contract_id.inciso_id.ids
         return False
 
+    @api.model
+    def _default_operating_unit(self):
+        employee = self.env.user.employee_id
+        if employee and employee.job_id and employee.job_id.contract_id and employee.job_id.contract_id.operating_unit_id:
+            return employee.job_id.contract_id.operating_unit_id.ids
+        return False
+
     general_cycle_ids = fields.Many2many('onsc.desempeno.general.cycle', 'onsc_desempeno_brecha_cycle',
                                          'desempeno_brecha_id', 'desempeno_cycle_id', u'Año a evaluar',
                                          default=lambda self: self._default_general_cycle())
     inciso_ids = fields.Many2many('onsc.catalog.inciso', string=u'Inciso', default=lambda self: self._default_inciso())
     inciso_ids_domain = fields.Char(compute='_compute_inciso_ids_domain')
     inciso_edit = fields.Boolean('Puede editar el form?', compute='_compute_inciso_edit')
-    operating_unit_ids = fields.Many2many('operating.unit', string=u'UE')
+    operating_unit_ids = fields.Many2many('operating.unit', string=u'UE',
+                                          default=lambda self: self._default_operating_unit())
     operating_unit_ids_domain = fields.Char(compute='_compute_operating_unit_ids_domain')
     operating_unit_edit = fields.Boolean('Puede editar el form?', compute='_compute_operating_unit_edit')
     uo_ids = fields.Many2many('hr.department', 'onsc_desempeno_brecha_department', 'desempeno_e_report_id',
                               'department_report_id', string=u'UO')
+    uo_ids_domain = fields.Char(compute='_compute_uo_ids_domain')
     niveles_ids = fields.Many2many('onsc.desempeno.level', 'onsc_desempeno_brecha_level', 'desempeno_e_level_id',
                                    'level_report_id', u'Nivel del evaluado')
     evaluation_type = fields.Many2many('evaluation.type', string=u'Tipo evaluación')
@@ -111,8 +120,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
     @api.depends('operating_unit_ids')
     def _compute_operating_unit_edit(self):
         for rec in self:
-            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_admin() or \
-                    self._is_group_desempeno_admin_gh_ue():
+            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_admin():
                 rec.operating_unit_edit = True
             else:
                 rec.operating_unit_edit = False
@@ -120,10 +128,30 @@ class ONSCOrganizationalWizard(models.TransientModel):
     @api.depends('inciso_ids')
     def _compute_inciso_edit(self):
         for rec in self:
-            if self._is_group_admin() or self._is_group_desempeno_admin_gh_ue():
+            if self._is_group_admin() or self._is_group_desempeno_admin_gh_ue() or self._is_group_desempeno_reportes():
                 rec.inciso_edit = True
             else:
                 rec.inciso_edit = False
+
+    @api.depends('inciso_ids', 'operating_unit_ids')
+    def _compute_uo_ids_domain(self):
+        hrdepartment = self.env['hr.department'].suspend_security()
+        for rec in self:
+            domain = []
+            if rec.inciso_ids or rec.operating_unit_ids:
+                domain_conditions = []
+
+                if rec.inciso_ids:
+                    domain_conditions.append(('inciso_id', 'in', rec.inciso_ids.ids))
+                if rec.operating_unit_ids:
+                    domain_conditions.append(('operating_unit_id', 'in', rec.operating_unit_ids.ids))
+
+                uos = hrdepartment.search(domain_conditions)
+                domain = [('id', 'in', uos.ids)]
+            else:
+                domain = [('id', '=', False)]
+
+            rec.uo_ids_domain = json.dumps(domain)
 
     def action_report_comp_brecha(self):
         where_clause = []
@@ -175,8 +203,8 @@ class ONSCOrganizationalWizard(models.TransientModel):
                 COUNT(*) AS cant,
                 0 as porcent
             FROM onsc_desempeno_evaluation AS onsc_e
-                LEFT JOIN onsc_desempeno_evaluation_competency AS onsc_ec
-                ON onsc_e.id = onsc_ec.evaluation_id
+                INNER JOIN onsc_desempeno_evaluation_competency AS onsc_ec
+                ON onsc_e.id = onsc_ec.gap_deal_id or onsc_e.id = onsc_ec.evaluation_id
             WHERE {where_clause_str}
             GROUP BY
                 onsc_ec.skill_id, onsc_ec.degree_id, onsc_e.inciso_id, onsc_e.operating_unit_id,
