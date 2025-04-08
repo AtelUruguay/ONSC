@@ -43,7 +43,7 @@ class ONSCLegajoSummary(models.Model):
     suspension = fields.Selection(SNSELECTION, string='Suspensión preventiva')
     start_date_suspension = fields.Date("Inicio")
     end_date_suspension = fields.Date("Fin")
-    retention_percentage = fields.Float("Retención de haberes con porcentajes")
+    retention_percentage = fields.Char("Retención de haberes con porcentajes")
     instructor_name = fields.Char("Nombre completo")
     instructor_email = fields.Char("Correo electrónico")
     penalty_type_id = fields.Many2one("onsc.legajo.penalty.type", string=u"Tipo de sanción")
