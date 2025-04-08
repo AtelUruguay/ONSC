@@ -4,7 +4,8 @@
 import logging
 import ssl
 
-from suds.client import Client
+from suds.client import Client as SUDSClient
+from zeep import Client as ZeepClient
 
 from odoo import _
 from odoo.exceptions import ValidationError
@@ -30,7 +31,7 @@ class ONSCLegajoClient():
             # Handle target environment that doesn't support HTTPS verification
             ssl._create_default_https_context = _create_unverified_https_context
 
-    def get_client(self, name, ws_url, pass_location=False):
+    def get_client(self, name, ws_url, pass_location=False, use_zeep=False):
         """
         """
         self._create_unverified_https_context()
@@ -47,10 +48,12 @@ class ONSCLegajoClient():
                   "El formato esperado es: wsdl;método") % (
                     ws_url, name))
         wsdl = ws_url_splitted[0]
-        if pass_location:
-            client = Client(wsdl, location=wsdl, timeout=self.timeout)
+        if use_zeep:
+            client = ZeepClient(wsdl)
+        elif pass_location:
+            client = SUDSClient(wsdl, location=wsdl, timeout=self.timeout)
         else:
-            client = Client(wsdl, timeout=self.timeout)
+            client = SUDSClient(wsdl, timeout=self.timeout)
         if not client:
             raise ValidationError(_("No se pudo establecer la conexión con el servicio"))
         return client

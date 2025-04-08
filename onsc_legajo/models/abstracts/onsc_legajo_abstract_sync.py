@@ -12,7 +12,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
     _name = 'onsc.legajo.abstract.sync'
     _description = 'Modelo abstracto para la sincronización de legajo con WS externos'
 
-    def _get_client(self, parameter, origin_name, integration_error, pass_location=False, timeout=120):
+    def _get_client(self, parameter, origin_name, integration_error, pass_location=False, timeout=120, use_zeep=False):
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
         _timeout = self.env['ir.config_parameter'].sudo().get_param(
             'onsc_legajo_WS_INVOQUE_TIMEOUT',
@@ -24,7 +24,12 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             _timeout = 60
         ONSCLegajoClient.timeout = _timeout
         try:
-            return ONSCLegajoClient.get_client(origin_name, parameter, pass_location=pass_location)
+            return ONSCLegajoClient.get_client(
+                origin_name,
+                parameter,
+                pass_location=pass_location,
+                use_zeep=use_zeep
+            )
         except Exception as e:
             self.create_new_log(
                 origin=origin_name,

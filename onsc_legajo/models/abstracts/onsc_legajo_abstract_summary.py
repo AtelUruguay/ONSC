@@ -4,6 +4,7 @@ import datetime
 import logging
 
 from odoo import models, api, tools, fields
+from zeep.helpers import serialize_object
 
 _logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
         onsc_legajo_summary_Pmsuserid = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_summary_Pmsuserid')
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_summary_9005")
 
-        wsclient = self._get_client(parameter, 'Sumario', integration_error, timeout=int(timeout))
+        wsclient = self._get_client(parameter, 'Sumario', integration_error, timeout=int(timeout), use_zeep=True)
         if not self._context.get('wizard'):
             paFechaDesde = self.env.user.company_id.summary_date_from
             pfFechaDesdewithTz = self.env.user.company_id.summary_date_from
@@ -79,7 +80,8 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
             onsc_legajo_integration_error_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_summary_9004")
             try:
-                self._populate_staging(response.Sdtinfosum[0])
+                if response.Sdtinfosum:
+                    self._populate_staging(serialize_object(response.Sdtinfosum).get('SDTInfoSumarios.SDTInfoSumariosItem'))
                 self.env.user.company_id.sudo().write({
                     'summary_date_from': self.env.context.get('date_to')
                 })
@@ -94,16 +96,16 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
         Staging = self.env['onsc.legajo.summary'].suspend_security()
         tz_delta = self.env['ir.config_parameter'].sudo().get_param('server_timezone_delta')
 
-        integration_error_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_summary_9004")
-
         with self._cr.savepoint():
             try:
+                response = sorted(response, key=lambda x: x['SumFchAct'])
                 for operation in response:
                     vals = self._get_base_dict(operation, tz_delta)
                     staging = self._get_staging(vals)
                     if vals.get('state') == 'E' and staging:
                         staging.unlink()
                     elif staging and vals.get('state') != 'E':
+                        vals['communications_ids'] = [(5,)] + vals['communications_ids']
                         staging.write(vals)
                     elif not staging and vals.get('state') != 'E':
                         Staging.create(vals)
@@ -111,40 +113,55 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
                 raise e
 
     def _get_base_dict(self, operation, tz_delta):
-        key = "%s-%s" % (operation.PerDocNum, operation.SumNum)
+        key = "%s-%s" % (operation.get('PerDocNum'), operation.get('SumNum'))
         vals = {
             'key': key,
-            'summary_number': operation.SumNum,
-            'record_number': operation.SumExpNum,
-            'nro_doc': operation.PerDocNum,
-            'document_type': operation.DocTpoDsc,
-            'emissor_country': operation.PaiNom,
-            'inciso_code': int(operation.IncisoCod) if operation.IncisoCod else None,
-            'inciso_name': operation.IncisoDescripcion,
-            'operating_unit_code': operation.UECod,
-            'operating_unit_name': operation.UEDsc,
-            'regime': operation.Regimen,
-            'relationship_date': operation.VinFchDes,
-            'state': operation.SumEst,
-            'summary_causal': operation.SumCauDsc,
-            'act_date': operation.SumFchAct,
-            'interrogator_notify_date': operation.SumFchNotSdo,
-            'summary_notify_date': operation.SumFchNotSte,
-            'penalty_type_id': self.env['onsc.legajo.penalty.type'].search([('code', '=', operation.SanTipCod)], limit=1).id if operation.SanTipCod else False,
-            'summary_detail': operation.SanTipDsc,
-            'instructor_name': operation.SumInsSumNomCompleto,
-            'instructor_email': operation.SumInsSumCorreo,
-            'instructor_doc_number': operation.SumInsSumDocumento,
-            'communications_ids': [(0, 0, {
-                'communication_date': com.SumComFchCre,
-                'communication_type': com.ComSubTipTip,
-                'instance': com.ComSubTipDsc
-            }) for com in getattr(operation.SumarioComunicacion, 'SumarioComunicacionItem', [])]
+            'summary_number': operation.get('SumNum'),
+            'record_number': operation.get('SumExpNum'),
+            'nro_doc': operation.get('PerDocNum'),
+            'document_type': operation.get('DocTpoDsc'),
+            'emissor_country': operation.get('PaiNom'),
+            'inciso_code': int(operation.get('IncisoCod')) if operation.get('IncisoCod') else None,
+            'inciso_name': operation.get('IncisoDescripcion'),
+            'operating_unit_code': operation.get('UECod'),
+            'operating_unit_name': operation.get('UEDsc'),
+            'regime': operation.get('Regimen'),
+            'relationship_date': operation.get('VinFchDes'),
+            'state': operation.get('SumEst'),
+            'summary_causal': operation.get('SumCauDsc'),
+            'act_date': operation.get('SumFchAct'),
+            'interrogator_notify_date': operation.get('SumFchNotSdo'),
+            'summary_notify_date': operation.get('SumFchNotSte'),
+            'penalty_type_id': self.env['onsc.legajo.penalty.type'].search(
+                [('code', '=', operation.get('SanTipCod'))], limit=1).id if operation.get('SanTipCod') else False,
+            'summary_detail': operation.get('SanTipDsc'),
+            'instructor_name': operation.get('SumInsSumNomCompleto'),
+            'instructor_email': operation.get('SumInsSumCorreo'),
+            'suspension': operation.get('SumSusPreFlg', '').lower(),
+            'retention_percentage': operation.get('HabRetTipDsc'),
+            'instructor_doc_number': operation.get('SumInsSumDocumento'),
+            'communications_ids': [
+                (0, 0, {
+                    'communication_date': com.get('SumComFchCre'),
+                    'communication_type': com.get('ComSubTipTip'),
+                    'instance': com.get('ComSubTipDsc')
+                })
+                for com in operation.get('SumarioComunicacion', {}).get('SumarioComunicacionItem', [])
+            ]
         }
-        if operation.DocTpoDsc == 'Cédula':
+        if vals['suspension'] == 's':
+            if isinstance(operation.get('SumSusPreFchDes'), str) and operation['SumSusPreFchDes'] != '1000-01-01':
+                vals['start_date_suspension'] = fields.Date.to_date(
+                    datetime.datetime.strptime(operation['SumSusPreFchDes'], '%d/%m/%Y').date())
+            if isinstance(operation.get('SumSusPreFchHas'), str) and operation['SumSusPreFchHas'] != '1000-01-01':
+                vals['end_date_suspension'] = fields.Date.to_date(
+                    datetime.datetime.strptime(operation['SumSusPreFchHas'], '%d/%m/%Y').date())
+
+        if operation.get('DocTpoDsc') == 'Cédula':
             vals['cv_document_type_id'] = self.env['onsc.cv.document.type'].search([('code', '=', 'ci')], limit=1).id
-        if operation.PaiNom == 'Uruguay':
+        if operation.get('PaiNom') == 'Uruguay':
             vals['country_id'] = self.env.ref('base.uy').id
+
         return vals
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
