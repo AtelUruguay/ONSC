@@ -57,3 +57,15 @@ class ReportCompetenciaBrecha(models.Model):
                         if 'porcent:sum' in fields:
                             fields.remove('porcent:sum')
             return res
+
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super().fields_get(allfields=allfields, attributes=attributes)
+        campos_ocultos = ['create_uid', 'create_date', 'write_uid', 'write_date']
+        for campo in campos_ocultos:
+            res.pop(campo, None)
+        for field in ['cant', 'porcent']:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['sortable'] = False
+        return res
