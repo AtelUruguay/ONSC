@@ -97,7 +97,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
         OperatingUnit = self.env['operating.unit'].suspend_security()
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
-            if self._is_group_desempeno_admin_gh_inciso():
+            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_desempeno_reportes():
                 if rec.inciso_ids:
                     operating_unit = OperatingUnit.suspend_security().search(
                         [('inciso_id', 'in', rec.inciso_ids.ids), ])
@@ -106,9 +106,6 @@ class ONSCOrganizationalWizard(models.TransientModel):
                     domain = [('id', '=', False)]
             elif self._is_group_desempeno_admin_gh_ue():
                 domain = [('id', '=', operating_unit_id)]
-            elif self._is_group_desempeno_reportes():
-                all_operating_unit_ids = self.env['operating.unit'].search([]).ids
-                domain = [('id', 'in', all_operating_unit_ids)]
             else:
                 if rec.inciso_ids:
                     operating_unit = OperatingUnit.suspend_security().search([('inciso_id', 'in', rec.inciso_ids.ids)])
