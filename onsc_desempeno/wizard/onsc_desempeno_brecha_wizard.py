@@ -83,11 +83,11 @@ class ONSCOrganizationalWizard(models.TransientModel):
     def _compute_inciso_ids_domain(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         for rec in self:
-            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_desempeno_admin_gh_ue():
-                domain = [('id', '=', inciso_id)]
-            elif self._is_group_desempeno_reportes():
+            if self._is_group_desempeno_reportes():
                 all_inciso_ids = self.env['onsc.catalog.inciso'].search([]).ids
                 domain = [('id', 'in', all_inciso_ids)]
+            elif self._is_group_desempeno_admin_gh_inciso() or self._is_group_desempeno_admin_gh_ue():
+                domain = [('id', '=', inciso_id)]
             else:
                 domain = []
             rec.inciso_ids_domain = json.dumps(domain)
@@ -120,7 +120,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
     @api.depends('operating_unit_ids')
     def _compute_operating_unit_edit(self):
         for rec in self:
-            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_admin():
+            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_desempeno_reportes():
                 rec.operating_unit_edit = True
             else:
                 rec.operating_unit_edit = False
@@ -128,7 +128,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
     @api.depends('inciso_ids')
     def _compute_inciso_edit(self):
         for rec in self:
-            if self._is_group_admin() or self._is_group_desempeno_admin_gh_ue() or self._is_group_desempeno_reportes():
+            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_desempeno_reportes():
                 rec.inciso_edit = True
             else:
                 rec.inciso_edit = False
