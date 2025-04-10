@@ -363,7 +363,8 @@ class ONSCDesempenoEvaluationList(models.Model):
                         'line_ids': [(0, 0, {'job_id': manage_job.id})]
                     }
                     evaluation_lists |= EvaluationList.create(evaluation_vals)
-            elif manage_job and parent_evaluation_list and not parent_evaluation_list.with_context(active_test=False).line_ids.filtered(
+            elif manage_job and parent_evaluation_list and not parent_evaluation_list.with_context(
+                    active_test=False).line_ids.filtered(
                     lambda x: x.employee_id.id == evaluation_list.manager_id.id):
                 parent_evaluation_list.write({'line_ids': [(0, 0, {'job_id': manage_job.id})]})
 
@@ -376,8 +377,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         :param evaluation_stage: Recorder onsc.desempeno.evaluation.stage Ciclo 390
         :return: Si ese puesto ya tiene autoevaluaciones no canceladas para ese Ciclo360
         """
-        self._cr.execute("""SELECT COUNT(id) FROM onsc_desempeno_evaluation WHERE 
-                                                current_job_id=%s AND 
+        self._cr.execute("""SELECT COUNT(id) FROM onsc_desempeno_evaluation WHERE
+                                                current_job_id=%s AND
                                                 evaluation_type='%s' AND
                                                 evaluation_stage_id=%s AND
                                                 state <> '%s'
@@ -433,12 +434,14 @@ class ONSCDesempenoEvaluationList(models.Model):
             'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
             'state': 'draft',
         })
-        for skill in skills:
-            Competency.create({'evaluation_id': evaluation.id,
-                               'skill_id': skill.id,
-                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
-                               })
+        Competency.set_competencies(skills, evaluation)
+
+        # for skill in skills:
+        #     Competency.create({'evaluation_id': evaluation.id,
+        #                        'skill_id': skill.id,
+        #                        'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+        #                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
+        #                        })
 
         return evaluation
 
@@ -483,12 +486,13 @@ class ONSCDesempenoEvaluationList(models.Model):
             'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
             'state': 'draft',
         })
-        for skill in skills:
-            Competency.create({'evaluation_id': evaluation.id,
-                               'skill_id': skill.id,
-                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
-                               })
+        Competency.set_competencies(skills, evaluation)
+        # for skill in skills:
+        #     Competency.create({'evaluation_id': evaluation.id,
+        #                        'skill_id': skill.id,
+        #                        'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+        #                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
+        #                        })
 
         return evaluation
 
@@ -580,12 +584,13 @@ class ONSCDesempenoEvaluationList(models.Model):
                     'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
                     'state': 'draft',
                 })
-                for skill in skills:
-                    Competency.create({'evaluation_id': evaluation.id,
-                                       'skill_id': skill.id,
-                                       'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
-                                           lambda r: r.level_id.id == evaluation.level_id.id).ids)]
-                                       })
+                Competency.set_competencies(skills, evaluation)
+                # for skill in skills:
+                #     Competency.create({'evaluation_id': evaluation.id,
+                #                        'skill_id': skill.id,
+                #                        'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                #                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
+                #                        })
                 data.write({'evaluation_ids': [(4, evaluation.id)]})
         return True
 
@@ -646,12 +651,13 @@ class ONSCDesempenoEvaluationList(models.Model):
             'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
             'state': 'draft',
         })
-        for skill in skills:
-            Competency.create({'evaluation_id': evaluation.id,
-                               'skill_id': skill.id,
-                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
-                               })
+        Competency.set_competencies(skills, evaluation)
+        # for skill in skills:
+        #     Competency.create({'evaluation_id': evaluation.id,
+        #                        'skill_id': skill.id,
+        #                        'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+        #                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
+        #                        })
         data.write({'evaluation_ids': [(4, evaluation.id)]})
         return True
 
@@ -685,11 +691,12 @@ class ONSCDesempenoEvaluationList(models.Model):
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
         for competency in record.evaluation_competency_ids:
-            Competency.create({'gap_deal_id': gap_deal.id,
-                               'skill_id': competency.skill_id.id,
-                               'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == record.level_id.id).ids)]
-                               })
+            Competency.set_competencies(competency.skill_id, gap_deal, gap_deal.id)
+            # Competency.create({'gap_deal_id': gap_deal.id,
+            #                    'skill_id': competency.skill_id.id,
+            #                    'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
+            #                        lambda r: r.level_id.id == record.level_id.id).ids)]
+            #                    })
 
         partners_to_notify |= record.evaluated_id.partner_id
         partners_to_notify |= record.evaluator_id.partner_id

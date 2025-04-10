@@ -249,9 +249,9 @@
                                     <field name="means_tooltip"/>
                                 </div>
                             </div>
-                            <field name="agreed_activities"/>
-                            <field name="detail_activities"/>
-                            <field name="comments"/>
+                            <field name="agreed_activities" placeholder="Mínimo 30 caracteres"/>
+                            <field name="detail_activities" placeholder="Mínimo 30 caracteres"/>
+                            <field name="comments" placeholder="Mínimo 30 caracteres"/>
                         </group>
                     </group>
                 </sheet>
@@ -339,7 +339,7 @@
                                     <field name="degree_progress_id"
                                            attrs="{'readonly':[('id', '!=', False)]}"
                                            options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="comments" attrs="{'readonly':[('id', '!=', False)]}"/>
+                                    <field name="comments" attrs="{'readonly':[('id', '!=', False)]}" placeholder="Mínimo 30 caracteres"/>
                                 </tree>
                             </field>
                         </page>
@@ -411,7 +411,8 @@
                                        options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </div>
                             <field name="development_goal"
-                                   attrs="{'required':[('is_required', '=',True)],'readonly':[('should_disable_form_edit', '=',True)]}"/>
+                                placeholder="Mínimo 30 caracteres"
+                                attrs="{'required':[('is_required', '=',True)],'readonly':[('should_disable_form_edit', '=',True)]}"/>
                         </group>
                     </group>
                     <notebook>
@@ -444,9 +445,9 @@
                                                   <field name="means_tooltip"/>
                                                 </div>
                                             </div>
-                                            <field name="agreed_activities"/>
-                                            <field name="detail_activities"/>
-                                            <field name="comments"/>
+                                            <field name="agreed_activities" placeholder="Mínimo 30 caracteres"/>
+                                            <field name="detail_activities" placeholder="Mínimo 30 caracteres"/>
+                                            <field name="comments" placeholder="Mínimo 30 caracteres"/>
                                         </group>
                                     </group>
                                 </form>

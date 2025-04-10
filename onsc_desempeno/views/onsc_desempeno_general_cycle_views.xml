@@ -41,7 +41,8 @@
                             <field name="end_date_max" required="1" attrs="{'readonly': [('is_edit_end_date_max', '=', False)]}"/>
                             <field name="date_limit_toextend_360"/>
                             <field name="end_date" required="1" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
-                            <field name="is_pilot" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
+                            <field name="whitout_impact"  groups="onsc_desempeno.group_desempeno_administrador" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"  />
+                            <field name="is_pilot" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"  invisible="1"/>
                             <field name="active" invisible="1" />
                             <field name="is_edit_start_date" invisible="1"/>
                             <field name="is_edit_start_date_max" invisible="1"/>

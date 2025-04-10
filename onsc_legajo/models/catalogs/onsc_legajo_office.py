@@ -246,6 +246,7 @@ class ONSCLegajoOffice(models.Model):
                     'office_id': office.id,
                     'codigoJornada': str(external_record.codigoJornada),
                     'descripcionJornada': external_record.descripcionJornada,
+                    'active': True
                 }
                 return vals
         except Exception as e:

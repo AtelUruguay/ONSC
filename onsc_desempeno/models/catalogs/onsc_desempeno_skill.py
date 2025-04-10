@@ -52,15 +52,9 @@ class ONSCDesempenoSkillLine(models.Model):
     name_dimension = fields.Char(string="Competencias", related='dimension_id.name', store=True)
     name_level = fields.Char(string="Nivel", related='level_id.name', store=True)
     competency_id = fields.Many2one('onsc.desempeno.evaluation.competency', string="Competencias")
-
     dimension_tooltip = fields.Html(string=" ",
                                     compute=lambda s: s._get_help('dimension_tooltip'),
                                     default=lambda s: s._get_help('dimension_tooltip', True))
-
-    _sql_constraints = [
-        ('line_uniq', 'unique(skill_id,dimension_id,level_id)',
-         u'La dimensión y nivel debe ser unico para la competencia'),
-    ]
 
     def _get_help(self, help_field='', is_default=False):
         _html2construct = HTML_HELP % ('Tooltip')
@@ -69,3 +63,9 @@ class ONSCDesempenoSkillLine(models.Model):
         for rec in self:
             _html2construct = HTML_HELP % (rec.sudo().dimension_id.definition or '')
             setattr(rec, help_field, _html2construct)
+
+class ONSCDesempenoEvaluationSkillLine(models.Model):
+    _name = 'onsc.desempeno.evaluation.skill.line'
+    _inherit = 'onsc.desempeno.skill.line'
+
+    frequency_id = fields.Many2one('onsc.desempeno.frequency.equivalence', string="Frecuencia del comportamiento esperado")

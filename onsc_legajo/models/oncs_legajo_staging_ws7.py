@@ -364,7 +364,9 @@ class ONSCLegajoStagingWS7(models.Model):
 
         state_square_id = self.env.ref('onsc_legajo.onsc_legajo_o')
 
-        if record.mov == 'ASCENSO':
+        if second_movement.fecha_vig < contract.date_start:
+            movement_description = self.env.user.company_id.ws7_new_retroactive_reason_description
+        elif record.mov == 'ASCENSO':
             movement_description = self.env.user.company_id.ws7_new_ascenso_reason_description
         elif record.mov in ['TRANSFORMA','TRANSFORMA_REDUE']:
             movement_description = self.env.user.company_id.ws7_new_transforma_reason_description
@@ -382,16 +384,7 @@ class ONSCLegajoStagingWS7(models.Model):
             same_ue = second_movement.inciso_id.id == incoming_contract.inciso_id.id and \
                       second_movement.operating_unit_id.id == incoming_contract.operating_unit_id.id
 
-            # GENERA NUEVO CONTRATO (C)
-
             new_contract_status = same_ue and 'active' or 'outgoing_commission'
-            new_contract = self._get_contract_copy(
-                contract,
-                second_movement, new_contract_status,
-                state_square_id=state_square_id.id,
-                movement_description=operation_dict.get(record.mov),
-            )
-            self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
@@ -404,9 +397,27 @@ class ONSCLegajoStagingWS7(models.Model):
             if second_movement.fecha_vig == contract.date_start:
                 contract_date_end = second_movement.fecha_vig
                 archive_contract = True
+                is_case_3 = False
+            elif second_movement.fecha_vig < contract.date_start:
+                contract_date_end = contract.date_start
+                archive_contract = True
+                legajo_state = contract.legajo_state
+                is_case_3 = True
             else:
                 contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
                 archive_contract = False
+                is_case_3 = False
+
+            # GENERA NUEVO CONTRATO (C)
+            new_contract = self._get_contract_copy(
+                contract,
+                second_movement,
+                legajo_state=new_contract_status,
+                state_square_id=state_square_id.id,
+                movement_description=operation_dict.get(record.mov),
+                contract_date_start=is_case_3 and contract.date_start or False
+            )
+            self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
 
             contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
                 contract_date_end,
@@ -438,22 +449,41 @@ class ONSCLegajoStagingWS7(models.Model):
                     'cs_contract_id': new_contract.id
                 })
         else:
-            new_contract = self._get_contract_copy(
-                contract,
-                second_movement,
-                state_square_id=state_square_id.id,
-                movement_description=movement_description
-            )
-            self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
-
             if second_movement.fecha_vig == contract.date_start:
                 contract_date_end = second_movement.fecha_vig
                 archive_contract = True
+                legajo_state = contract.legajo_state
+                is_case_3 = False
+            elif second_movement.fecha_vig < contract.date_start:
+                contract_date_end = contract.date_start
+                archive_contract = True
+                legajo_state = contract.legajo_state
+                is_case_3 = True
             else:
                 contract_date_end = second_movement.fecha_vig + datetime.timedelta(days=-1)
                 archive_contract = False
+                legajo_state = 'active'
+                is_case_3 = False
 
-            if new_contract.operating_unit_id != contract.operating_unit_id:
+            new_contract = self._get_contract_copy(
+                contract,
+                second_movement,
+                legajo_state=legajo_state,
+                link_tocontract=True,
+                state_square_id=state_square_id.id,
+                movement_description=movement_description,
+                contract_date_start=is_case_3 and contract.date_start or False
+            )
+            self._copy_jobs(contract, new_contract, operation_dict.get(record.mov))
+
+            if is_case_3:
+                contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
+                    contract_date_end,
+                    legajo_state='baja',
+                    eff_date=fields.Date.today(),
+                    archive_contract=archive_contract
+                )
+            elif new_contract.operating_unit_id != contract.operating_unit_id:
                 # DESACTIVA EL CONTRATO
                 contract.with_context(
                     no_check_write=True,is_copy_job=False,no_check_date_range=True
@@ -759,22 +789,8 @@ class ONSCLegajoStagingWS7(models.Model):
             legajo_state='active',
             link_tocontract=False,
             state_square_id=False,
-            movement_description=False
-        ):
-        """
-        Duplica el contrato aplicando los cambios de la operacion
-        :param contract: Recordset de contrato
-        :param record: Recordset de la operacion
-        :param error: Recordset del log de error
-        :return: Recordset de contrato
-
-        # TODO
-        si no estan todos los descriptores?
-        de todos los juegos cuales pasamos? ej:
-        cod_reg : hay que verificarlo?
-        inciso?
-        ue?
-        """
+            movement_description=False,
+            contract_date_start=False):
         inciso = record.inciso_id
         operating_unit = record.operating_unit_id
         descriptor1 = record.descriptor1_id
@@ -787,7 +803,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'employee_id': contract.employee_id.id,
             'inciso_id': inciso.id,
             'operating_unit_id': operating_unit.id,
-            'date_start': record.fecha_vig,
+            'date_start': contract_date_start or record.fecha_vig,
             'eff_date': fields.Date.today(),
             'date_end': False,
             'legajo_state': legajo_state,
@@ -812,7 +828,10 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             vals['state_square_id'] = contract.state_square_id.id
         if link_tocontract:
-            vals['cs_contract_id'] = contract.id
+            if contract.legajo_state == 'incoming_commission':
+                vals['cs_contract_id'] = contract.cs_contract_id.id
+            else:
+                vals['cs_contract_id'] = contract.id
         if movement_description:
             vals['reason_description'] = movement_description
         new_contract = self.env['hr.contract'].suspend_security().create(vals)

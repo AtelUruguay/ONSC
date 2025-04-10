@@ -35,6 +35,10 @@
                                             <label for="ws7_new_reestructura_reason_description" string="Reestructura" class="col-md-3 o_light_label"/>
                                             <field name="ws7_new_reestructura_reason_description"/>
                                         </div>
+                                        <div class="row">
+                                            <label for="ws7_new_retroactive_reason_description" string="Retroactivo" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_new_retroactive_reason_description"/>
+                                        </div>
                                     </div>
                                     <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Causales de egreso</h6>
                                     <div class="content-group">
