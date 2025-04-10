@@ -63,6 +63,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
         compute='_compute_is_edit_end_date')
     is_pilot = fields.Boolean(string="Piloto 2024")
     date_limit_toextend_360 = fields.Date(string='Fecha límite para la extensión de Etapa 360°')
+    whitout_impact = fields.Boolean(string="Sin impacto en legajo")
 
 
     @api.depends('start_date')
@@ -276,7 +277,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
             'year': evaluation.evaluation_stage_id.year,
             'evaluation_list_id': evaluation.evaluation_list_id.id,
             'is_pilot': evaluation.general_cycle_id.is_pilot,
-            'is_employee_notified': evaluation.general_cycle_id.is_pilot,
+            'is_employee_notified': evaluation.general_cycle_id.whitout_impact,
+            'whitout_impact': evaluation.general_cycle_id.whitout_impact,
             # 360
             'evaluations_360_total_qty': 0,
             'evaluations_360_finished_qty': 0,
@@ -360,5 +362,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 'score': eval_360_finished_score + eval_gap_deal_finished_score + eval_tracing_plan_finished_score + tracing_plan_activity_score + eval_develop_plan_finished_score,
                 'is_pilot': value['is_pilot'],
                 'is_employee_notified': value['is_employee_notified'],
+                'whitout_impact': value['whitout_impact'],
             })
         return bulked_vals

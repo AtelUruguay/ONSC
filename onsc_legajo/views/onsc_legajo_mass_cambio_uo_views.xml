@@ -48,6 +48,23 @@
                         </h4>
                     </div>
                     <group>
+                        <group string="Destino y Documentación">
+                            <field name="target_department_id"
+                                domain="[('operating_unit_id', '=', operating_unit_id)]"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                            <field name="start_date" />
+                            <field name="description"
+                                required="1" />
+                            <field name="document_type_id"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                required="1" />
+                            <field name="document_file" required="1" widget="binary"
+                                filename="document_file_name"
+                                options="{'accepted_file_extensions': '.pdf'}" />
+                            <field name="document_file_name" invisible="1" />
+                            <field name="should_disable_form_edit" invisible="1" />
+
+                        </group>
                         <group string="Filtros de búsqueda">
                             <field name="employee_id"
                                 context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
@@ -75,22 +92,7 @@
                                     states="draft" />
                             </div>
                         </group>
-                        <group string="Destino y Documentación">
-                            <field name="target_department_id"
-                                domain="[('operating_unit_id', '=', operating_unit_id)]"
-                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
-                            <field name="start_date" />
-                            <field name="description"
-                                required="1" />
-                            <field name="document_type_id"
-                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                                required="1" />
-                            <field name="document_file" required="1" widget="binary"
-                                filename="document_file_name"
-                                options="{'accepted_file_extensions': '.pdf'}" />
-                            <field name="document_file_name" invisible="1" />
-                            <field name="should_disable_form_edit" invisible="1" />
-                        </group>
+
                     </group>
                     <notebook>
                         <page string="Funcionarios">
@@ -126,8 +128,8 @@
                                     <field name="start_date" readonly="1" force_save="1" />
                                     <field name="security_job_id" readonly="1" force_save="1"
                                         options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
-                                    <field name="is_responsable_uo" />
-                                    <field name="legajo_state_id"
+                                    <field name="is_responsable_uo"  attrs="{'readonly': [('is_included', '=', False)]}"/>
+                                    <field name="legajo_state_id"  attrs="{'readonly': [('is_included', '=', False)]}"
                                         options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                                     <field name="op_cambio_uo_id"
                                         invisible="1"/>
@@ -176,6 +178,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
