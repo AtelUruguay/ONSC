@@ -35,6 +35,10 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         comodel_name="onsc.desempeno.skill.line",
         relation="competency_skill_line_rel",
         string="Lineas de competencia")
+    evaluation_skill_line_ids = fields.Many2many(
+        comodel_name="onsc.desempeno.evaluation.skill.line",
+        relation="evaluation_competency_skill_line_rel",
+        string="Lineas de competencia")
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo',
                                 required=False, ondelete='restrict')
     improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=False)
@@ -54,6 +58,13 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         compute=lambda s: s._get_value_config('improvement_areas_help_text'),
         default=lambda s: s._get_value_config('improvement_areas_help_text', True)
     )
+    grade_suggested_id = fields.Many2one(
+        'onsc.desempeno.grade.equivalence',
+        string='Grado de necesidad de desarrollo sugerido',
+        compute='_compute_grade_suggested',
+        store=True
+    )
+    is_pilot = fields.Boolean(string='¿Es piloto?', copy=False, compute='_compute_competency_form_edit')
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -72,10 +83,28 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                 _cond1 = record.gap_deal_id.state_gap_deal != 'in_process' or record.gap_deal_id.gap_deal_state != 'no_deal'
                 _cond2 = record.gap_deal_id.evaluator_id.id != user_employee_id and record.gap_deal_id.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
+                is_pilot = record.gap_deal_id.is_pilot
             else:
                 _cond1 = record.evaluation_id.evaluator_id.id != user_employee_id or record.evaluation_id.locked
                 condition = record.state not in ['in_process'] or _cond1
+                is_pilot = record.evaluation_id.is_pilot
+            record.is_pilot = is_pilot
             record.competency_form_edit = condition
+
+    @api.depends('evaluation_skill_line_ids', 'evaluation_skill_line_ids.frequency_id')
+    def _compute_grade_suggested(self):
+        EquivalenceGrade = self.env['onsc.desempeno.grade.equivalence']
+        for record in self:
+            frequency_float_list = []
+            for skill_line_id in record.evaluation_skill_line_ids:
+                frequency_id = skill_line_id.frequency_id
+                if frequency_id and frequency_id.value != float(0):
+                    frequency_float_list.append(frequency_id.value)
+            if frequency_float_list:
+                average_frequency = sum(frequency_float_list) / len(frequency_float_list)
+            else:
+                average_frequency = float(0)
+            record.grade_suggested_id = EquivalenceGrade.get_grade_equivalence(average_frequency)
 
     def _get_help(self, help_field='', is_default=False):
         _html2construct = HTML_HELP % ('Tooltip')
@@ -92,3 +121,37 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
 
     def action_close_dialog(self):
         return {'type': 'ir.actions.act_window_close'}
+
+    def set_competencies(self, skills, evaluation_id=False, gap_deal_id=False):
+        """
+        Set competencies for the given skills.
+
+        This method creates and returns competency records based on the provided skills.
+        It filters skill lines by the evaluation level and creates evaluation skill lines
+        accordingly.
+
+        Args:
+            skills (list): A list of skill records to process.
+            evaluation_id (int, optional): The ID of the evaluation. Defaults to False.
+            gap_deal_id (int, optional): The ID of the gap deal. Defaults to False.
+
+        Returns:
+            recordset: A recordset of the created 'onsc.desempeno.evaluation.competency' records.
+        """
+        competencies = self.env['onsc.desempeno.evaluation.competency']
+        for skill in skills:
+            skill_lines = skill.skill_line_ids.filtered(lambda r: r.level_id.id == evaluation_id.level_id.id)
+            evaluation_skill_lines = [(0, 0, {
+                'dimension_id': skill_line.dimension_id.id,
+                'level_id': skill_line.level_id.id,
+                'behavior': skill_line.behavior,
+                'skill_id': skill.id
+            }) for skill_line in skill_lines]
+            competencies |= self.create({
+                'evaluation_id': evaluation_id.id,
+                'gap_deal_id': gap_deal_id,
+                'skill_id': skill.id,
+                'skill_line_ids': [(6, 0, skill_lines.ids)],
+                'evaluation_skill_line_ids': evaluation_skill_lines
+            })
+        return competencies

@@ -8,3 +8,4 @@ from . import onsc_desempeno_dimension
 from . import onsc_desempeno_level
 from . import onsc_desempeno_reason_change_evaluator
 from . import onsc_desempeno_skill
+from . import onsc_frequency_equivalence
