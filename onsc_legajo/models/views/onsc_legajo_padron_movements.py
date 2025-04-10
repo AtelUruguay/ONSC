@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, tools, api
-from odoo.osv import expression
-from odoo.tools import func
+from odoo import fields, models, api
 
 
 class ONSCLegajoPadron(models.Model):

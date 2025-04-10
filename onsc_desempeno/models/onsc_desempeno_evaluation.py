@@ -603,11 +603,21 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            _is_valid_1 = record.evaluation_type in (
-            'gap_deal', 'development_plan') and record.state_gap_deal == 'in_process'
-            _is_valid_2 = record.evaluation_type == 'tracing_plan' and record.state == 'in_process'
-            is_valid = (_is_valid_1 or _is_valid_2) and record.gap_deal_state != 'agree_leader'
-            record.is_agree_evaluation_leader_available = is_am_evaluator and is_valid
+            is_valid_1 = (
+                record.evaluation_type in ('gap_deal', 'development_plan')
+                and record.state_gap_deal == 'in_process'
+            )
+            is_valid_2 = (
+                record.evaluation_type == 'tracing_plan'
+                and record.state == 'in_process'
+            )
+            is_valid = (
+                (is_valid_1 or is_valid_2)
+                and record.gap_deal_state != 'agree_leader'
+            )
+            record.is_agree_evaluation_leader_available = (
+                is_am_evaluator and is_valid
+            )
 
     @api.depends('state', 'state_gap_deal')
     def _compute_is_agree_button_gh_available(self):
@@ -730,8 +740,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 cond2 = record.evaluation_type == 'leader_evaluation' and is_eval_valid_cond2
                 cond3 = record.evaluation_type == 'self_evaluation' and is_iam_evaluated
 
-                record.is_notebook_available = cond1 or cond2 or cond3 or record.evaluation_type in (
-                'gap_deal', 'environment_definition')
+                _evaluation_type = record.evaluation_type in ('gap_deal', 'environment_definition')
+                record.is_notebook_available = cond1 or cond2 or cond3 or _evaluation_type
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):

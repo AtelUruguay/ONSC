@@ -146,7 +146,7 @@ class ONSCMigrations(models.Model):
         _logger.info('CRON 28.8 bajaVL')
         BajaVL = self.env['onsc.legajo.baja.vl'].sudo().with_context(ignore_base_restrict=True)
         bajasVL_towrite = self.env['onsc.legajo.baja.vl']
-        for bajaVl in BajaVL.search([('state', 'in', ['borrador','error_sgh'])]):
+        for bajaVl in BajaVL.search([('state', 'in', ['borrador', 'error_sgh'])]):
             if not bajaVl.is_require_extended and bajaVl.causes_discharge_extended_id:
                 bajasVL_towrite |= bajaVl
         bajasVL_towrite.write({'causes_discharge_extended_id': False})
@@ -162,7 +162,7 @@ class ONSCMigrations(models.Model):
             ('model', '=', 'hr.contract'),
             ('name', '=', 'legajo_state')
         ], limit=1)
-        legajo_state_items= dict(HrContract.fields_get(allfields=['legajo_state'])['legajo_state']['selection']).items()
+        legajo_state_items = dict(HrContract.fields_get(allfields=['legajo_state'])['legajo_state']['selection']).items()
         messages = self.env['mail.message'].sudo().search([
             ('model', '=', 'hr.contract'),
             ('tracking_value_ids.field', '=', legajo_state_field_id.id),

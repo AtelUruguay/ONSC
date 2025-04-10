@@ -5,7 +5,6 @@ import uuid
 from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
 
-from odoo.exceptions import UserError, ValidationError
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 _logger = logging.getLogger(__name__)
@@ -165,8 +164,6 @@ WHERE
             bulked_vals.append(new_record)
         result = self.env['onsc.legajo.padron'].sudo().create(bulked_vals)
         return result
-
-
 
 
 class ONSCLegajoPadronEstructureMovementsFilterWizard(models.TransientModel):

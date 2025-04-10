@@ -176,10 +176,12 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
         else:
             long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
 
-            super(ONSCLegajoAbstractSyncSummary, self)._process_response_witherror(response,
-                                                                               origin_name,
-                                                                               integration_error,
-                                                                               long_description)
+            super(ONSCLegajoAbstractSyncSummary, self)._process_response_witherror(
+                response,
+                origin_name,
+                integration_error,
+                long_description
+            )
 
     def _get_staging(self, vals):
         Staging = self.env['onsc.legajo.summary'].suspend_security()

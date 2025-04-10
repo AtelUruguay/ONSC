@@ -166,22 +166,29 @@ class ONSCLegajoBajaVL(models.Model):
         for record in self:
             if record.state not in ['borrador', 'error_sgh']:
                 record.is_read_only_description = True
-            elif not record.causes_discharge_id.is_require_extended and (
-                record.causes_discharge_id.reason_description or record.causes_discharge_id.resolution_description or record.causes_discharge_id.norm_id):
+            elif (
+                not record.causes_discharge_id.is_require_extended
+                and (
+                    record.causes_discharge_id.reason_description
+                    or record.causes_discharge_id.resolution_description
+                    or record.causes_discharge_id.norm_id
+                )
+            ):
                 record.is_read_only_description = True
-            elif record.causes_discharge_extended_id.reason_description or record.causes_discharge_extended_id.resolution_description or record.causes_discharge_extended_id.norm_id:
+            elif (
+                record.causes_discharge_extended_id.reason_description
+                or record.causes_discharge_extended_id.resolution_description
+                or record.causes_discharge_extended_id.norm_id
+            ):
                 record.is_read_only_description = True
             else:
                 record.is_read_only_description = False
-
 
     @api.constrains("end_date")
     def _check_date(self):
         for record in self:
             if record.end_date > fields.Date.today():
                 raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
-
-
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -334,8 +341,6 @@ class ONSCLegajoBajaVL(models.Model):
             ('cv_document_type_id', '=', self.employee_id.cv_document_type_id.id),
             ('nro_doc', '=', self.employee_id.cv_nro_doc),
             ('state', '!=', 'C'),
-            ('operating_unit_id','=',self.contract_id.operating_unit_id.id),
-            ('inciso_id','=',self.contract_id.inciso_id.id)
+            ('operating_unit_id', '=', self.contract_id.operating_unit_id.id),
+            ('inciso_id', '=', self.contract_id.inciso_id.id)
         ]) > 0
-
-

@@ -47,4 +47,3 @@ class ONSCDesempenoLevelLine(models.Model):
         ('level_line_uniq', 'unique(hierarchical_level_id,is_uo_manager)',
          u'La combinación de nivel jerárquico y responsable UO solo puede estar asociada a un nivel'),
     ]
-

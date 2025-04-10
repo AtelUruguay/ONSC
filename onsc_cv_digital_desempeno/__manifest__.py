@@ -9,7 +9,7 @@ ONSC CV Digital - Desempeno
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['onsc_cv_digital_legajo','onsc_desempeno'],
+    'depends': ['onsc_cv_digital_legajo', 'onsc_desempeno'],
     'data': [
         'data/onsc_legajo_report_config_data.xml',
         'report/legajo_report_sections/onsc_legajo_report_section_funct_info.xml',

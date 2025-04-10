@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, tools, api
-from odoo.osv import expression
+from odoo import fields, models, tools
 
 
 class ONSCLegajoDepartment(models.Model):

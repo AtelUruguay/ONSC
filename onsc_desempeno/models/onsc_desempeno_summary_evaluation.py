@@ -112,7 +112,6 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                   ('evaluator_id', '=', self.env.user.employee_id.id),
                   ('evaluation_type', '=', 'environment_evaluation')], args_extended])
 
-
             args_extended = expression.OR(
                 [[('state_summary', 'in', ['draft', 'in_process']), ('evaluated_id', '=', self.env.user.employee_id.id),
                   ('evaluation_type', '=', 'environment_definition'),

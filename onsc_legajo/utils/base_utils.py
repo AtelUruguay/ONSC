@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import logging
-
-from odoo import models, _
-
-_logger = logging.getLogger(__name__)
+from odoo import models
 
 
 class ONSCLegajoUtils(models.AbstractModel):
@@ -84,20 +80,19 @@ class ONSCLegajoUtils(models.AbstractModel):
             ORDER BY j.contract_id, j.start_date ASC  -- Para tomar el primer puesto válido''', (tuple(contract_ids), date, date))
         result = self.env.cr.dictfetchall()
         return {rec['contract_id']: {'job_id': rec['job_id'],
-                                     'job_name':rec['job_name'],
-                                     'security_job_id':rec['security_job_id'],
-                                     'department_id':rec['department_id'],
-                                     'hierarchical_level_id':rec['hierarchical_level_id'],
-                                     'is_uo_manager':rec['is_uo_manager'],
-                                     'job_start_date':rec['start_date'],
-                                     'job_end_date':rec['end_date'],
+                                     'job_name': rec['job_name'],
+                                     'security_job_id': rec['security_job_id'],
+                                     'department_id': rec['department_id'],
+                                     'hierarchical_level_id': rec['hierarchical_level_id'],
+                                     'is_uo_manager': rec['is_uo_manager'],
+                                     'job_start_date': rec['start_date'],
+                                     'job_end_date': rec['end_date'],
                                      'level_0': rec['level_0'],
                                      'level_1': rec['level_1'],
                                      'level_2': rec['level_2'],
                                      'level_3': rec['level_3'],
                                      'level_4': rec['level_4'],
-                                     'level_5': rec['level_5'],
-                                    } for rec in result}
+                                     'level_5': rec['level_5']} for rec in result}
 
     def _get_historical_contract_data(self, contract_dict, _date):
         if contract_dict.get('eff_date') > _date:
