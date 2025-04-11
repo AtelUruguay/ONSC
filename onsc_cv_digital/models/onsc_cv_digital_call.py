@@ -320,8 +320,7 @@ class ONSCCVDigitalCall(models.Model):
 
     def test_json(self):
         self.send_notification_document_validators(self.call_number)
-        
-    
+
     def test_generate(self):
         self._generate_json(self.call_number)
 
@@ -800,11 +799,9 @@ class ONSCCVDigitalCall(models.Model):
         emailto = ','.join(users.filtered(lambda x: x.partner_id.email).mapped('partner_id.email'))
         template.with_context(call=call_number).send_mail(len(self) and self[0].id, email_values={'email_to': emailto})
 
-
     def test_send_notification_document_validators(self):
         self.send_notification_document_validators(self.call_number)
         self.send_notification_conditional(self.call_number)
-
 
     def button_print_cv_copy(self):
         res = {

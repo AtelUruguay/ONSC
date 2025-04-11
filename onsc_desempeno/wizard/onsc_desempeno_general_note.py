@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models
 
 
 class ONSCDesempenoGeneralNoteWizard(models.TransientModel):
@@ -13,4 +13,3 @@ class ONSCDesempenoGeneralNoteWizard(models.TransientModel):
     def action_confirm(self):
         self.evaluation_id.write({'general_comments': self.message})
         return True
-

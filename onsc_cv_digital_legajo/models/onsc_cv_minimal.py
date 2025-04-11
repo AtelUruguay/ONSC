@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from odoo import models, fields, api, tools, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
@@ -94,7 +92,6 @@ class ONSCCVMinimal(models.Model):
                                               compute='_compute_should_disable_form_edit')
     partner_id = fields.Many2one('res.partner', string="Contacto", copy=False)
     cv_full_name = fields.Char('Nombre', related='partner_id.cv_full_name', store=True)
-
 
     @api.onchange('cv_nro_doc')
     def onchange_cv_nro_doc(self):

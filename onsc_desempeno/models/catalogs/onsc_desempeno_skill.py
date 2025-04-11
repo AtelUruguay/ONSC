@@ -64,8 +64,11 @@ class ONSCDesempenoSkillLine(models.Model):
             _html2construct = HTML_HELP % (rec.sudo().dimension_id.definition or '')
             setattr(rec, help_field, _html2construct)
 
+
 class ONSCDesempenoEvaluationSkillLine(models.Model):
     _name = 'onsc.desempeno.evaluation.skill.line'
     _inherit = 'onsc.desempeno.skill.line'
 
-    frequency_id = fields.Many2one('onsc.desempeno.frequency.equivalence', string="Frecuencia del comportamiento esperado")
+    frequency_id = fields.Many2one(
+        'onsc.desempeno.frequency.equivalence',
+        string="Frecuencia del comportamiento esperado")

@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
-from odoo.addons.onsc_base.onsc_useful_tools import to_timestamp as to_timestamp
-
-from odoo import models, fields, _
+from odoo import models
 
 
 class ONSCLegajo(models.Model):

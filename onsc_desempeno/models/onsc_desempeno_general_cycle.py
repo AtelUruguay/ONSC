@@ -65,7 +65,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
     date_limit_toextend_360 = fields.Date(string='Fecha límite para la extensión de Etapa 360°')
     whitout_impact = fields.Boolean(string="Sin impacto en legajo")
 
-
     @api.depends('start_date')
     def _compute_is_edit_start_date(self):
         for record in self:

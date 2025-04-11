@@ -166,8 +166,6 @@ WHERE
         return result
 
 
-
-
 class ONSCLegajoPadronEstructureMovementsFilterWizard(models.TransientModel):
     _name = 'onsc.legajo.padron.estructure.movements.filter.wizard'
     _inherit = 'onsc.legajo.abstract.opaddmodify.security'

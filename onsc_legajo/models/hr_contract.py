@@ -123,7 +123,7 @@ class HrContract(models.Model):
                                          related='employee_id.cv_emissor_country_id', store=True)
     document_type_id = fields.Many2one('onsc.cv.document.type', string=u'Tipo de documento',
                                        related='employee_id.cv_document_type_id', store=True)
-    nro_doc = fields.Char(u'Número de documento',related='employee_id.cv_nro_doc', store=True)
+    nro_doc = fields.Char(u'Número de documento', related='employee_id.cv_nro_doc', store=True)
     program = fields.Char(string='Programa', history=True)
     project = fields.Char(string='Proyecto', history=True)
     regime_id = fields.Many2one(
@@ -488,6 +488,7 @@ class HrContract(models.Model):
         _logger.info('CRON: UPDATE  TRACEABILITY FIN')
         return True
 
+
 class HrContractHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.contract.model.history'
@@ -514,9 +515,11 @@ class HrContractStateTransactionHistory(models.Model):
         string='Estado destino del Contrato', required=False)
     contract_id = fields.Many2one('hr.contract', string='Contrato', required=True, index=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id', store=True)
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", related='contract_id.operating_unit_id',
-                                         store=True)
+    operating_unit_id = fields.Many2one(
+        "operating.unit",
+        string="Unidad ejecutora",
+        related='contract_id.operating_unit_id',
+        store=True)
     transaction_date = fields.Datetime(string='Fecha')
-
     create_uid = fields.Many2one('res.users', string='Creado por')
     create_date = fields.Datetime(string='Creado el')

@@ -26,7 +26,6 @@ class ONSCCVAbstractFormation(models.AbstractModel):
         store=False
     )
 
-
     @api.onchange('start_date')
     def onchange_start_date(self):
         if self.start_date and self.start_date > fields.Date.today():
