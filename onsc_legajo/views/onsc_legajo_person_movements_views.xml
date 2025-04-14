@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="onsc_legajo_person_movements_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.person.movements.tree</field>
+            <field name="model">onsc.legajo.person.movements</field>
+            <field name="arch" type="xml">
+                <tree string="Movimientos para una persona">
+                    <field name="nro_doc" optional="show"/>
+                    <field name="employee_id" string="Funcionario" optional="show"/>
+                    <field name="inciso_id" string="Inciso" optional="show"/>
+                    <field name="operating_unit_id" string="Unidad ejecutora" optional="show"/>
+                    <field name="department_id" string="UO" optional="show"/>
+                    <field name="move_type" optional="show"/>
+                    <field name="contract_legajo_state" optional="show"/>
+                    <field name="date_start" optional="show"/>
+                    <field name="is_uo_manager" optional="show"/>
+                    <field name="regime_id" optional="show"/>
+                    <field name="commission_regime_id" optional="show"/>
+                    <field name="date_end" optional="show"/>
+                    <field name="hierarchical_level_id" optional="hide"/>
+                    <field name="contract_id" string="Contrato" optional="hide"/>
+                    <field name="inciso_origin_id" optional="hide"/>
+                    <field name="operating_unit_origin_id" optional="hide"/>
+                    <field name="origin_department_id" optional="hide"/>
+                    <field name="inciso_dest_id" optional="hide"/>
+                    <field name="operating_unit_dest_id" optional="hide"/>
+                    <field name="target_department_id" optional="hide"/>
+                    <field name="descriptor1_id" optional="hide"/>
+                    <field name="descriptor2_id" optional="hide"/>
+                    <field name="descriptor3_id" optional="hide"/>
+                    <field name="descriptor4_id" optional="hide"/>
+                    <field name="public_admin_entry_date" optional="hide"/>
+                    <field name="first_operating_unit_entry_date" optional="hide"/>
+                    <field name="date_end_commission" optional="hide"/>
+                    <field name="reason_description" optional="hide"/>
+                    <field name="reason_deregistration" optional="hide"/>
+                    <field name="income_mechanism_id" optional="hide"/>
+                    <field name="causes_discharge_id" optional="hide"/>
+                    <field name="extinction_commission_id" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_person_movements_search" model="ir.ui.view">
+            <field name="name">onsc.legajo.person.movements.search</field>
+            <field name="model">onsc.legajo.person.movements</field>
+            <field name="arch" type="xml">
+                <search string="Movimientos para una persona">
+                    <field name="employee_id" string="Funcionario"/>
+                    <field name="contract_id" string="Contrato"/>
+                    <field name="department_id" string="UO"/>
+                    <group string="Agrupar por">
+                        <filter name="group_move_type" string="Estado del contrato"
+                            context="{'group_by': 'move_type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id='onsc_legajo_person_movements_action' model='ir.actions.act_window'>
+            <field name="name">Movimientos para una persona</field>
+            <field name="res_model">onsc.legajo.person.movements</field>
+            <field name="view_mode">tree</field>
+            <field name="target">main</field>
+            <field name="context">{
+                'is_from_menu':True,
+                'is_legajo':True,
+                'active_test': False,
+                'ignore_base_restrict': True
+            }</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_person_movements_tree')})]"/>
+            <field name="search_view_id" ref="onsc_legajo.onsc_legajo_person_movements_search"/>
+            <field name="limit">1500</field>
+        </record>
+    </data>
+</odoo>
