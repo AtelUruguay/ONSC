@@ -26,7 +26,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     date_to = fields.Date(string='Fecha de fin', required=True)
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute="_compute_employee_domain")
-    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
+    contract_id = fields.Many2one('hr.contract', string='Contrato')
     contract_id_domain = fields.Char(string="Dominio Contrato", compute="_compute_contract_domain")
     show_contract = fields.Boolean(string="Mostrar contratos?", compute="_compute_contract_domain")
 
@@ -50,7 +50,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                     rec.contract_id = contracts.id
                 else:
                     rec.show_contract = True
-                    rec.contract_id = False
+
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
                 rec.show_contract = False
@@ -73,6 +73,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         self.date_to = False
         self.employee_id = False
         self.contract_id = False
+
 
     @api.onchange('date_from', 'date_to')
     def _onchange_dates(self):
@@ -172,6 +173,9 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
             ELSE null
         END AS date_start_commission,
         CASE
+            WHEN history.to_state = 'active' and contract.reason_description = '%s'  THEN 'ascenso'
+            WHEN history.to_state = 'active' and contract.reason_description = '%s'  THEN 'transforma'
+            WHEN history.to_state = 'active' and contract.reason_description = '%s' THEN 'reestructura'
             WHEN history.to_state = 'active' and history.from_state is null and contract.cs_contract_id is null  THEN 'alta'
             WHEN history.to_state = 'baja' and contract.cs_contract_id is null  THEN 'baja'
             WHEN history.to_state = 'incoming_commission' and contract.cs_contract_id is null  THEN 'comision_alta'
@@ -185,7 +189,9 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                 WHERE pe.contract_id = history.contract_id and to_state = 'active' and from_state is null
               )
             THEN 'comision_baja'
-            ELSE null
+        
+           WHEN history.to_state = 'reserved' THEN 'reserva'
+           ELSE null
         END AS move_type
        
     FROM hr_contract contract
@@ -193,7 +199,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     WHERE
         contract.id = %s AND
         history.transaction_date::DATE BETWEEN '%s' AND '%s' 
-    """ % (contract.id, date_from, date_to)
+    """ % (self.env.user.company_id.ws7_new_ascenso_reason_description, self.env.user.company_id.ws7_new_transforma_reason_description, self.env.user.company_id.ws7_new_reestructura_reason_description,contract.id, date_from, date_to)
 
         return _sql1
 

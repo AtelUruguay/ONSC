@@ -24,7 +24,7 @@
                            context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                            domain="employee_id_domain"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                    <field name="contract_id"
+                    <field name="contract_id"  required="1"
                            domain="contract_id_domain"
                            attrs="{'invisible': [('show_contract', '=', False)]}"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
