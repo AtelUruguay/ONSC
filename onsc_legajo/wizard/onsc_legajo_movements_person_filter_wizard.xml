@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ejecutar consulta Movimientos de una persona -->
+    <record id="view_onsc_legajo_person_movements_filter_wizard_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.person.movements.filter.wizard.form</field>
+        <field name="model">onsc.legajo.person.movements.filter.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Movimientos para una persona ">
+                <group>
+                    <field name="inciso_id"
+                           required="1"
+                           attrs="{'readonly': [('is_user_admin', '=', False)]}"
+                           force_save="1"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="operating_unit_id"
+                           domain="[('inciso_id', '=', inciso_id)]"
+                           attrs="{'readonly': [('is_user_admin', '=', False),('is_user_inciso', '=', False)],'required': [('is_user_operating_unit', '=', True)]}"
+                           force_save="1"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="employee_id" string="C.I." required="1"
+                           context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
+                           domain="employee_id_domain"
+                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                    <field name="contract_id"
+                           domain="contract_id_domain"
+                           attrs="{'invisible': [('show_contract', '=', False)]}"
+                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+
+                    <field name="is_user_admin" invisible="1"/>
+                    <field name="is_user_inciso" invisible="1"/>
+                    <field name="is_user_operating_unit" invisible="1"/>
+                    <field name="is_user_consulta" invisible="1"/>
+                    <field name="employee_id_domain" invisible="1"/>
+                    <field name="show_contract" invisible="1" />
+                    <field name="contract_id_domain" invisible="1"/>
+                </group>
+                <footer>
+                    <button string="Mostrar" name="action_show" type="object" class="oe_highlight" data-hotkey="m"/>
+                    <button string="Cancelar" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_onsc_legajo_person_movements_filter_wizard_form" model="ir.actions.act_window">
+        <field name="name">Filtro Reporte Movimientos para una persona </field>
+        <field name="res_model">onsc.legajo.person.movements.filter.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_onsc_legajo_person_movements_filter_wizard_form"/>
+        <field name="context">{'is_person_movements': True}</field>
+        <field name="target">new</field>
+    </record>
+
+
+</odoo>
