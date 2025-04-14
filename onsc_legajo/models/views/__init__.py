@@ -9,4 +9,4 @@ from . import onsc_legajo_padron_movements
 from . import onsc_legajo_vote_registry_pending
 from . import onsc_legajo_change_uo_movements
 from . import onsc_legajo_person_movements
-from . import onsc_legajo_person_movements
+

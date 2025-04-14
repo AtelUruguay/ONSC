@@ -67,8 +67,7 @@
                 'is_from_menu':True,
                 'is_legajo':True,
                 'active_test': False,
-                'ignore_base_restrict': True,
-                'is_from_padron_report': True
+                'ignore_base_restrict': True
             }</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_person_movements_tree')})]"/>
