@@ -209,7 +209,11 @@ class ONSCLegajoAltaVL(models.Model):
     judicial_antecedents_ids = fields.One2many(comodel_name='onsc.legajo.judicial.antecedents',
                                                inverse_name='alta_vl_id', string="Antecedentes judiciales")
 
-    summary_message = fields.Char(string="Mensaje de Sumarios", compute='_compute_summary_message',  store=False, copy=False)
+    summary_message = fields.Char(
+        string="Mensaje de Sumarios",
+        compute='_compute_summary_message',
+        store=False,
+        copy=False)
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -341,7 +345,7 @@ class ONSCLegajoAltaVL(models.Model):
             cond2 = legajo and not legajo.public_admin_entry_date and rec.date_income_public_administration
             rec.show_date_income_change_notification = rec.state in ['borrador', 'error_sgh'] and (cond1 or cond2)
 
-    @api.depends('cv_emissor_country_id','cv_emissor_country_id','partner_id')
+    @api.depends('cv_emissor_country_id', 'cv_emissor_country_id', 'partner_id')
     def _compute_summary_message(self):
         Summary = self.env['onsc.legajo.summary'].suspend_security()
         for rec in self:

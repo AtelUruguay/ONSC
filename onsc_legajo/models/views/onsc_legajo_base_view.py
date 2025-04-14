@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, tools
+from odoo import models, tools
 
 
 class ONSCLegajoBaseView(models.Model):

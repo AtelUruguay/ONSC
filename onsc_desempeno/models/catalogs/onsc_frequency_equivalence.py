@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-import logging
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import models, fields
 
-_logger = logging.getLogger(__name__)
 
 class ONSCDesempenoGradequivalence(models.Model):
     _name = 'onsc.desempeno.grade.equivalence'
@@ -41,6 +38,7 @@ class ONSCDesempenoGradequivalence(models.Model):
         else:
             args = [('min_value', '<=', value), ('max_value', '>=', value)]
         return self.search(args, limit=1)
+
 
 class ONSCDesempenoFrequencyEquivalence(models.Model):
     _name = 'onsc.desempeno.frequency.equivalence'

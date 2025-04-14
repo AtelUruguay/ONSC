@@ -254,7 +254,7 @@ class ONSCLegajoMassCambioUO(models.Model):
                 department = department_id
             args = [
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
-                ('contract_id.operating_unit_id','=',department.operating_unit_id.id),
+                ('contract_id.operating_unit_id', '=', department.operating_unit_id.id),
                 ('department_id', '=', department.id),
                 '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)
             ]

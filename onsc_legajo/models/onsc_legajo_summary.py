@@ -43,7 +43,7 @@ class ONSCLegajoSummary(models.Model):
     suspension = fields.Selection(SNSELECTION, string='Suspensión preventiva')
     start_date_suspension = fields.Date("Inicio")
     end_date_suspension = fields.Date("Fin")
-    retention_percentage = fields.Float("Retención de haberes con porcentajes")
+    retention_percentage = fields.Char("Retención de haberes con porcentajes")
     instructor_name = fields.Char("Nombre completo")
     instructor_email = fields.Char("Correo electrónico")
     penalty_type_id = fields.Many2one("onsc.legajo.penalty.type", string=u"Tipo de sanción")
@@ -123,13 +123,15 @@ class ONSCLegajoSummary(models.Model):
                 record.inciso_id = inciso_id.id
                 record.inciso_name = inciso_id.name
 
-    @api.depends('operating_unit_code','inciso_id')
+    @api.depends('operating_unit_code', 'inciso_id')
     def _compute_operating_unit_id(self):
         OperatingUnit = self.env['operating.unit'].suspend_security()
         for record in self:
 
-            operating_unit_id = OperatingUnit.search([('budget_code', '=', record.operating_unit_code),
-                                                             ('inciso_id','=', record.inciso_id.id)], limit=1)
+            operating_unit_id = OperatingUnit.search([
+                ('budget_code', '=', record.operating_unit_code),
+                ('inciso_id', '=', record.inciso_id.id)
+            ], limit=1)
 
             if operating_unit_id:
                 record.operating_unit_id = operating_unit_id.id
@@ -167,8 +169,7 @@ class ONSCLegajoSummary(models.Model):
             ('country_id', '=', country_id.id),
             ('cv_document_type_id', '=', cv_document_type_id.id),
             ('nro_doc', '=', nro_doc),
-            ('penalty_type_id.warning', '=', 's')
-            ]) > 0
+            ('penalty_type_id.warning', '=', 's')]) > 0
 
     def _update_empty_legajo_records(self, legajo):
         """
@@ -188,7 +189,7 @@ class ONSCLegajoSummary(models.Model):
             ('country_id', '=', legajo.emissor_country_id.id),
             ('cv_document_type_id', '=', legajo.document_type_id.id),
             ('nro_doc', '=', legajo.nro_doc),
-            ('legajo_id','=', False)
+            ('legajo_id', '=', False)
         ]).write({'legajo_id': legajo.id})
 
 
