@@ -12,13 +12,8 @@ MOV = [
     ('transforma', 'Transformación'),
     ('reestructura', 'Reestructura'),
     ('reserva', 'Reserva'),
-    ('desreserva', 'Desreserva'),
-    ('renovacion', 'Renovación'),
-    ('correcion_ascenso', 'Correción ascenso'),
-    ('correcion_alta', 'Correción alta'),
-    ('correcion_baja', 'Correción baja'),
-    ('cambio_jornada', 'Cambio Jornada'),
-    ('modfu', 'Modificación funcionario'),
+    ('cambio_uo', 'Cambio de UO'),
+    ('renovacion', 'Renovación')
 ]
 
 
@@ -87,5 +82,6 @@ class ONSCLegajoPersonMovements(models.Model):
     target_department_id = fields.Many2one('hr.department', 'UO Destino')
     move_type = fields.Selection(MOV, string='Tipo de Movimiento')
     transaction_date = fields.Date(string='Fecha de transacción (PARA TEST)')
-
-
+    legajo_state_id = fields.Many2one(
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones')
