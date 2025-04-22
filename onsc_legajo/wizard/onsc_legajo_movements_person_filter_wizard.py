@@ -66,7 +66,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         Contract = self.env['hr.contract'].suspend_security()
         args = [('inciso_id', '=', self.inciso_id.id),
                 ('date_start', '<=', fields.Date.to_string(self.date_from)), '|',
-                ('date_end', '>=', fields.Date.to_string(self.date_to)), ('date_end', '=', False)]
+                ('date_end', '<=', fields.Date.to_string(self.date_to)), ('date_end', '=', False)]
         if self.employee_id:
             args = expression.AND([[('employee_id', '=', self.employee_id.id)], args])
 
