@@ -38,6 +38,8 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                 employees = contracts.mapped('employee_id')
                 if employees:
                     rec.employee_id_domain = json.dumps([('id', 'in', employees.ids)])
+                else:
+                    rec.employee_id_domain = json.dumps([('id', '=', False)])
             else:
                 rec.employee_id_domain = json.dumps([('id', '=', False)])
 
@@ -63,7 +65,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     def _get_contracts(self):
         Contract = self.env['hr.contract'].suspend_security()
         args = [('inciso_id', '=', self.inciso_id.id),
-                ('date_start', '>=', fields.Date.to_string(self.date_from)), '|',
+                ('date_start', '<=', fields.Date.to_string(self.date_from)), '|',
                 ('date_end', '<=', fields.Date.to_string(self.date_to)), ('date_end', '=', False)]
         if self.employee_id:
             args = expression.AND([[('employee_id', '=', self.employee_id.id)], args])

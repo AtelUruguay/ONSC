@@ -51,7 +51,7 @@
                     <field name="contract_id" string="Contrato"/>
                     <field name="department_id" string="UO"/>
                     <group string="Agrupar por">
-                        <filter name="group_move_type" string="Estado del contrato"
+                        <filter name="group_move_type" string="Tipo de movimiento"
                             context="{'group_by': 'move_type'}"/>
                     </group>
                 </search>
