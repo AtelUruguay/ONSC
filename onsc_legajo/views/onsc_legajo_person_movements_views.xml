@@ -11,6 +11,7 @@
                     <field name="inciso_id" string="Inciso" optional="show"/>
                     <field name="operating_unit_id" string="Unidad ejecutora" optional="show"/>
                     <field name="department_id" string="UO" optional="show"/>
+                    <field name="transaction_date"  optional="show"/>
                     <field name="move_type" optional="show"/>
                     <field name="contract_legajo_state" optional="show"/>
                     <field name="date_start" optional="show"/>

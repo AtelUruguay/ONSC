@@ -81,7 +81,7 @@ class ONSCLegajoPersonMovements(models.Model):
     origin_department_id = fields.Many2one('hr.department', string="UO Origen")
     target_department_id = fields.Many2one('hr.department', 'UO Destino')
     move_type = fields.Selection(MOV, string='Tipo de Movimiento')
-    transaction_date = fields.Date(string='Fecha de transacción (PARA TEST)')
+    transaction_date = fields.Date(string='Fecha del Movimiento')
     legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones')
