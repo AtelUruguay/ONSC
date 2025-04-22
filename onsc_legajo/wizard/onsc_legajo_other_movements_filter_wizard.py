@@ -24,135 +24,12 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     )
     date_from = fields.Date(string='Fecha de inicio', required=True)
     date_to = fields.Date(string='Fecha de fin', required=True)
-    employee_id = fields.Many2one("hr.employee", string="Funcionario")
-    employee_id_domain = fields.Char(string="Dominio Funcionario", compute="_compute_employee_domain")
-    contract_id = fields.Many2one('hr.contract', string='Contrato')
-    contract_id_domain = fields.Char(string="Dominio Contrato", compute="_compute_contract_domain")
-    show_contract = fields.Boolean(string="Mostrar contratos?", compute="_compute_contract_domain")
-
-    @api.depends('date_from', 'date_to', 'inciso_id', 'operating_unit_id')
-    def _compute_employee_domain(self):
-        for rec in self:
-            if self.date_from and self.date_to:
-                contracts = self._get_contracts()
-                employees = contracts.mapped('employee_id')
-                if employees:
-                    rec.employee_id_domain = json.dumps([('id', 'in', employees.ids)])
-            else:
-                rec.employee_id_domain = json.dumps([('id', '=', False)])
-
-    @api.depends('employee_id')
-    def _compute_contract_domain(self):
-        for rec in self:
-            if self.date_from and self.date_to:
-                contracts = self._get_contracts()
-                if contracts and rec.employee_id:
-                    rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
-                    if len(contracts) == 1:
-                        rec.show_contract = False
-                        rec.contract_id = contracts.id
-                    else:
-                        rec.show_contract = True
-                else:
-                    rec.contract_id_domain = json.dumps([('id', '=', False)])
-                    rec.show_contract = False
-            else:
-                rec.contract_id_domain = json.dumps([('id', '=', False)])
-                rec.show_contract = False
-
-    def _get_contracts(self):
-        Contract = self.env['hr.contract'].suspend_security()
-        args = [('inciso_id', '=', self.inciso_id.id),
-                ('date_start', '>=', fields.Date.to_string(self.date_from)), '|',
-                ('date_end', '<=', fields.Date.to_string(self.date_to)), ('date_end', '=', False)]
-        if self.employee_id:
-            args = expression.AND([[('employee_id', '=', self.employee_id.id)], args])
-
-        if self.operating_unit_id:
-            args = expression.AND([[('operating_unit_id', '=', self.operating_unit_id.id)], args])
-        contracts_from_domain = Contract.suspend_security().search(args)
-        self.env.cr.execute(self._get_contract_ids())
-
-        ids_from_sql = [row[0] for row in self.env.cr.fetchall()]
-        all_ids = list(set(contracts_from_domain.ids + ids_from_sql))
-
-        return Contract.browse(all_ids)
-
-    def _get_contract_ids(self):
-        _sql1 = """
-        SELECT
-            contract.id AS id
-                
-        FROM (
-            SELECT
-                id,
-                record_date,
-                res_id ,
-                (history_data::jsonb)->>'contract_expiration_date' AS current_exp_date ,
-                LAG((history_data::jsonb)->>'contract_expiration_date',1, 'false') OVER (
-                    PARTITION BY res_id ORDER BY id 
-                ) AS previous_exp_date,
-                eff_date_from,
-                eff_date_to
-            FROM hr_contract_model_history
-        ) sub
-        LEFT JOIN hr_contract contract ON contract.id = sub.res_id
-        WHERE
-            current_exp_date IS DISTINCT FROM previous_exp_date AND
-            current_exp_date IS DISTINCT FROM contract.contract_expiration_date::text
-            and inciso_id = %s and eff_date_from >= '%s' AND
-            eff_date_to <= '%s'""" % (
-        self.inciso_id.id, fields.Date.to_string(self.date_from), fields.Date.to_string(self.date_to))
-
-        _sql2 = """
-        SELECT
-            contract.id AS id
-        FROM  hr_contract contract
-        WHERE  contract.contract_expiration_date is not null
-            and contract.contract_expiration_date::text != 'false'
-            and (select (history_data::jsonb)->>'contract_expiration_date' AS current_exp_date 
-            from hr_contract_model_history where id = prev_history_id) IS DISTINCT FROM contract.contract_expiration_date::text
-            and inciso_id = %s and date_start >= '%s' and (date_end <='%s' or date_end is null)
-        """ % (self.inciso_id.id, fields.Date.to_string(self.date_from), fields.Date.to_string(self.date_to))
-
-        _sql3 = """
-        SELECT 
-            distinct contract.id AS id
-        FROM onsc_legajo_cambio_uo uo left join hr_contract contract ON contract.id = uo.contract_id
-        WHERE uo.state = 'confirmado' AND uo.department_id != 
-            (SELECT department_id FROM hr_job WHERE contract_id = contract.id AND start_date < uo.date_start 
-            ORDER BY start_date DESC LIMIT 1) AND contract.inciso_id = %s and
-            uo.date_start::DATE BETWEEN '%s' AND '%s'  
-        """ % (self.inciso_id.id, fields.Date.to_string(self.date_from), fields.Date.to_string(self.date_to))
-
-        if self.operating_unit_id:
-            _sql1 += '''
-                AND contract.operating_unit_id = %s''' % (self.operating_unit_id.id)
-            _sql2 += '''
-                AND contract.operating_unit_id = %s''' % (self.operating_unit_id.id)
-            _sql3 += '''
-                AND contract.operating_unit_id = %s''' % (self.operating_unit_id.id)
-
-        if self.employee_id:
-            _sql1 += '''
-                AND contract.employee_id = %s''' % (self.employee_id.id)
-            _sql2 += '''
-                AND contract.employee_id = %s''' % (self.employee_id.id)
-            _sql3 += '''
-                           AND contract.employee_id = %s''' % (self.employee_id.id)
-
-        return _sql1 + '''
-        UNION ALL
-        ''' + _sql2 + '''
-        UNION ALL
-        ''' + _sql3
 
     @api.onchange('inciso_id', 'operating_unit_id')
     def _onchange_inciso_operating_unit(self):
         self.date_from = False
         self.date_to = False
-        self.employee_id = False
-        self.contract_id = False
+
 
     @api.onchange('date_from', 'date_to')
     def _onchange_dates(self):
@@ -165,17 +42,15 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         if self.date_to and self.date_to > fields.Date.today():
             self.date_to = False
             return cv_warning(_("La fecha hasta no puede ser mayor a la fecha actual."))
-        self.employee_id = False
-        self.contract_id = False
 
     def _is_group_admin_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_report_person_movements_consult')
+        return self.user_has_groups('onsc_legajo.group_legajo_report_other_movements_consult')
 
     def _is_group_inciso_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_report_person_movements_inciso')
+        return self.user_has_groups('onsc_legajo.group_legajo_report_other_movements_inciso')
 
     def _is_group_ue_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_report_person_movements_ue')
+        return self.user_has_groups('onsc_legajo.group_legajo_report_other_movements_ue')
 
     def action_show(self):
         action = self.env.ref('onsc_legajo.onsc_legajo_person_movements_action').sudo().read()[0]
@@ -188,20 +63,17 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
             'inciso_id': self.inciso_id.id,
             'date_from': self.date_from,
             'date_to': self.date_to,
-            'employee_id': self.employee_id.id,
-            'contract_id': self.contract_id.id,
             'token': _token,
         }
         self._set_info(
             _token,
             self.date_from,
-            self.date_to,
-            self.contract_id)
+            self.date_to)
         action['domain'] = [('token', '=', _token)]
         action['context'] = new_context
         return action
 
-    def _get_base_sql(self, date_from, date_to, contract):
+    def _get_base_sql(self, date_from, date_to):
         _sql1 = """
     WITH primer_estado AS (
       SELECT contract_id, from_state,to_state
@@ -477,5 +349,5 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
             new_record.pop('eff_date')
 
             bulked_vals.append(new_record)
-        result = self.env['onsc.legajo.person.movements'].sudo().create(bulked_vals)
+        result = self.env['onsc.legajo.other.movements'].sudo().create(bulked_vals)
         return result
