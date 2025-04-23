@@ -72,7 +72,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
 
         if self.operating_unit_id:
             args = expression.AND([[('operating_unit_id', '=', self.operating_unit_id.id)], args])
-        contracts_from_domain = Contract.suspend_security().search(args)
+        contracts_from_domain = Contract.search(args)
         self.env.cr.execute(self._get_contract_ids())
 
         ids_from_sql = [row[0] for row in self.env.cr.fetchall()]
