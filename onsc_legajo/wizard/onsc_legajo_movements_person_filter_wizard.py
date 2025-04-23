@@ -63,16 +63,17 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                 rec.show_contract = False
 
     def _get_contracts(self):
+        ContractHistory = self.env['hr.contract.state.transaction.history'].suspend_security()
         Contract = self.env['hr.contract'].suspend_security()
         args = [('inciso_id', '=', self.inciso_id.id),
-                ('date_start', '<=', fields.Date.to_string(self.date_from)), '|',
-                ('date_end', '<=', fields.Date.to_string(self.date_to)), ('date_end', '=', False)]
+                ('transaction_date', '>=', fields.Date.to_string(self.date_from)),
+                ('transaction_date', '<=', fields.Date.to_string(self.date_to))]
         if self.employee_id:
-            args = expression.AND([[('employee_id', '=', self.employee_id.id)], args])
+            args = expression.AND([[('contract_id.employee_id', '=', self.employee_id.id)], args])
 
         if self.operating_unit_id:
             args = expression.AND([[('operating_unit_id', '=', self.operating_unit_id.id)], args])
-        contracts_from_domain = Contract.suspend_security().search(args)
+        contracts_from_domain = ContractHistory.suspend_security().search(args).mapped('contract_id')
         self.env.cr.execute(self._get_contract_ids())
 
         ids_from_sql = [row[0] for row in self.env.cr.fetchall()]
@@ -204,79 +205,82 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         return action
 
     def _get_base_sql(self, date_from, date_to, contract):
-        _sql1 = """
-    WITH primer_estado AS (
-      SELECT contract_id, from_state,to_state
-      FROM hr_contract contract
-      LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
-      ORDER BY transaction_date ASC
-      LIMIT 1
+        _sql1 = """WITH primer_estado AS (
+        SELECT contract_id, from_state, to_state
+        FROM hr_contract contract
+        LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
+        ORDER BY transaction_date ASC
+        LIMIT 1
+    ),
+    movimientos_filtrados AS (
+        SELECT
+            history.id AS id,
+            history.id AS history_id,
+            contract.id AS contract_id,
+            contract.legajo_id,
+            contract.inciso_id,
+            contract.operating_unit_id,
+            contract.employee_id,
+            contract.date_start,
+            contract.nro_doc,
+            contract.public_admin_entry_date,
+            contract.first_operating_unit_entry_date,
+            contract.descriptor1_id,
+            contract.descriptor2_id,
+            contract.descriptor3_id,
+            contract.descriptor4_id,
+            contract.regime_id,
+            contract.commission_regime_id,
+            contract.inciso_origin_id,
+            contract.operating_unit_origin_id,
+            contract.inciso_dest_id,
+            contract.operating_unit_dest_id,
+            contract.eff_date,
+            contract.date_start,
+            contract.date_end,
+            contract.date_end_commission,
+            contract.reason_description,
+            contract.reason_deregistration,
+            contract.income_mechanism_id,
+            contract.causes_discharge_id,
+            contract.extinction_commission_id,
+            history.to_state AS contract_legajo_state,
+            history.transaction_date::DATE,
+            CASE
+                WHEN history.to_state IN ('outgoing_commission', 'incoming_commission') THEN contract.eff_date
+                ELSE NULL
+            END AS date_start_commission,
+            CASE
+                WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'ascenso'
+                WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'transforma'
+                WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'reestructura'
+                WHEN history.to_state = 'active' AND history.from_state IS NULL AND (contract.cs_contract_id IS NULL or contract.parent_id IS NULL)THEN 'alta'
+                WHEN history.to_state = 'baja' AND contract.cs_contract_id IS NULL THEN 'baja'
+                WHEN history.to_state = 'incoming_commission' AND contract.cs_contract_id IS NULL THEN 'comision_alta'
+                WHEN (history.to_state = 'outgoing_commission' AND (contract.cs_contract_id IS NULL  or contract.parent_id IS NULL))
+                  OR (history.to_state = 'outgoing_commission' AND history.from_state = 'active') THEN 'comision_alta'
+                WHEN history.to_state = 'baja' AND history.from_state = 'incoming_commission' AND contract.extinction_commission_id IS NOT NULL THEN 'comision_baja'
+                WHEN history.to_state = 'active' AND history.from_state = 'incoming_commission' THEN 'comision_baja'
+                WHEN history.to_state = 'baja'
+                  AND history.from_state = 'outgoing_commission'
+                  AND NOT EXISTS (
+                      SELECT 1 FROM primer_estado pe
+                      WHERE pe.contract_id = history.contract_id AND to_state = 'active' AND from_state IS NULL
+                  ) THEN 'comision_baja'
+                WHEN history.to_state = 'reserved' THEN 'reserva'
+                ELSE NULL
+            END AS move_type,
+            NULL::integer AS origin_department_id,
+            NULL::integer AS target_department_id
+        FROM hr_contract contract
+        LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
+        WHERE
+            contract.id = %s AND
+            history.transaction_date::DATE BETWEEN '%s' AND '%s'
     )
-    SELECT
-        history.id AS id,
-        history.id AS history_id,
-        contract.id AS contract_id,
-        contract.legajo_id,
-        contract.inciso_id,
-        contract.operating_unit_id,
-        contract.employee_id,
-        contract.date_start,
-        contract.nro_doc,
-        contract.public_admin_entry_date,
-        contract.first_operating_unit_entry_date,
-        contract.descriptor1_id,
-        contract.descriptor2_id,
-        contract.descriptor3_id,
-        contract.descriptor4_id,
-        contract.regime_id,
-        contract.commission_regime_id,
-        contract.inciso_origin_id,
-        contract.operating_unit_origin_id,
-        contract.inciso_dest_id,
-        contract.operating_unit_dest_id,
-        contract.eff_date,
-        contract.date_start,
-        contract.date_end,
-        contract.date_end_commission,
-        contract.reason_description,
-        contract.reason_deregistration,
-        contract.income_mechanism_id,
-        contract.causes_discharge_id,
-        contract.extinction_commission_id,
-        history.to_state AS contract_legajo_state,
-        history.transaction_date::DATE,
-        CASE
-            WHEN history.to_state in ('outgoing_commission','incoming_commission') THEN  contract.eff_date
-            ELSE null
-        END AS date_start_commission,
-        CASE
-            WHEN history.to_state = 'active' and contract.reason_description = '%s'  THEN 'ascenso'
-            WHEN history.to_state = 'active' and contract.reason_description = '%s'  THEN 'transforma'
-            WHEN history.to_state = 'active' and contract.reason_description = '%s' THEN 'reestructura'
-            WHEN history.to_state = 'active' and history.from_state is null and contract.cs_contract_id is null  THEN 'alta'
-            WHEN history.to_state = 'baja' and contract.cs_contract_id is null  THEN 'baja'
-            WHEN history.to_state = 'incoming_commission' and contract.cs_contract_id is null  THEN 'comision_alta'
-            WHEN (history.to_state = 'outgoing_commission' and contract.cs_contract_id is null) or (history.to_state = 'outgoing_commission' and history.from_state = 'active') THEN 'comision_alta'
-            WHEN history.to_state = 'baja' and history.from_state = 'incoming_commission' and contract.extinction_commission_id is not null THEN 'comision_baja'
-            WHEN history.to_state = 'active' and history.from_state = 'incoming_commission' THEN 'comision_baja'
-            WHEN history.to_state = 'baja'
-              AND history.from_state = 'outgoing_commission'
-              AND NOT EXISTS (
-                SELECT 1 FROM primer_estado pe
-                WHERE pe.contract_id = history.contract_id and to_state = 'active' and from_state is null
-              )
-            THEN 'comision_baja'
-        
-           WHEN history.to_state = 'reserved' THEN 'reserva'
-           ELSE null
-        END AS move_type,
-        NULL::integer AS origin_department_id,
-	    NULL::integer AS target_department_id
-    FROM hr_contract contract
-    LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
-    WHERE
-        contract.id = %s AND
-        history.transaction_date::DATE BETWEEN '%s' AND '%s' 
+    
+    SELECT * FROM movimientos_filtrados
+    WHERE move_type IS NOT NULL
     """ % (self.env.user.company_id.ws7_new_ascenso_reason_description,
            self.env.user.company_id.ws7_new_transforma_reason_description,
            self.env.user.company_id.ws7_new_reestructura_reason_description, contract.id, date_from, date_to)
@@ -314,7 +318,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
             contract.causes_discharge_id,
             contract.extinction_commission_id,
             (select to_state from hr_contract_state_transaction_history where contract_id = contract.id and transaction_date <=record_date order by transaction_date desc limit 1)  AS contract_legajo_state,
-            (select transaction_date from hr_contract_state_transaction_history where contract_id = contract.id and transaction_date <=record_date order by transaction_date desc limit 1)::DATE AS transaction_date,
+            sub.eff_date_from::DATE  AS transaction_date,
             contract.date_end_commission, 
             'renovacion' AS move_type,
              NULL::integer AS origin_department_id,
@@ -333,7 +337,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         ) sub
         LEFT JOIN hr_contract contract ON contract.id = sub.res_id
     WHERE
-        res_id = %s AND
+        res_id = %s AND  previous_exp_date != 'false' AND
         current_exp_date IS DISTINCT FROM previous_exp_date AND 
         eff_date_from >= '%s' AND
         eff_date_to <= '%s'
@@ -372,7 +376,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         contract.causes_discharge_id,
         contract.extinction_commission_id,
         (select to_state from hr_contract_state_transaction_history where contract_id = contract.id and transaction_date <=rec_date order by transaction_date desc limit 1)  AS contract_legajo_state,
-        (select transaction_date from hr_contract_state_transaction_history where contract_id = contract.id and transaction_date <=rec_date order by transaction_date desc limit 1)::DATE AS transaction_date,
+        sub2.eff_date_from::DATE AS transaction_date,
         contract.date_end_commission, 
         'renovacion' AS move_type,
         NULL::integer AS origin_department_id,
@@ -424,7 +428,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         contract.causes_discharge_id,
         contract.extinction_commission_id,
         (select to_state from hr_contract_state_transaction_history where contract_id = contract.id and transaction_date <=rec_date order by transaction_date desc limit 1)  AS contract_legajo_state,
-        (select transaction_date from hr_contract_state_transaction_history where contract_id = contract.id and transaction_date <=rec_date order by transaction_date desc limit 1)::DATE AS transaction_date,
+        uo.date_start::DATE AS transaction_date,
         contract.date_end_commission, 
         'cambio_uo' AS move_type,
         (SELECT department_id FROM hr_job WHERE contract_id = contract.id AND start_date < uo.date_start ORDER BY start_date DESC LIMIT 1)as origin_department_id,
