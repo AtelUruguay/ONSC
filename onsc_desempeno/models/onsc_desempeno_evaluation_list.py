@@ -264,7 +264,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation_stages = self.env['onsc.desempeno.evaluation.stage'].search([
             ('start_date', '<=', fields.Date.today()),
             ('end_date', '>=', fields.Date.today()),
-            ('closed_stage', '=', False)
+            ('closed_stage', '=', False),
         ])
         for evaluation_stage in evaluation_stages:
             department_inlist = self._get_evaluation_list_departments(evaluation_stage)
@@ -279,7 +279,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         exluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
 
         self._cr.execute(
-            """SELECT DISTINCT current_job_id FROM onsc_desempeno_evaluation WHERE current_job_id IS NOT NULL""")
+            """SELECT DISTINCT current_job_id FROM onsc_desempeno_evaluation WHERE current_job_id IS NOT NULL AND evaluation_stage_id=%s""" % evaluation_stage.id)
         result = self._cr.fetchall()
         evaluation_current_job_ids = [value[0] for value in result]
 
