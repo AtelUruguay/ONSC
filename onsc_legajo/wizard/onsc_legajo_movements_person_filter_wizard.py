@@ -63,17 +63,16 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                 rec.show_contract = False
 
     def _get_contracts(self):
-        ContractHistory = self.env['hr.contract.state.transaction.history'].suspend_security()
         Contract = self.env['hr.contract'].suspend_security()
         args = [('inciso_id', '=', self.inciso_id.id),
-                ('transaction_date', '>=', fields.Date.to_string(self.date_from)),
-                ('transaction_date', '<=', fields.Date.to_string(self.date_to))]
+                ('date_start', '<=', fields.Date.to_string(self.date_to)), '|',
+                ('date_end', '>=', fields.Date.to_string(self.date_from)), ('date_end', '=', False)]
         if self.employee_id:
-            args = expression.AND([[('contract_id.employee_id', '=', self.employee_id.id)], args])
+            args = expression.AND([[('employee_id', '=', self.employee_id.id)], args])
 
         if self.operating_unit_id:
             args = expression.AND([[('operating_unit_id', '=', self.operating_unit_id.id)], args])
-        contracts_from_domain = ContractHistory.suspend_security().search(args).mapped('contract_id')
+        contracts_from_domain = Contract.suspend_security().search(args)
         self.env.cr.execute(self._get_contract_ids())
 
         ids_from_sql = [row[0] for row in self.env.cr.fetchall()]
