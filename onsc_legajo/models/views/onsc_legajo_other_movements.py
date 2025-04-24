@@ -27,16 +27,15 @@ class ONSCLegajoPersonMovements(models.Model):
 
     # CONTRACT INFO
     nro_doc = fields.Char(u'Número de documento')
-    employee_id = fields.Many2one('hr.employee', string="Funcionario")
+    employee = fields.Char(string="Funcionario")
     move_type = fields.Selection(MOV, string='Tipo de Movimiento')
     audit_date = fields.Date(string=u'Fecha de auditoría')
     from_date = fields.Date(string=u'Fecha desde del movimiento')
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
     department_id = fields.Many2one('hr.department', string="UO")
-    nroPuesto = fields.Char(string='Puesto')
-    nroPlaza = fields.Char(string='Plaza')
-    secPlaza = fields.Char(string="Sec Plaza")
+    puesto_plaza = fields.Char(string='Puesto - Plaza - Sec plaza ')
+
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', )
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2')
