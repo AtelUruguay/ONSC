@@ -73,10 +73,20 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         if self.operating_unit_id:
             args = expression.AND([[('operating_unit_id', '=', self.operating_unit_id.id)], args])
         contracts_from_domain = Contract.search(args)
+
+        # Buscar contratos que sean padres (es decir, que tienen hijos que los referencian por cs_contract_id)
+        child_contracts = Contract.search([('cs_contract_id', 'in', contracts_from_domain.ids)])
+
+        # Obtener IDs de contratos que son hijos
+        child_ids = set(child_contracts.mapped('cs_contract_id').ids)
+
+        # Filtrar: quitar los contratos que son hijos (es decir, cuyo ID aparece como valor de cs_contract_id)
+        valid_contracts = contracts_from_domain.filtered(lambda c: c.id not in child_ids)
+
         self.env.cr.execute(self._get_contract_ids())
 
         ids_from_sql = [row[0] for row in self.env.cr.fetchall()]
-        all_ids = list(set(contracts_from_domain.ids + ids_from_sql))
+        all_ids = list(set(valid_contracts.ids + ids_from_sql))
 
         return Contract.browse(all_ids)
 
@@ -104,7 +114,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
             current_exp_date IS DISTINCT FROM contract.contract_expiration_date::text
             and inciso_id = %s and eff_date_from >= '%s' AND
             eff_date_to <= '%s'""" % (
-        self.inciso_id.id, fields.Date.to_string(self.date_from), fields.Date.to_string(self.date_to))
+            self.inciso_id.id, fields.Date.to_string(self.date_from), fields.Date.to_string(self.date_to))
 
         _sql2 = """
         SELECT
@@ -204,7 +214,22 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         return action
 
     def _get_base_sql(self, date_from, date_to, contract):
-        _sql1 = """WITH primer_estado AS (
+        contracts = set()
+        current = contract
+        while current:
+            if current.id in contracts:
+                break
+            if current in self._get_contracts():
+                contracts.add(current.id)
+            current = current.cs_contract_id
+
+        contract_ids = list(contracts)
+
+        # Convertimos los contract_ids a una tabla temporal
+        cte_ids = ", ".join(str(cid) for cid in contract_ids)
+        sql_cte = f"WITH contract_ids AS (SELECT UNNEST(ARRAY[{cte_ids}])::INTEGER AS id),\n"
+
+        _sql1 = """primer_estado AS (
         SELECT contract_id, from_state, to_state
         FROM hr_contract contract
         LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
@@ -253,10 +278,10 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                 WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'ascenso'
                 WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'transforma'
                 WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'reestructura'
-                WHEN history.to_state = 'active' AND history.from_state IS NULL AND (contract.cs_contract_id IS NULL or contract.parent_id IS NULL)THEN 'alta'
+                WHEN history.to_state = 'active' AND history.from_state IS NULL AND contract.cs_contract_id IS NULL AND contract.parent_id IS NULL THEN 'alta'
                 WHEN history.to_state = 'baja' AND contract.cs_contract_id IS NULL THEN 'baja'
                 WHEN history.to_state = 'incoming_commission' AND contract.cs_contract_id IS NULL THEN 'comision_alta'
-                WHEN (history.to_state = 'outgoing_commission' AND (contract.cs_contract_id IS NULL  or contract.parent_id IS NULL))
+                WHEN (history.to_state = 'outgoing_commission' AND contract.cs_contract_id IS NULL  AND contract.parent_id IS NULL)
                   OR (history.to_state = 'outgoing_commission' AND history.from_state = 'active') THEN 'comision_alta'
                 WHEN history.to_state = 'baja' AND history.from_state = 'incoming_commission' AND contract.extinction_commission_id IS NOT NULL THEN 'comision_baja'
                 WHEN history.to_state = 'active' AND history.from_state = 'incoming_commission' THEN 'comision_baja'
@@ -274,7 +299,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         FROM hr_contract contract
         LEFT JOIN hr_contract_state_transaction_history history ON contract.id = history.contract_id
         WHERE
-            contract.id = %s AND
+            contract.id IN (SELECT id FROM contract_ids) AND
             history.transaction_date::DATE BETWEEN '%s' AND '%s'
     )
     
@@ -282,7 +307,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     WHERE move_type IS NOT NULL
     """ % (self.env.user.company_id.ws7_new_ascenso_reason_description,
            self.env.user.company_id.ws7_new_transforma_reason_description,
-           self.env.user.company_id.ws7_new_reestructura_reason_description, contract.id, date_from, date_to)
+           self.env.user.company_id.ws7_new_reestructura_reason_description, date_from, date_to)
 
         _sql2 = """
     SELECT
@@ -336,11 +361,11 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         ) sub
         LEFT JOIN hr_contract contract ON contract.id = sub.res_id
     WHERE
-        res_id = %s AND  previous_exp_date != 'false' AND
+        res_id IN (SELECT id FROM contract_ids) AND  previous_exp_date != 'false' AND
         current_exp_date IS DISTINCT FROM previous_exp_date AND 
         eff_date_from >= '%s' AND
         eff_date_to <= '%s'
-       """ % (contract.id, date_from, date_to)
+       """ % (date_from, date_to)
 
         _sql3 = """
     SELECT
@@ -391,9 +416,9 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                eff_date_to
         FROM hr_contract_model_history ORDER BY id desc limit 1	 
         ) sub2  inner join hr_contract contract on contract.id = sub2.res_id
-    WHERE res_id = '%s' and contract.contract_expiration_date is not null
+    WHERE res_id IN (SELECT id FROM contract_ids) and contract.contract_expiration_date is not null
             and contract.contract_expiration_date::text != 'false'
-            and current_exp_date IS DISTINCT FROM contract.contract_expiration_date::text """ % (contract.id)
+            and current_exp_date IS DISTINCT FROM contract.contract_expiration_date::text """
 
         _sql4 = """
     SELECT uo.id AS id,
@@ -435,11 +460,11 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     FROM onsc_legajo_cambio_uo uo left join hr_contract contract ON contract.id = uo.contract_id
     WHERE uo.state = 'confirmado' AND uo.department_id != 
         (SELECT department_id FROM hr_job WHERE contract_id = contract.id AND start_date < uo.date_start 
-        ORDER BY start_date DESC LIMIT 1) and contract.id = %s AND
+        ORDER BY start_date DESC LIMIT 1) and contract.id IN (SELECT id FROM contract_ids) AND
         uo.date_start::DATE BETWEEN '%s' AND '%s'
-    """ % (contract.id, date_from, date_to)
+    """ % (date_from, date_to)
 
-        return _sql1 + '''
+        return sql_cte + _sql1 + '''
         UNION ALL
         ''' + _sql2 + '''
          UNION ALL
