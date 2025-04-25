@@ -293,10 +293,10 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                 WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'ascenso'
                 WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'transforma'
                 WHEN history.to_state = 'active' AND contract.reason_description = '%s' THEN 'reestructura'
-                WHEN history.to_state = 'active' AND history.from_state IS NULL AND contract.cs_contract_id IS NULL AND contract.parent_id IS NULL THEN 'alta'
+                WHEN history.to_state = 'active' AND history.from_state IS NULL AND (SELECT COUNT(id) FROM hr_contract c2 WHERE c2.cs_contract_id = contract.id and active= true) = 0 AND contract.parent_id IS NULL THEN 'alta'
                 WHEN history.to_state = 'baja' AND contract.cs_contract_id IS NULL THEN 'baja'
-                WHEN history.to_state = 'incoming_commission' AND contract.cs_contract_id IS NULL THEN 'comision_alta'
-                WHEN (history.to_state = 'outgoing_commission' AND contract.cs_contract_id IS NULL  AND contract.parent_id IS NULL)
+                WHEN history.to_state = 'incoming_commission' AND (SELECT COUNT(id) FROM hr_contract c2 WHERE c2.cs_contract_id = contract.id and active= true) = 0 THEN 'comision_alta'
+                WHEN (history.to_state = 'outgoing_commission' AND (SELECT COUNT(id) FROM hr_contract c2 WHERE c2.cs_contract_id = contract.id and active= true) = 0 AND contract.parent_id IS NULL)
                   OR (history.to_state = 'outgoing_commission' AND history.from_state = 'active') THEN 'comision_alta'
                 WHEN history.to_state = 'baja' AND history.from_state = 'incoming_commission' AND contract.extinction_commission_id IS NOT NULL THEN 'comision_baja'
                 WHEN history.to_state = 'active' AND history.from_state = 'incoming_commission' THEN 'comision_baja'
