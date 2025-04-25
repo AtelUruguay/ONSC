@@ -34,7 +34,7 @@ class ONSCLegajoPersonMovements(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
     department_id = fields.Many2one('hr.department', string="UO")
-    puesto_plaza = fields.Char(string='Puesto - Plaza - Sec plaza ')
+    puesto_plaza = fields.Char(string='Puesto - Plaza - Sec plaza')
 
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', )
@@ -50,9 +50,8 @@ class ONSCLegajoPersonMovements(models.Model):
         string="UE anterior",
 
     )
-    nroPuesto_origin = fields.Char(string='Puesto anterior')
-    nroPlaza_origin = fields.Char(string='Plaza anterior')
-    secPlaza_origin = fields.Char(string="Sec Plaza anterior")
+    puesto_plaza_origin = fields.Char(string='Puesto - Plaza - Sec plaza')
+    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen anterior')
     descriptor1_origin_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1 anterior')
     descriptor2_origin_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2 anterior')
     descriptor3_origin_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3 anterior')
