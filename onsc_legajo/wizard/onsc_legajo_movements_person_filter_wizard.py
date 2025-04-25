@@ -73,20 +73,23 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         if self.operating_unit_id:
             args = expression.AND([[('operating_unit_id', '=', self.operating_unit_id.id)], args])
         contracts_from_domain = Contract.search(args)
+        contracts_set = set(contracts_from_domain.ids)
+        final_ids = []
 
-        # Buscar contratos que sean padres (es decir, que tienen hijos que los referencian por cs_contract_id)
-        child_contracts = Contract.search([('cs_contract_id', 'in', contracts_from_domain.ids)])
+        for contract in contracts_from_domain:
+            hijo = self.env['hr.contract'].search([
+                ('cs_contract_id', '=', contract.id),
+                ('id', 'in', list(contracts_set)),
+            ])
+            if not contract.cs_contract_id and not hijo:
+                final_ids.append(contract.id)
 
-        # Obtener IDs de contratos que son hijos
-        child_ids = set(child_contracts.mapped('cs_contract_id').ids)
+            elif not hijo:
+                    final_ids.append(contract.id)
 
-        # Filtrar: quitar los contratos que son hijos (es decir, cuyo ID aparece como valor de cs_contract_id)
-        valid_contracts = contracts_from_domain.filtered(lambda c: c.id not in child_ids)
-
+        final_contracts = self.env['hr.contract'].browse(final_ids)
         self.env.cr.execute(self._get_contract_ids())
-
-        ids_from_sql = [row[0] for row in self.env.cr.fetchall()]
-        all_ids = list(set(valid_contracts.ids + ids_from_sql))
+        all_ids = list(set(final_contracts.ids))
 
         return Contract.browse(all_ids)
 
@@ -213,13 +216,25 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         action['context'] = new_context
         return action
 
+    def _get_contract_base(self):
+        Contract = self.env['hr.contract'].suspend_security()
+        args = [('inciso_id', '=', self.inciso_id.id),
+                ('date_start', '<=', fields.Date.to_string(self.date_to)), '|',
+                ('date_end', '>=', fields.Date.to_string(self.date_from)), ('date_end', '=', False)]
+        if self.employee_id:
+            args = expression.AND([[('employee_id', '=', self.employee_id.id)], args])
+
+        if self.operating_unit_id:
+            args = expression.AND([[('operating_unit_id', '=', self.operating_unit_id.id)], args])
+        return Contract.search(args)
+
     def _get_base_sql(self, date_from, date_to, contract):
         contracts = set()
         current = contract
         while current:
             if current.id in contracts:
                 break
-            if current in self._get_contracts():
+            if current in self._get_contract_base():
                 contracts.add(current.id)
             current = current.cs_contract_id
 
