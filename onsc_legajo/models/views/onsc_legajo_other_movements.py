@@ -3,24 +3,18 @@
 from odoo import fields, models
 
 MOV = [
-    ('alta', 'Alta'),
-    ('baja', 'Baja'),
-    ('comision_alta', 'Comisión Alta'),
-    ('comision_baja', 'Comisión Baja'),
-    ('cambio_dpto', 'Cambio departamento'),
-    ('ascenso', 'Ascenso'),
-    ('transforma', 'Transformación'),
-    ('reestructura', 'Reestructura'),
-    ('reserva', 'Reserva'),
-    ('cambio_uo', 'Cambio de UO'),
-    ('renovacion', 'Renovación')
+    ('ASCENSO', 'Ascenso'),
+    ('TRANSFORMA', 'Transformación'),
+    ('REESTRUCTURA', 'Reestructura'),
+    ('RESERVA', 'Reserva'),
+    ('DESRESERVA', 'Desreserva'),
+    ('RENOVACION', 'Renovación')
 ]
 
 
 class ONSCLegajoPersonMovements(models.Model):
     _name = "onsc.legajo.other.movements"
     _description = "Otros movimientos de la UE/Inciso"
-
 
     token = fields.Char(string='Token', index=True)
     report_user_id = fields.Integer(string='Usuario que dió origen al reporte', index=True)
@@ -50,10 +44,9 @@ class ONSCLegajoPersonMovements(models.Model):
         string="UE anterior",
 
     )
-    puesto_plaza_origin = fields.Char(string='Puesto - Plaza - Sec plaza')
+    puesto_plaza_origin = fields.Char(string='Puesto - Plaza - Sec plaza anterior')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen anterior')
     descriptor1_origin_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1 anterior')
     descriptor2_origin_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2 anterior')
     descriptor3_origin_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3 anterior')
     descriptor4_origin_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4 anterior')
-

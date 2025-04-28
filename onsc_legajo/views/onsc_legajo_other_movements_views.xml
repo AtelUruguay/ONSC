@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="onsc_legajo_other_movements_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.other.movements.tree</field>
+            <field name="model">onsc.legajo.other.movements</field>
+            <field name="arch" type="xml">
+                <tree string="Otros movimientos de la UE/Inciso">
+                    <field name="nro_doc" optional="show"/>
+                    <field name="employee" string="Funcionario" optional="show"/>
+                    <field name="move_type" optional="show"/>
+                    <field name="from_date" optional="show"/>
+                    <field name="audit_date" optional="show"/>
+                    <field name="inciso_id" string="Inciso" optional="show"/>
+                    <field name="operating_unit_id" string="Unidad ejecutora" optional="show"/>
+                    <field name="department_id" string="UO" optional="show"/>
+                    <field name="puesto_plaza"  optional="show"/>
+                    <field name="regime_id" optional="show"/>
+                    <field name="descriptor1_id" optional="show"/>
+                    <field name="descriptor2_id" optional="show"/>
+                    <field name="descriptor3_id" optional="show"/>
+                    <field name="descriptor4_id" optional="show"/>
+                    <field name="public_admin_entry_date" optional="show"/>
+                    <field name="retributive_day_id" optional="show"/>
+                    <field name="graduation_date" optional="show"/>
+                    <field name="marital_status_id" optional="show"/>
+                    <field name="operating_unit_origin_id" optional="hide"/>
+                    <field name="puesto_plaza_origin" optional="hide"/>
+                    <field name="regime_origin_id" optional="hide"/>
+                    <field name="descriptor1_origin_id" optional="hide"/>
+                    <field name="descriptor2_origin_id" optional="hide"/>
+                    <field name="descriptor3_origin_id" optional="hide"/>
+                    <field name="descriptor4_origin_id" optional="hide"/>
+                 </tree>
+            </field>
+        </record>
+
+        <record id='onsc_legajo_other_movements_action' model='ir.actions.act_window'>
+            <field name="name">Otros movimientos de la UE/Inciso</field>
+            <field name="res_model">onsc.legajo.other.movements</field>
+            <field name="view_mode">tree</field>
+            <field name="target">main</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_other_movements_tree')})]"/>
+            <field name="limit">1500</field>
+        </record>
+    </data>
+</odoo>

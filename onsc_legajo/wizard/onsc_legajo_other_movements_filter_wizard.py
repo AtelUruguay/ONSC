@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
-import json
 import logging
 import uuid
 
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 from odoo import models, fields, api, _
-from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
 
-class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
-    _name = 'onsc.legajo.person.movements.filter.wizard'
+class ONSCLegajoOtherMovementFilterWizard(models.TransientModel):
+    _name = 'onsc.legajo.other.movements.filter.wizard'
     _inherit = 'onsc.legajo.abstract.opaddmodify.security'
-    _description = 'Wizard para filtrar movimientos para una persona'
+    _description = 'Wizard para filtrar otros movimientos de la UE/Inciso'
 
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one(
@@ -29,7 +27,6 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
     def _onchange_inciso_operating_unit(self):
         self.date_from = False
         self.date_to = False
-
 
     @api.onchange('date_from', 'date_to')
     def _onchange_dates(self):
@@ -53,7 +50,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         return self.user_has_groups('onsc_legajo.group_legajo_report_other_movements_ue')
 
     def action_show(self):
-        action = self.env.ref('onsc_legajo.onsc_legajo_person_movements_action').sudo().read()[0]
+        action = self.env.ref('onsc_legajo.onsc_legajo_other_movements_action').sudo().read()[0]
         original_context = safe_eval(action.get('context', '{}'))
         _token = str(uuid.uuid4())
         new_context = {
@@ -68,12 +65,12 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
         self._set_info(
             _token,
             self.date_from,
-            self.date_to)
+            self.date_to, self.inciso_id, self.operating_unit_id)
         action['domain'] = [('token', '=', _token)]
         action['context'] = new_context
         return action
 
-    def _get_base_sql(self, date_from, date_to):
+    def _get_base_sql(self, date_from, date_to, inciso, operating_unit):
         _sql1 = """
             SELECT doc as nro_doc,
             regexp_replace(
@@ -87,9 +84,7 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
               ) AS employee,
           mov as move_type,
           fecha_aud as audit_date,
-          CASE 
-                WHEN tipo_mov ='ALTA' THEN inciso_id
-          END AS inciso_id,
+           inciso_id,
           CASE 
                 WHEN tipo_mov ='ALTA' THEN operating_unit_id
           END AS operating_unit_id,
@@ -97,8 +92,8 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
                 WHEN tipo_mov ='ALTA' THEN 
                   regexp_replace(
                         trim(
-                          COALESCE("idPuesto", '') || ' _ ' ||
-                          COALESCE("nroPlaza", '') || ' _ ' ||
+                          COALESCE("idPuesto", '') || ' - ' ||
+                          COALESCE("nroPlaza", '') || ' - ' ||
                           COALESCE("secPlaza", '') 
                         ),
                         '\s+', ' ', 'g'
@@ -137,12 +132,12 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
             CASE 
                 WHEN tipo_mov ='BAJA' THEN operating_unit_id
             END AS operating_unit_origin_id,
-             CASE 
-                WHEN tipo_mov ='ALTA' THEN 
+            CASE 
+                WHEN tipo_mov ='BAJA' THEN 
                   regexp_replace(
                         trim(
-                          COALESCE("idPuesto", '') || ' _ ' ||
-                          COALESCE("nroPlaza", '') || ' _ ' ||
+                          COALESCE("idPuesto", '') || ' - ' ||
+                          COALESCE("nroPlaza", '') || ' - ' ||
                           COALESCE("secPlaza", '') 
                         ),
                         '\s+', ' ', 'g'
@@ -162,48 +157,69 @@ class ONSCLegajoPadronEstructureFilterWizard(models.TransientModel):
             END AS descriptor3_origin_id,
             CASE 
                 WHEN tipo_mov ='BAJA' THEN descriptor4_id
-            END AS descriptor4_origin_id
-            
-         
-        
-        FROM onsc_legajo_staging_ws7 
+            END AS descriptor4_origin_id,
+            fecha_vig as from_date,
+            "idPuesto" as puesto,
+            "nroPlaza" as plaza,
+            "secPlaza" as sec_plaza 
+        FROM onsc_legajo_staging_ws7
         WHERE state='processed'
         AND mov in ('ASCENSO', 'TRANSFORMA', 'REESTRUCTURA','DESRESERVA','RESERVA')
+        AND inciso_id = %s
         AND fecha_vig ::DATE BETWEEN '%s' AND '%s'
-    """ % (date_from, date_to)
+    """ % (inciso.id, date_from, date_to)
+
+        if operating_unit:
+            _sql1 += '''
+        AND operating_unit_id = %s''' % (operating_unit.id)
 
         return _sql1
+
     def _get_record_job_vals(self, record, job_dict):
         return {
             'department_id': job_dict.get('department_id', False),
         }
 
-    def _set_info(self, token, date_from, date_to, contract_id):
+    def _get_contract(self, record):
+        Contract = self.env['hr.contract'].suspend_security()
+        args = [
+            ('position', '=', record.get('puesto')),
+            ('workplace', '=', record.get('plaza')),
+            ('sec_position', '=', record.get('sec_plaza')),
+            ('nro_doc', '=', record.get('nro_doc')),
+            ('inciso_id', '=', self.inciso_id.id),
+        ]
+
+        if self.operating_unit_id:
+            args.extend([('operating_unit_id', '=', self.operating_unit_id.id)])
+
+        return Contract.search(args, limit=1)
+
+    def _set_info(self, token, date_from, date_to, inciso, operating_unit=False):
         LegajoUtils = self.env['onsc.legajo.utils']
 
-        _sql = self._get_base_sql(date_from, date_to, contract_id)
+        _sql = self._get_base_sql(date_from, date_to, inciso, operating_unit)
         self.env.cr.execute(
-            '''DELETE FROM onsc_legajo_person_movements WHERE report_user_id = %s''' % (self.env.user.id,))
+            '''DELETE FROM onsc_legajo_other_movements WHERE report_user_id = %s''' % (self.env.user.id,))
         self.env.cr.execute(_sql)
-        contract_records = self.env.cr.dictfetchall()
+        records = self.env.cr.dictfetchall()
         bulked_vals = []
         user_id = self.env.user.id
-        for result in contract_records:
-            contract_id = result['contract_id']
-            current_jobs = LegajoUtils._get_contracts_jobs_dict([contract_id],
-                                                                result.get('transaction_date', fields.Date.today()))
-            job_dict = current_jobs.get(contract_id, {})
+        for result in records:
+            job_dict = {}
+            contract_id = self._get_contract(result)
+            if contract_id:
+                current_jobs = LegajoUtils._get_contracts_jobs_dict([contract_id.id],
+                                                                    result.get('from_date', fields.Date.today()))
+                job_dict = current_jobs.get(contract_id.id, {})
             new_record = self._get_record_job_vals(result, job_dict)
             for field, value in result.items():
                 new_record[field] = value
-            transaction_date = result.get('transaction_date') and result.get('transaction_date') or fields.Date.today()
-            contract_data = LegajoUtils._get_historical_contract_data(result, transaction_date)
-            for key, value in contract_data.items():
-                new_record[key] = value
             new_record['report_user_id'] = user_id
             new_record['token'] = token
-            new_record.pop('id')
-            new_record.pop('eff_date')
+            new_record.pop('puesto')
+            new_record.pop('plaza')
+            new_record.pop('sec_plaza')
 
             bulked_vals.append(new_record)
         result = self.env['onsc.legajo.other.movements'].sudo().create(bulked_vals)
