@@ -497,5 +497,27 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
+           <!-- REPORTES Otros movimientos de la UE/Inciso -->
+        <record id="group_legajo_report_other_movements_inciso" model="res.groups">
+            <field name="name">Reporte (Otros movimientos de la UE/Inciso) por Inciso</field>
+            <field name="comment">Reporte (Otros movimientos de la UE/Inciso) por Inciso</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_report_other_movements_ue" model="res.groups">
+            <field name="name">Reporte (Otros movimientos de la UE/Inciso) por UE</field>
+            <field name="comment">Reporte (Otros movimientos de la UE/Inciso) por UE</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_report_other_movements_consult" model="res.groups">
+            <field name="name">Reporte (Otros movimientos de la UE/Inciso) consulta</field>
+            <field name="comment">Reporte (Otros movimientos de la UE/Inciso) consulta</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
     </data>
 </odoo>

@@ -35,6 +35,7 @@ ONSC - Legajo
         "wizard/mail_wizard_invite_views.xml",
         "wizard/onsc_legajo_padron_estructure_filter_wizard.xml",
         "wizard/onsc_legajo_movements_person_filter_wizard.xml",
+        "wizard/onsc_legajo_other_movements_filter_wizard.xml",
         "views/onsc_legajo_department_views.xml",
         "views/onsc_legajo_padron_views.xml",
         "views/onsc_legajo_padron_movements_views.xml",
@@ -80,7 +81,8 @@ ONSC - Legajo
         "views/onsc_legajo_menuitems.xml",
         "views/hr_contract_transaction_history_views.xml",
         "views/onsc_legajo_change_uo_movements_views.xml",
-        "views/onsc_legajo_person_movements_views.xml"
+        "views/onsc_legajo_person_movements_views.xml",
+        "views/onsc_legajo_other_movements_views.xml"
     ],
     'assets': {
         'web.assets_backend': [
