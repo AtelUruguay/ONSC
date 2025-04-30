@@ -7,7 +7,7 @@
         <field name="type">tree</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="last_update_date"/>
+
                 <field name="emissor_country"/>
                 <field name="document_type"/>
                 <field name="nro_doc"/>
@@ -48,7 +48,6 @@
                     <group>
                         <field name="summary_number"/>
                         <field name="record_number"/>
-                        <field name="last_update_date"/>
                         <field name="country_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                         <field name="cv_document_type_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                         <field name="nro_doc"/>

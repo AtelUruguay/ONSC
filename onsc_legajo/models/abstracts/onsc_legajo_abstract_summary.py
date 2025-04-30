@@ -116,6 +116,7 @@ class ONSCLegajoAbstractSyncSummary(models.AbstractModel):
         key = "%s-%s" % (operation.get('PerDocNum'), operation.get('SumNum'))
         vals = {
             'key': key,
+            'last_update_date': fields.Date.today(),
             'summary_number': operation.get('SumNum'),
             'record_number': operation.get('SumExpNum'),
             'nro_doc': operation.get('PerDocNum'),
