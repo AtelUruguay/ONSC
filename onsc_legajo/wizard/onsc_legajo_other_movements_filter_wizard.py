@@ -72,8 +72,69 @@ class ONSCLegajoOtherMovementFilterWizard(models.TransientModel):
 
     def _get_base_sql(self, date_from, date_to, inciso, operating_unit):
         _sql1 = """
-            SELECT doc as nro_doc,
-            regexp_replace(
+            SELECT alta.doc as nro_doc,
+             regexp_replace(
+                    trim(
+                      COALESCE(alta.primer_nombre, '') || ' ' ||
+                      COALESCE(alta.segundo_nombre, '') || ' ' ||
+                      COALESCE(alta.primer_ap, '') || ' ' ||
+                      COALESCE(alta.segundo_ap, '')
+                    ),
+                    '\s+', ' ', 'g'
+                  ) AS employee,
+              alta.mov as move_type,
+              alta.fecha_aud as audit_date,
+              alta.inciso_id,
+              alta.operating_unit_id AS operating_unit_id,
+              regexp_replace(
+                    trim(
+                      COALESCE(alta."idPuesto", '') || ' - ' ||
+                      COALESCE(alta."nroPlaza", '') || ' - ' ||
+                      COALESCE(alta."secPlaza", '') 
+                    ),
+                    '\s+', ' ', 'g'
+                  )  
+                AS puesto_plaza,
+                alta.regime_id AS regime_id,
+               alta.descriptor1_id AS descriptor1_id,
+               alta.descriptor2_id AS descriptor2_id,
+               alta.descriptor3_id AS descriptor3_id,
+               alta.descriptor4_id AS descriptor4_id,
+               alta.retributive_day_id AS retributive_day_id,
+               alta.fecha_ing_adm AS public_admin_entry_date,
+               alta."fechaGraduacion"AS graduation_date,
+               alta.marital_status_id AS marital_status_id,
+               baja.operating_unit_id AS operating_unit_origin_id,
+                regexp_replace(
+                    trim(
+                      COALESCE(baja."idPuesto", '') || ' - ' ||
+                      COALESCE(baja."nroPlaza", '') || ' - ' ||
+                      COALESCE(baja."secPlaza", '') 
+                    ),
+                    '\s+', ' ', 'g'
+                  ) AS puesto_plaza_origin,
+                baja.regime_id AS regime_origin_id,
+                baja.descriptor1_id AS descriptor1_origin_id,
+                baja.descriptor2_id AS descriptor2_origin_id,
+                baja.descriptor3_id AS descriptor3_origin_id,
+                baja.descriptor4_id AS descriptor4_origin_id,
+                alta.fecha_vig as from_date,
+                alta."idPuesto" as puesto,
+                alta."nroPlaza" as plaza,
+                alta."secPlaza" as sec_plaza 
+            FROM onsc_legajo_staging_ws7 alta
+            LEFT JOIN onsc_legajo_staging_ws7 baja
+                ON alta.tipo_mov = 'ALTA' and baja.tipo_mov = 'BAJA'
+                AND alta."movimientoPadreId" = baja."movimientoPadreId"
+                AND alta.doc = baja.doc and alta.mov = baja.mov
+            WHERE alta.state='processed'
+            AND alta.mov in ('ASCENSO', 'TRANSFORMA', 'REESTRUCTURA','TRANSFORMA_REDUE')
+            AND alta.inciso_id = %s AND alta.tipo_mov = 'ALTA'
+            AND alta.fecha_vig ::DATE BETWEEN '%s' AND '%s'
+    """ % (inciso.id, date_from, date_to)
+
+        _sql2 = """ 		SELECT doc as nro_doc,
+         regexp_replace(
                 trim(
                   COALESCE(primer_nombre, '') || ' ' ||
                   COALESCE(segundo_nombre, '') || ' ' ||
@@ -84,96 +145,51 @@ class ONSCLegajoOtherMovementFilterWizard(models.TransientModel):
               ) AS employee,
           mov as move_type,
           fecha_aud as audit_date,
-           inciso_id,
-          CASE 
-                WHEN tipo_mov ='ALTA' THEN operating_unit_id
-          END AS operating_unit_id,
-          CASE 
-                WHEN tipo_mov ='ALTA' THEN 
-                  regexp_replace(
-                        trim(
-                          COALESCE("idPuesto", '') || ' - ' ||
-                          COALESCE("nroPlaza", '') || ' - ' ||
-                          COALESCE("secPlaza", '') 
-                        ),
-                        '\s+', ' ', 'g'
-                      )  
-            END AS puesto_plaza,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN regime_id
-            END AS regime_id,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN descriptor1_id
-            END AS descriptor1_id,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN descriptor2_id
-            END AS descriptor2_id,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN descriptor3_id
-            END AS descriptor3_id,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN descriptor4_id
-            END AS descriptor4_id,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN retributive_day_id
-            END AS retributive_day_id,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN fecha_ing_adm
-            END AS public_admin_entry_date,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN "fechaGraduacion"
-            END AS graduation_date,
-            CASE 
-                WHEN tipo_mov ='ALTA' THEN marital_status_id
-            END AS marital_status_id,
-            CASE 
-                WHEN tipo_mov ='BAJA' THEN operating_unit_id
-            END AS operating_unit_origin_id,
-            CASE 
-                WHEN tipo_mov ='BAJA' THEN operating_unit_id
-            END AS operating_unit_origin_id,
-            CASE 
-                WHEN tipo_mov ='BAJA' THEN 
-                  regexp_replace(
-                        trim(
-                          COALESCE("idPuesto", '') || ' - ' ||
-                          COALESCE("nroPlaza", '') || ' - ' ||
-                          COALESCE("secPlaza", '') 
-                        ),
-                        '\s+', ' ', 'g'
-                      )  
-            END AS puesto_plaza_origin,
-            CASE 
-                WHEN tipo_mov ='BAJA' THEN regime_id
-            END AS regime_origin_id,
-            CASE 
-                WHEN tipo_mov ='BAJA' THEN descriptor1_id
-            END AS descriptor1_origin_id,
-            CASE 
-                WHEN tipo_mov ='BAJA' THEN descriptor2_id
-            END AS descriptor2_origin_id,
-            CASE 
-                WHEN tipo_mov ='BAJA' THEN descriptor3_id
-            END AS descriptor3_origin_id,
-            CASE 
-                WHEN tipo_mov ='BAJA' THEN descriptor4_id
-            END AS descriptor4_origin_id,
+          inciso_id,
+          operating_unit_id AS operating_unit_id,
+		  regexp_replace(
+				trim(
+				  COALESCE("idPuesto", '') || ' - ' ||
+				  COALESCE("nroPlaza", '') || ' - ' ||
+				  COALESCE("secPlaza", '') 
+				),
+				'\s+', ' ', 'g'
+			  )  
+		 	AS puesto_plaza,
+   		   regime_id AS regime_id,
+           descriptor1_id AS descriptor1_id,
+           descriptor2_id AS descriptor2_id,
+           descriptor3_id AS descriptor3_id,
+           descriptor4_id AS descriptor4_id,
+           retributive_day_id AS retributive_day_id,
+           fecha_ing_adm AS public_admin_entry_date,
+            "fechaGraduacion"AS graduation_date,
+            marital_status_id AS marital_status_id,
+            NULL::integer AS operating_unit_origin_id,
+            NULL::text AS puesto_plaza_origin,
+            NULL::integer AS regime_origin_id,
+            NULL::integer AS descriptor1_origin_id,
+            NULL::integer AS descriptor2_origin_id,
+            NULL::integer AS descriptor3_origin_id,
+            NULL::integer AS descriptor4_origin_id,
             fecha_vig as from_date,
             "idPuesto" as puesto,
             "nroPlaza" as plaza,
             "secPlaza" as sec_plaza 
-        FROM onsc_legajo_staging_ws7
+        FROM onsc_legajo_staging_ws7 
         WHERE state='processed'
-        AND mov in ('ASCENSO', 'TRANSFORMA', 'REESTRUCTURA','DESRESERVA','RESERVA')
+        AND mov IN ('RESERVA','DESRESERVA')
         AND inciso_id = %s
-        AND fecha_vig ::DATE BETWEEN '%s' AND '%s'
-    """ % (inciso.id, date_from, date_to)
+        AND fecha_vig ::DATE BETWEEN '%s' AND '%s'""" % (inciso.id, date_from, date_to)
 
         if operating_unit:
             _sql1 += '''
-        AND operating_unit_id = %s''' % (operating_unit.id)
-
-        return _sql1
+        AND alta.operating_unit_id = %s''' % (operating_unit.id)
+            _sql2 += '''
+                   AND operating_unit_id = %s''' % (operating_unit.id)
+        return _sql1 + '''
+               UNION ALL
+               ''' + _sql2
 
     def _get_record_job_vals(self, record, job_dict):
         return {
