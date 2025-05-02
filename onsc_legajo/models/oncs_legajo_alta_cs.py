@@ -138,7 +138,7 @@ class ONSCLegajoAltaCS(models.Model):
     sequence_position_origin = fields.Char(string='Secuencia Plaza')
     contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
-    program_project_origin_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto',
+    program_project_origin_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto(Origen)',
                                                 compute='_compute_program_project_origin_id', store=True)
     is_inciso_origin_ac = fields.Boolean(
         "¿El inciso de origen es AC?",
@@ -166,7 +166,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     program_project_destination_id = fields.Many2one(
         'onsc.legajo.office',
-        string='Programa - Proyecto',
+        string='Programa - Proyecto(Destino)',
         copy=False,
         domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
         readonly=False, states={'confirmed': [('readonly', True)],
