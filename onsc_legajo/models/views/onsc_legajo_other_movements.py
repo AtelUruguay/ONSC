@@ -8,7 +8,8 @@ MOV = [
     ('REESTRUCTURA', 'Reestructura'),
     ('RESERVA', 'Reserva'),
     ('DESRESERVA', 'Desreserva'),
-    ('RENOVACION', 'Renovación')
+    ('RENOVACION', 'Renovación'),
+    ('TRANSFORMA_REDUE', 'Transformación')
 ]
 
 
