@@ -266,7 +266,7 @@
                         </page>
                         <page name="summarys" string="Sumarios"
                               attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_summary', '=', False)]}">
-                            <label for="last_sync_rve_date" string="Última sincronización con RVE" class="col-md-3 o_light_label"/>
+                            <label for="last_sync_rve_date" string="Última sincronización con RVE"/>
                             <field name="last_sync_rve_date"/>
                             <field name="summary_ids"  options="{'no_open': True}">
                                 <tree>
