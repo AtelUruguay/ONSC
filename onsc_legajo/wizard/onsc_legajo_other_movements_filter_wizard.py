@@ -209,7 +209,7 @@ class ONSCLegajoOtherMovementFilterWizard(models.TransientModel):
         if self.operating_unit_id:
             args.extend([('operating_unit_id', '=', self.operating_unit_id.id)])
 
-        return Contract.search(args, limit=1)
+        return Contract.with_context(active_test=False).search(args, limit=1)
 
     def _set_info(self, token, date_from, date_to, inciso, operating_unit=False):
         LegajoUtils = self.env['onsc.legajo.utils']
