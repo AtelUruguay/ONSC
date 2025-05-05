@@ -237,10 +237,10 @@ class ONSCLegajo(models.Model):
             rec.show_legajo_summary = is_user_valid_summary or rec.employee_id.user_id.id == self.env.user.id
 
     def _compute_last_sync_rve_date(self):
-        Summary = self.env['onsc.legajo.summary'].suspend_security()
+        cron = self.env.ref("onsc_legajo.legajo_summary", raise_if_not_found=False)
+        lastcall = cron and cron.lastcall or False
         for rec in self:
-            rec.last_sync_rve_date = Summary.search([('legajo_id', '=', rec.id)], limit=1,
-                                                    order="last_update_date desc").last_update_date
+            rec.last_sync_rve_date = lastcall
 
     @api.depends('summary_ids.last_update_date')
     def _compute_last_sync_rve_date(self):
