@@ -242,12 +242,6 @@ class ONSCLegajo(models.Model):
         for rec in self:
             rec.last_sync_rve_date = lastcall
 
-    @api.depends('summary_ids.last_update_date')
-    def _compute_last_sync_rve_date(self):
-        for record in self:
-            fechas = [d for d in record.summary_ids.mapped('last_update_date') if d]
-            record.last_sync_rve_date = max(fechas) if fechas else False
-
     def button_open_employee(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_employee_action')
