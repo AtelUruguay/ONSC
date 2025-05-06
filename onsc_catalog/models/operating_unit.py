@@ -9,6 +9,17 @@ class OperatingUnit(models.Model):
     _name = 'operating.unit'
     _history_model = 'operating.unit.history'
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(OperatingUnit, self).fields_get(allfields, attributes)
+        hide = ['company_id']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
+
     name = fields.Char(required=True, history=True)
     short_name = fields.Char(string="Sigla", required=True, history=True)
     code = fields.Char(required=True, history=True)
