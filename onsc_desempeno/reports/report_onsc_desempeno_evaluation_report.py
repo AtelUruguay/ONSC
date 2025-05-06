@@ -13,8 +13,6 @@ EVALUATION_TYPE = [
 class ReportCompetenciaBrecha(models.Model):
     _name = 'report.competencia.brecha'
     _description = 'Reporte de Competencias por Brecha'
-    _auto = True  # usa una tabla real con ID
-    _rec_name = 'comp_id'  # opcional
 
     comp_id = fields.Many2one('onsc.desempeno.skill', string=u'Competencia')
     grado_id = fields.Many2one('onsc.desempeno.degree', string=u'Grado de necesidad de desarrollo')
