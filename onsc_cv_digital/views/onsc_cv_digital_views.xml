@@ -109,8 +109,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="cv_emissor_country_id"/>
-                            <field name="cv_document_type_id"/>
+                            <field name="cv_emissor_country_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                            <field name="cv_document_type_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="cv_nro_doc"/>
                             <field name="cv_expiration_date" required="1"/>
                             <field name="is_cv_uruguay_ci" invisible="1"/>
@@ -169,8 +169,8 @@
                             </div>
                             <group string="Datos personales">
                                 <group>
-                                    <field name="country_of_birth_id" required="True"/>
-                                    <field name="marital_status_id" required="True"/>
+                                    <field name="country_of_birth_id" required="True" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                    <field name="marital_status_id" required="True" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                     <field name="uy_citizenship" required="True"/>
                                     <field name="crendencial_serie"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
@@ -257,7 +257,7 @@
                             </group>
                             <group>
                                 <group string="Género">
-                                    <field name="cv_gender_id" options="{'limit': 12}" required="True"/>
+                                    <field name="cv_gender_id" required="True"   options="{'limit': 12,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
                                     <field name="cv_gender_record_file"
