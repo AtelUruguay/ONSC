@@ -90,7 +90,7 @@
                                    domain="[('study_level_id', '=', advanced_study_level_id), ('subinstitution_id', '=', subinstitution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id,
                                             'default_country_id': country_id, 'default_study_level_id': advanced_study_level_id, 'is_readonly': True}"
-                                 options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                 options="{'no_create_edit':true, 'no_quick_create':true, 'no_create':true}"/>
                             <field name="generic_academic_program_id"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
                                    attrs="{'invisible': [('show_generic_academic_program', '=', False)],'required': [('show_generic_academic_program', '=', True)],}"/>
                             <field name="name_generic_academic_program" attrs="{'invisible': [('show_generic_academic_program', '=', False)],'required': [('show_generic_academic_program', '=', True)]}"/>
