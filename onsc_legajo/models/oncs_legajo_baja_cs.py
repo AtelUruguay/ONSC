@@ -183,7 +183,7 @@ class ONSCLegajoBajaCS(models.Model):
         copy=False, store=True)
     operating_unit_origen_id = fields.Many2one(
         "operating.unit",
-        string="Unidad ejecutora",
+        string="Unidad ejecutora origen",
         compute='_compute_inciso_ue_origen_id',
         copy=False,
         store=True)

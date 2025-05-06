@@ -122,7 +122,7 @@ msgstr "Código"
 #: model:ir.model.fields,field_description:onsc_catalog.field_onsc_catalog_inciso__company_id
 #: model:ir.model.fields,field_description:onsc_catalog.field_operating_unit__company_id
 msgid "Company"
-msgstr "Inciso"
+msgstr "Compañía"
 
 #. module: onsc_catalog
 #: model:ir.model.fields,field_description:onsc_catalog.field_onsc_catalog_inciso__company_details

@@ -99,6 +99,17 @@ class ONSCCVDigital(models.Model):
         res = super().prefix_by_phones
         return res + [('prefix_emergency_phone_id', 'emergency_service_telephone')]
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCCVDigital, self).fields_get(allfields, attributes)
+        hide = ['cv_address_state']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
+
     employee_id = fields.Many2one("hr.employee", string="Funcionario", compute='_compute_employee_id', store=True)
     is_docket = fields.Boolean(string="Tiene legajo")
     is_docket_active = fields.Boolean(string="Tiene legajo activo", compute='_compute_is_docket_active', store=True)
