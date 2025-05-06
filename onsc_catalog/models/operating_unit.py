@@ -25,7 +25,7 @@ class OperatingUnit(models.Model):
     createupdate_regulation = fields.Char(u'Normativa de creación/modificación', tracking=True, history=True)
     description = fields.Text('Observaciones', history=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, history=True)
-    company_id = fields.Many2one('res.company',
+    company_id = fields.Many2one('res.company',string="Compañia",
                                  related='inciso_id.company_id',
                                  store=True, history=True, ondelete='restrict')
 

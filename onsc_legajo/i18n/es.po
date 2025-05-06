@@ -47,3 +47,30 @@ msgstr "Estado (interno)"
 #: model:ir.model.fields,field_description:hr_employee.field_hr_employee__department_id
 msgid "Department"
 msgstr "Unidad organizativa"
+
+#. module: onsc_legajo
+#: model:ir.model,name:onsc_legajo.model_hr_employee
+msgid "Employee"
+msgstr "Funcionario"
+
+#. module: onsc_legajo
+#: model:ir.model.fields,field_description:onsc_legajo.field_onsc_legajo_baja_cs__operating_unit_origen_id
+msgid "Unidad ejecutora"
+msgstr "Unidad ejecutora origen "
+
+#. module: onsc_legajo
+#: model:ir.model.fields,field_description:onsc_legajo.field_onsc_legajo_alta_cs__program_project_destination_id
+msgid "Programa - Proyecto"
+msgstr "Programa - Proyecto (Destino)"
+
+#. module: onsc_legajo
+#: model:ir.model.fields,field_description:onsc_legajo.field_onsc_legajo_alta_cs__program_project_origin_id
+msgid "Programa - Proyecto"
+msgstr "Programa - Proyecto (Origen)"
+
+#. module: onsc_legajo
+#: model:ir.model.fields,field_description:onsc_legajo.field_onsc_catalog_inciso__summary_date_from
+#: model:ir.model.fields,field_description:onsc_legajo.field_onsc_legajo_settings__summary_date_from
+#: model:ir.model.fields,field_description:onsc_legajo.field_res_company__summary_date_from
+msgid "Fecha/hora desde"
+msgstr "Fecha/hora desde(sumario)"

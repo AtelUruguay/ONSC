@@ -22,3 +22,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr.field_res_users__mobile_phone
 msgid "Work Mobile"
 msgstr "Teléfono celular"
+
+#. module: onsc_cv_digital_legajo
+#: model:ir.model.fields,field_description:onsc_cv_digital_legajo.field_onsc_legajo_alta_vl__employee_id
+msgid "Employee"
+msgstr "Funcionario"
+
+#. module: onsc_cv_digital_legajo
+#: model:ir.model.fields,field_description:onsc_cv_digital_legajo.field_hr_employee__prefix_emergency_phone_id
+#: model:ir.model.fields,field_description:onsc_cv_digital_legajo.field_onsc_cv_digital__prefix_emergency_phone_id
+#: model:ir.model.fields,field_description:onsc_cv_digital_legajo.field_onsc_cv_digital_call__prefix_emergency_phone_id
+#: model:ir.model.fields,field_description:onsc_cv_digital_legajo.field_onsc_cv_legajo_abstract_common__prefix_emergency_phone_id
+msgid "Prefijo"
+msgstr "Prefijo Servicio de emergencia"

@@ -163,7 +163,7 @@ class ONSCCVDigital(models.Model):
 
     prefix_phone_id = fields.Many2one(related='partner_id.prefix_phone_id', readonly=False)
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
-    prefix_mobile_phone_id = fields.Many2one(related='partner_id.prefix_mobile_phone_id', readonly=False)
+    prefix_mobile_phone_id = fields.Many2one(string=u'Prefijo del móvil',related='partner_id.prefix_mobile_phone_id', readonly=False)
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     email = fields.Char(string="Email", related='partner_id.email')
 

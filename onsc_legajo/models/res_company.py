@@ -33,7 +33,7 @@ class ResCompany(models.Model):
     message_block_summary = fields.Boolean(u"Mensaje de sumario bloqueante")
     message_baja_vl_summary = fields.Char(u"Mensaje de baja de vinculo laboral")
     summary_date_from = fields.Datetime(
-        string='Fecha/hora desde')
+        string='Fecha/hora desde(sumario)')
     summary_latency_inseconds = fields.Integer(
         string='Latencia(segundos)')
 

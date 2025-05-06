@@ -94,7 +94,7 @@ class ONSCLegajoAltaVL(models.Model):
     address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"', copy=False)
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio', copy=False)
 
-    employee_id = fields.Many2one('hr.employee', 'Employee', copy=False)
+    employee_id = fields.Many2one('hr.employee', 'Funcionario', copy=False)
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="CV Digital", copy=False)
     is_docket = fields.Boolean(string="Tiene legajo", related='cv_digital_id.is_docket')
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
