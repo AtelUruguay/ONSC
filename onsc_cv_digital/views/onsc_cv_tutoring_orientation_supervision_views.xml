@@ -28,7 +28,7 @@
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="academic_program_id"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                            <field name="academic_program_id"  options="{'no_open':true}"
                                    attrs="{'invisible': [('show_generic_academic_program', '=', True)],'required': [('show_generic_academic_program', '=', False)],
                                    'readonly': [('subinstitution_id', '=', False)]}"
                                    domain="[('subinstitution_id', '=', subinstitution_id)]"
