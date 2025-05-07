@@ -16,10 +16,12 @@
                             <field name="is_country_uy" invisible="1"/>
                             <field name="institution_id"
                                    required="1"
+                                   options="{'no_open':true}"
                                    domain="[('country_id', '=?', country_id),('is_basic_formation', '=', True)]"
                                    context="{'default_country_id': country_id, 'is_readonly': True,'default_is_basic_formation': True, 'is_readonly': True, 'can_create': is_country_uy == False}" />
                             <field name="subinstitution_id"
                                    required="1"
+                                   options="{'no_open':true}"
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True, 'can_create': is_country_uy == False}"
