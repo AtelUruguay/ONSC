@@ -175,8 +175,10 @@
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
                             <field name="reason_cancel"
                                    readonly="1"
-                                   attrs="{'invisible': [('show_button_go_back', '=', False)]}"/>
-
+                                   attrs="{'invisible': ['|',('show_button_go_back', '=', False),('is_pilot','=',False)]}"/>
+                            <field name="reason_cancel_id"
+                                   readonly="1"
+                                   attrs="{'invisible': ['|',('show_button_go_back', '=', False),('is_pilot','=',True)]}"/>
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
                         </group>

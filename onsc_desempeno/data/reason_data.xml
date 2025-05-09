@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="reason_cancellation_baja" model="onsc.desempeno.reason.cancellation">
+            <field name="name">Baja</field>
+            <field name="description">Baja</field>
+        </record>
+
+    </data>
+</odoo>
