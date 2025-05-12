@@ -550,8 +550,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 if leader_evaluations_qty >= max_environment_evaluation_forms:
                     evaluation_type_args = [
                         'environment_evaluation',
-                        'self_evaluation',
-                        'collaborator'
+                        # 'self_evaluation',
+                        # 'collaborator'
                     ]
                     value_restrict_to_use = max_environment_evaluation_leader_forms
                 else:
