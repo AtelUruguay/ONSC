@@ -24,6 +24,8 @@ class ReportCompetenciaBrecha(models.Model):
     niveles_id = fields.Many2one('onsc.desempeno.level', string=u'Nivel del evaluado')
     cant = fields.Integer(string=u'Cantidad', readonly=True)
     porcent = fields.Integer(string=u'Porcentaje del total de formularios', readonly=True)
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -69,3 +71,8 @@ class ReportCompetenciaBrecha(models.Model):
                 res[field]['selectable'] = False
                 res[field]['sortable'] = False
         return res
+
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = True
+

@@ -7,11 +7,43 @@
             <pivot string="Reporte de Competencias por Brecha">
                 <field name="comp_id" type="row"/>
                 <field name="grado_id" type="row"/>
-                <field name="cant" type="measure"/>
+                <field name="cant" type="measure" />
                 <field name="porcent" type="measure"/>
             </pivot>
         </field>
     </record>
+    <record id="view_report_competencia_brecha_tree" model="ir.ui.view">
+        <field name="name">report.competencia.brecha.tree</field>
+        <field name="model">report.competencia.brecha</field>
+        <field name="arch" type="xml">
+
+
+            <tree string=""  create="false" delete="false">
+               <field name="comp_id" options="{'no_open': true, 'no_create_edit': true, 'no_quick_create': true}" />
+               <field name="grado_id" options="{'no_open': true, 'no_create_edit': true, 'no_quick_create': true}"/>
+               <field name="cant" />
+            </tree>
+        </field>
+    </record>
+
+     <record id="view_report_competencia_brecha_form" model="ir.ui.view">
+        <field name="name">report.competencia.brecha.form</field>
+        <field name="model">report.competencia.brecha</field>
+        <field name="arch" type="xml">
+            <form string="Reporte de Competencias por Brecha">
+                <sheet>
+                    <field name="should_disable_form_edit" invisible="1"/>
+                    <group>
+                       <field name="comp_id" options="{'no_open': true, 'no_create_edit': true, 'no_quick_create': true}" />
+                       <field name="grado_id" options="{'no_open': true, 'no_create_edit': true, 'no_quick_create': true}"/>
+                       <field name="cant" />
+
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
 
     <record id="action_report_competencia_brecha" model="ir.actions.act_window">
         <field name="name">Reporte de Competencias por Brecha</field>
