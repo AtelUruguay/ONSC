@@ -10,22 +10,22 @@
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="type"/>
-                            <field name="subtype_publication_id"
+                            <field name="subtype_publication_id"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('type', '!=', 'publication')],'required': [('type', '=', 'publication')]}"/>
                             <field name="is_subtype_publication" invisible="1"/>
                             <field name="other_subtype_publication"
                                    attrs="{'invisible': [('is_subtype_publication', '!=', True)],'required': [('is_subtype_publication', '=', True)]}"/>
-                            <field name="subtype_production_id"
+                            <field name="subtype_production_id"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('type', '!=', 'productions')],'required': [('type', '=', 'productions')]}"/>
                             <field name="is_subtype_production" invisible="1"/>
                             <field name="other_subtype_production"
                                    attrs="{'invisible': [('is_subtype_production', '!=', True)],'required': [('is_subtype_production', '=', True)]}"/>
-                            <field name="subtype_evaluation_id"
+                            <field name="subtype_evaluation_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('type', '!=', 'evaluation')],'required': [('type', '=', 'evaluation')]}"/>
                             <field name="is_subtype_evaluation" invisible="1"/>
                             <field name="other_subtype_evaluation"
                                    attrs="{'invisible': [('is_subtype_evaluation', '!=', True)],'required': [('is_subtype_evaluation', '=', True)]}"/>
-                            <field name="subtype_other_id"
+                            <field name="subtype_other_id"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('type', '!=', 'other')],'required': [('type', '=', 'other')]}"/>
                             <field name="is_subtype_other" invisible="1"/>
                             <field name="other_subtype_other"
