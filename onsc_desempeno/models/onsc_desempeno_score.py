@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
 import ast
+import logging
 
 from odoo import fields, models, api
 from odoo.osv import expression
@@ -80,6 +80,7 @@ class ONSCDesempenoScore(models.Model):
     score = fields.Float('Puntaje final')
     is_employee_notified = fields.Boolean(string='¿Fue notificado?')
     is_pilot = fields.Boolean(string="¿Es piloto?")
+    whitout_impact = fields.Boolean(string="Sin impacto en legajo")
 
     def button_open_gap_deal(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
