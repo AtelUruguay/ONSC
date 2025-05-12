@@ -34,6 +34,7 @@
                 <field name="score"/>
                 <field name="is_employee_notified"/>
                 <field name="is_pilot" optional="hide"/>
+                <field name="whitout_impact" optional="hide"/>
             </tree>
         </field>
     </record>

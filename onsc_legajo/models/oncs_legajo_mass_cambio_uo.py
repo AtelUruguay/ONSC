@@ -1,14 +1,9 @@
 # -*- coding:utf-8 -*-
 import json
 
-from dateutil.relativedelta import relativedelta
-from lxml import etree
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-
-from odoo import fields, models, api, _, Command
-from odoo.exceptions import ValidationError
+from odoo import fields, models, api, _
 from odoo import tools
-from odoo.osv import expression
+from odoo.exceptions import ValidationError
 
 
 class ONSCLegajoMassCambioUO(models.Model):
@@ -52,7 +47,7 @@ class ONSCLegajoMassCambioUO(models.Model):
     target_department_id = fields.Many2one(
         "hr.department", string="UO destino", required=True, copy=False)
     start_date = fields.Date(string='Fecha desde',
-                             required=True, default=fields.Date.today)
+                             required=True)
     state = fields.Selection(
         string='Estado',
         selection=[('draft', 'Borrador'), ('confirm', 'Confirmado')],
@@ -169,6 +164,7 @@ class ONSCLegajoMassCambioUO(models.Model):
     def button_confirm(self):
         self._validate_confirm()
         for rec in self:
+            rec.line_ids.filtered(lambda x: not x.is_included).unlink()
             rec.line_ids.action_confirm()
         self.write({'state': 'confirm'})
 
@@ -181,6 +177,9 @@ class ONSCLegajoMassCambioUO(models.Model):
 
     def button_search(self):
         self.ensure_one()
+        if not self.employee_id and not self.department_id and not self.is_not_uo:
+            raise ValidationError(_("Es necesario completar al menos uno de los filtros."))
+
         self.line_ids.filtered(lambda x: not x.is_included).unlink()
         self._search_contracts()
 
@@ -203,7 +202,7 @@ class ONSCLegajoMassCambioUO(models.Model):
         if self.employee_id:
             contracts = self._get_contracts(employee_id=self.employee_id.id)
         elif self.department_id:
-            contracts = self._get_contracts(department_id=self.department_id.id)
+            contracts = self._get_contracts(department_id=self.department_id)
         elif self.is_not_uo:
             contracts = self._get_contracts_sin_uo()
         else:
@@ -249,9 +248,14 @@ class ONSCLegajoMassCambioUO(models.Model):
             return self.env['hr.contract'].sudo().search(args)
         elif department_id:
             today = fields.Date.today()
+            if isinstance(department_id, int):
+                department = self.env['hr.department'].sudo().browse(department_id)
+            else:
+                department = department_id
             args = [
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
-                ('department_id', '=', department_id),
+                ('contract_id.operating_unit_id','=',department.operating_unit_id.id),
+                ('department_id', '=', department.id),
                 '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)
             ]
             if employee_id:
@@ -269,7 +273,7 @@ WHERE
     legajo_state in ('active', 'incoming_commission') AND
     operating_unit_id = %s AND
     id NOT IN (SELECT contract_id FROM hr_job WHERE operating_unit_id = %s AND (end_date IS NULL OR end_date >= CURRENT_DATE))""" % (
-        self.operating_unit_id.id, self.operating_unit_id.id)
+            self.operating_unit_id.id, self.operating_unit_id.id)
         self.env.cr.execute(_sql)
         results = self.env.cr.fetchall()
         contract_ids = []
@@ -277,11 +281,12 @@ WHERE
             contract_ids.append({'contract_id': result[0], 'employee_id': result[1], 'legajo_state_id': result[2]})
         return contract_ids
 
+
 class ONSCLegajoMassCambioUOLine(models.Model):
     _name = 'onsc.legajo.mass.cambio.uo.line'
 
     cambio_uo_id = fields.Many2one(
-        'onsc.legajo.mass.cambio.uo', 'Cambio de UO masivo')
+        'onsc.legajo.mass.cambio.uo', 'Cambio de UO masivo', ondelete='cascade')
     is_included = fields.Boolean(string='¿Incluido?')
     employee_id = fields.Many2one('hr.employee', 'C.I.')
     contract_id = fields.Many2one('hr.contract', 'Contrato')
@@ -342,7 +347,8 @@ class ONSCLegajoMassCambioUOLine(models.Model):
     def _compute_job_info(self):
         for rec in self:
             if rec.contract_id:
-                jobs = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today())
+                jobs = rec.contract_id.job_ids.filtered(
+                    lambda x: x.end_date is False or x.end_date >= fields.Date.today())
                 if len(jobs) >= 1:
                     rec.job_id = jobs[0].id
                     rec.department_id = jobs[0].department_id.id
@@ -402,7 +408,6 @@ class ONSCLegajoMassCambioUOLine(models.Model):
                 # Manejo de errores generales para el registro
                 rec.write({'state': 'error', 'error_message': f"Error general: {tools.ustr(outer_e)}"})
 
-
     def button_open_cambio_uo(self):
         self.ensure_one()
         if not self.op_cambio_uo_id:
@@ -414,7 +419,7 @@ class ONSCLegajoMassCambioUOLine(models.Model):
             'view_type': 'form',
             'res_id': self.op_cambio_uo_id.id,
             'target': 'current',
-            'context': {'show_descriptors':True, 'is_from_menu': False},
+            'context': {'show_descriptors': True, 'is_from_menu': False},
             'views': [
                 [self.env.ref('onsc_legajo.onsc_legajo_cambio_uo_form').id, 'form'],
             ]

@@ -250,7 +250,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
             competency.write({'consolidate_id': consolidate.id, 'order': number})
 
     def _set_comment_to_consolidated(self, evaluation, consolidate):
-        if consolidate:
+        if consolidate and evaluation.general_comments:
             consolidate.write({
                 'comment_ids': [(0, 0, {
                     'name': evaluation.general_comments,
@@ -270,14 +270,16 @@ class ONSCDesempenoEvaluationStage(models.Model):
             if evaluated_id not in evaluated_dict:
                 filtered_evaluations = evaluations.filtered(lambda r: r.evaluated_id.id == evaluated_id)
                 _collaborator_qty = sum(1 for r in filtered_evaluations if r.evaluation_type == 'collaborator')
-                _environment_evaluation_qty = sum(1 for r in filtered_evaluations if r.evaluation_type == 'environment_evaluation')
+                _environment_evaluation_qty = sum(
+                    1 for r in filtered_evaluations if r.evaluation_type == 'environment_evaluation')
 
                 # R1: TIENE QUE HABER EN TOTAL MÁS DE 1
                 # R2: >=1 ENTORNO Y <=1 COLABORADOR: HAGO CONSOLIDADO DE ENTORNO E INCLUYO TODAS LAS COMPETENCIAS DE EVALUACIONES
                 # R3: >1 COLABORADOR Y <=1 ENTORNO: HAGO CONSOLIDADO DE COLABORADOR E INCLUYO SOLO COMPETENCIAS DE EVALUACIONES DE COLABORADOR
                 # R4: >1 COLABORADOR Y >1 ENTORNO: HAGO CONSOLIDADO DE COLABORADOR Y ENTORNO Y CADA COMPETENCIA POR SU TIPO
 
-                if (_collaborator_qty + _environment_evaluation_qty) <= 1:  # R1 es exluyente que al menos haya 1 de algún tipo
+                if (
+                        _collaborator_qty + _environment_evaluation_qty) <= 1:  # R1 es exluyente que al menos haya 1 de algún tipo
                     evaluated_dict[evaluated_id] = {
                         'case': 1,
                         'collaborator_consolidated': self.env['onsc.desempeno.consolidated'],
@@ -298,8 +300,10 @@ class ONSCDesempenoEvaluationStage(models.Model):
                         'environment_consolidated': self.env['onsc.desempeno.consolidated'],
                     }
                 elif _collaborator_qty > 1 and _environment_evaluation_qty > 1:  # 4
-                    collaborator_consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='collaborator')
-                    environment_consolidated = self._create_consolidated(evaluation=evaluation, evaluation_type='environment')
+                    collaborator_consolidated = self._create_consolidated(evaluation=evaluation,
+                                                                          evaluation_type='collaborator')
+                    environment_consolidated = self._create_consolidated(evaluation=evaluation,
+                                                                         evaluation_type='environment')
                     evaluated_dict[evaluated_id] = {
                         'case': 4,
                         'collaborator_consolidated': collaborator_consolidated,
@@ -318,7 +322,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
             elif evaluated_dict_element['case'] == 4 and evaluation.evaluation_type == 'environment_evaluation':
                 self._set_competency_to_consolidated(evaluation, evaluated_dict_element['environment_consolidated'])
                 self._set_comment_to_consolidated(evaluation, evaluated_dict_element['environment_consolidated'])
-
 
         return True
 
@@ -390,11 +393,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
                     for competency in record.evaluation_competency_ids:
-                        Competency.create({'gap_deal_id': gap_deal.id,
-                                           'skill_id': competency.skill_id.id,
-                                           'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
-                                               lambda r: r.level_id.id == record.level_id.id).ids)]
-                                           })
+                        Competency.set_competencies(competency.skill_id, gap_deal, gap_deal.id)
 
                     partners_to_notify |= record.evaluated_id.partner_id
                     partners_to_notify |= record.evaluator_id.partner_id
