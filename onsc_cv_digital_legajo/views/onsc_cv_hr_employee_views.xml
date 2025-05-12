@@ -256,7 +256,7 @@
                             </group>
                         </group>
                     </page>
-                    <page name="datos_legajo" string="Datos del legajo">
+                    <page name="datos_legajo" string="Contactos">
                         <group>
                             <group string="Información personal:">
                                 <field name="institutional_email" readonly="1"/>
