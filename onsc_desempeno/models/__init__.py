@@ -18,3 +18,4 @@ from . import onsc_desempeno_summary_evaluation
 from . import onsc_desempeno_evaluation_report
 from . import onsc_legajo
 from . import oncs_legajo_staging_ws7
+from . import onsc_desempeno_competency_skills

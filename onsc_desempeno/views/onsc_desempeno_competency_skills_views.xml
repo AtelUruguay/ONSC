@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_desempeno_competency_skills_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.competency.skills.search</field>
+        <field name="model">onsc.desempeno.competency.skills</field>
+        <field name="arch" type="xml">
+            <search string="Información completa de formularios">
+                <field name="skill_id"/>
+                <field name="degree_id"/>
+                <field name="improvement_areas"/>
+                <field name="dimension_id"/>
+                <field name="behavior"/>
+                <field name="frequency_id"/>
+            </search>
+        </field>
+    </record>
+    
+    <record id="onsc_desempeno_competency_skills_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.competency.skills.tree</field>
+        <field name="model">onsc.desempeno.competency.skills</field>
+        <field name="arch" type="xml">
+            <tree string="Información completa de formularios">
+                <field name="skill_id"/>
+                <field name="degree_id"/>
+                <field name="improvement_areas"/>
+                <field name="dimension_id"/>
+                <field name="behavior"/>
+                <field name="frequency_id"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id='onsc_desempeno_competency_skills_action' model='ir.actions.act_window'>
+        <field name="name">Información completa de formularios</field>
+        <field name="res_model">onsc.desempeno.competency.skills</field>
+        <field name="view_mode">tree</field>
+     </record>
+
+</odoo>
