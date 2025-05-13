@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, tools, api, _
-from odoo.osv import expression
-from odoo.exceptions import RedirectWarning
-
 import logging
+
+from odoo import fields, models
+
 _logger = logging.getLogger(__name__)
 class ONSCDesempenoCompetencySkills(models.Model):
     _name = "onsc.desempeno.competency.skills"

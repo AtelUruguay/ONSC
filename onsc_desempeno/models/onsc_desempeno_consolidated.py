@@ -161,7 +161,6 @@ class ONSCDesempenoConsolidated(models.Model):
         return action
 
 
-
 class ONSCDesempenoConsolidatedComment(models.Model):
     _name = 'onsc.desempeno.consolidated.comment'
     _description = u'Consolidado-Comentarios'
