@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import uuid
 
 from odoo import fields, models, api
 from odoo.osv import expression
@@ -133,20 +134,21 @@ class ONSCDesempenoConsolidated(models.Model):
                 record.name = ''
 
     def button_show_info(self):
-
+        user_id = self.env.user.id
+        token = " '%s' " % (str(uuid.uuid4()))
         where_clause_str = " cons.id = %s " % (self.id)
 
         _query = f"""
                    INSERT INTO onsc_desempeno_competency_skills
-                       (skill_id,dimension_id,behavior, frequency_id,improvement_areas,degree_id)
-                   SELECT comp.skill_id,line.dimension_id,behavior,null as frequency_id,comp.improvement_areas,comp.degree_id
+                       (skill_id,dimension_id,behavior, frequency_id,improvement_areas,degree_id,token,report_user_id)
+                   SELECT comp.skill_id,line.dimension_id,behavior,null as frequency_id,comp.improvement_areas,comp.degree_id,{token},{user_id}
                    FROM onsc_desempeno_consolidated cons  
                    LEFT JOIN  onsc_desempeno_evaluation_competency comp ON cons.id = comp.consolidate_id
                    LEFT JOIN competency_skill_line_rel rel ON comp.id =onsc_desempeno_evaluation_competency_id
                    LEFT JOIN onsc_desempeno_skill_line line ON rel.onsc_desempeno_skill_line_id = line.id
                    WHERE {where_clause_str} and cons.is_pilot = true
                    UNION ALL
-                   SELECT   comp.skill_id,line.dimension_id,behavior,frequency_id,comp.improvement_areas,comp.degree_id
+                   SELECT   comp.skill_id,line.dimension_id,behavior,frequency_id,comp.improvement_areas,comp.degree_id,{token},{user_id}
                    FROM onsc_desempeno_consolidated cons  
                    LEFT JOIN onsc_desempeno_evaluation_competency comp ON cons.id = comp.consolidate_id
                    LEFT JOIN evaluation_competency_skill_line_rel rel ON  comp.id =onsc_desempeno_evaluation_competency_id
@@ -154,7 +156,7 @@ class ONSCDesempenoConsolidated(models.Model):
                    WHERE {where_clause_str} and cons.is_pilot = false
                """
         cr = self.env.cr
-        cr.execute("DELETE FROM onsc_desempeno_competency_skills")
+        cr.execute('''DELETE FROM onsc_desempeno_competency_skills WHERE report_user_id = %s''' % (user_id,))
         cr.execute(_query)
 
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_competency_skills_action').read()[0]
