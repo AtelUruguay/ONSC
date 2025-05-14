@@ -179,7 +179,10 @@
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
                             <field name="reason_cancel" readonly="1"
-                                   attrs="{'invisible': [('reason_cancel', '=', False)]}"/>
+                                   attrs="{'invisible': ['|',('reason_cancel', '=', False),('is_pilot','=',False)]}"/>
+                            <field name="reason_cancel_id" readonly="1"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': ['|',('reason_cancel_id', '=', False),('is_pilot','=',True)]}"/>
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
                             <field name="environment_definition_end_date"

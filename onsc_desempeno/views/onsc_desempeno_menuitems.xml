@@ -158,6 +158,12 @@
             parent="onsc_desempeno_catalog_menu"
             groups="onsc_desempeno.group_desempeno_administrador"
             sequence="15" />
+      <menuitem id="onsc_desempeno_reason_cancellation_menu"
+            name="Motivos de cancelación"
+            action="onsc_desempeno_reason_cancellation_action"
+            parent="onsc_desempeno_catalog_menu"
+            groups="onsc_desempeno.group_desempeno_administrador"
+            sequence="17" />
       <menuitem id="onsc_desempeno_level_menu"
             name="Niveles"
             action="onsc_desempeno_level_action"

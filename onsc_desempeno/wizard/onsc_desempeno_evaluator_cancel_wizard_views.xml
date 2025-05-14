@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="reason" />
+                    <field name="reason_id" />
                     <field name="evaluation_id" invisible="1"/>
                  </group>
                 <footer>

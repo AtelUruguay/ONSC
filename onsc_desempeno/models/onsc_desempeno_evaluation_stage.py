@@ -368,7 +368,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     evaluation[0]["current_job_id"] = record.current_job_id.id
                     evaluation[0]["evaluator_current_job_id"] = record.evaluator_current_job_id.id
                     evaluation[0]["general_comments"] = False
-                    evaluation[0]["reason_cancel"] = False
+                    evaluation[0]["reason_cancel_id"] = False
 
                     if record.current_job_id:
                         _department_id = record.current_job_id.department_id
