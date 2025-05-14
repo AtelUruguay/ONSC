@@ -501,6 +501,7 @@ class ONSCDesempenoEvaluation(models.Model):
         required=False)
     state_before_cancel = fields.Selection(STATE, string="Estado")
     reason_cancel = fields.Text(string='Motivo de cancelación')
+    reason_cancel_id = fields.Many2one('onsc.desempeno.reason.cancellation', string='Motivo de cancelación')
     show_button_go_back = fields.Boolean('Ver botón volver atras', compute='_compute_show_button_go_back')
     show_button_cancel = fields.Boolean('Ver botón cancelar atras', compute='_compute_show_button_cancel')
     evaluations = fields.Boolean(string="Mis evaluaciones", default=False)
@@ -921,11 +922,13 @@ class ONSCDesempenoEvaluation(models.Model):
         if self.evaluation_type in ('gap_deal', 'development_plan'):
             vals = {'state_gap_deal': self.state_before_cancel,
                     'state_before_cancel': False,
-                    'reason_cancel': False}
+                    'reason_cancel': False,
+                    'reason_cancel_id': False}
         else:
             vals = {'state': self.state_before_cancel,
                     'state_before_cancel': False,
-                    'reason_cancel': False
+                    'reason_cancel': False,
+                    'reason_cancel_id': False
                     }
         self.write(vals)
 
@@ -939,10 +942,13 @@ class ONSCDesempenoEvaluation(models.Model):
     #         })
 
     def action_cancel(self, is_canceled_by_employee_out=False):
+
+        baja_id = self.env['onsc.desempeno.reason.cancellation'].sudo().search(
+                [('name', '=', 'Baja')]).id
         for record in self:
             vals = {
                 'is_canceled_by_employee_out': is_canceled_by_employee_out,
-                'reason_cancel': "Baja",
+                'reason_cancel_id':baja_id,
                 'state_before_cancel': record.state,
                 'state': 'canceled',
             }
