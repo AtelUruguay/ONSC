@@ -46,7 +46,7 @@ class ONSCLegajoVoteRegistry(models.Model):
                 ('date_since_consultation_control', '<=', fields.Date.today()),
                 ('date_until_consultation_control', '>=', fields.Date.today())])
             args = expression.AND([[('electoral_act_ids', 'in', electoral_act_ids.ids)], args])
-        return super(ONSCLegajoVoteRegistry, self.with_context(only_active_contracts=True))._search(
+        return super(ONSCLegajoVoteRegistry, self)._search(
             args,
             offset=offset,
             limit=limit,
@@ -62,12 +62,15 @@ class ONSCLegajoVoteRegistry(models.Model):
                 ('date_since_consultation_control', '<=', fields.Date.today()),
                 ('date_until_consultation_control', '>=', fields.Date.today())])
             domain = expression.AND([[('electoral_act_ids', 'in', electoral_act_ids.ids)], domain])
-        return super(ONSCLegajoVoteRegistry, self.with_context(only_active_contracts=True)).read_group(domain, fields,
-                                                                                                       groupby,
-                                                                                                       offset=offset,
-                                                                                                       limit=limit,
-                                                                                                       orderby=orderby,
-                                                                                                       lazy=lazy)
+        return super(ONSCLegajoVoteRegistry, self).read_group(
+            domain,
+            fields,
+            groupby,
+            offset=offset,
+            limit=limit,
+            orderby=orderby,
+            lazy=lazy
+        )
 
     employee_id = fields.Many2one(
         comodel_name="hr.employee",
