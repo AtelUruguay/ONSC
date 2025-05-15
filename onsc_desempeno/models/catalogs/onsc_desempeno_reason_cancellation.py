@@ -10,7 +10,7 @@ class ONSCDesempenoReasonCancellation(models.Model):
     _name = 'onsc.desempeno.reason.cancellation'
     _description = 'Catalogo Motivos de cancelación de formularios'
 
-    name = fields.Char(string="Motivos de cancelación", required=True)
+    name = fields.Char(string="Motivo de cancelación", required=True)
     description = fields.Text(string="Descripción")
     active = fields.Boolean(string="Activo", default=True)
 
