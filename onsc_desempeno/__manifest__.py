@@ -57,6 +57,7 @@ ONSC - Gestión de Desempeño
         "views/onsc_desempeno_evaluation_report_views.xml",
         "views/onsc_legajo_views_inherit.xml",
         "views/onsc_frequency_equivalence_views.xml",
+        "views/onsc_desempeno_competency_skills_views.xml",
         "views/onsc_desempeno_menuitems.xml",
     ],
     'demo': [],
