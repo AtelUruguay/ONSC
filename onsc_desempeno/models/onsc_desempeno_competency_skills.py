@@ -22,7 +22,7 @@ class ONSCDesempenoCompetencySkills(models.Model):
             'write_uid',
             'create_date',
             'write_date',
-            'id',
+
         ]
         for field in hide:
             if field in res:
