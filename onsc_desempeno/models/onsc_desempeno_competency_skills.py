@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 _logger = logging.getLogger(__name__)
 
@@ -9,6 +9,27 @@ _logger = logging.getLogger(__name__)
 class ONSCDesempenoCompetencySkills(models.Model):
     _name = "onsc.desempeno.competency.skills"
     _description = "Información completa de formularios"
+    _order = "skill_id"
+
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCDesempenoCompetencySkills, self).fields_get(allfields, attributes)
+        hide = [
+            'consolidate_id',
+            'report_user_id',
+            'token',
+            'create_uid',
+            'write_uid',
+            'create_date',
+            'write_date',
+            'id',
+        ]
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
 
     token = fields.Char(string='Token', index=True)
     report_user_id = fields.Integer(string='Usuario que dió origen al reporte', index=True)
