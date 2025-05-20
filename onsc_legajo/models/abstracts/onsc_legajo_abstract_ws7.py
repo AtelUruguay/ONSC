@@ -187,7 +187,8 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             'sexo': operation.sexo if hasattr(operation, 'sexo') else False,
             'codigoEstadoCivil': operation.codigoEstadoCivil if hasattr(operation, 'codigoEstadoCivil') else False,
             'cod_reg': operation.cod_reg if hasattr(operation, 'cod_reg') else False,
-            'contract_expiration_date':fechaVencimientoContrato
+            'contract_expiration_date':fechaVencimientoContrato,
+            'code_day': operation.jornadaFormal if hasattr(operation, 'jornadaFormal') else False,
         }
 
     def _is_op_unicity_valid(self, vals, onsc_legajo_integration_error_WS7_9004):
