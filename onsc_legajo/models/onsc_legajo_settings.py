@@ -76,12 +76,17 @@ class ONSCCVSettings(models.TransientModel):
         readonly=False,
         related_sudo=True,
         help='Ingresar la lista de correos electronicos separados por coma')
+    message_block_alta_vl_summary = fields.Boolean(
+        u"Mensaje de sumario bloqueante alta vínculo laboral",
+        related="company_id.message_block_alta_vl_summary",
+        readonly=False,
+        related_sudo=True)
     message_block_summary = fields.Boolean(
-        u"Mensaje de sumario bloqueante",
+        u"Mensaje de sumario bloqueante baja vínculo laboral",
         related="company_id.message_block_summary",
         readonly=False,
         related_sudo=True)
-    message_baja_vl_summary = fields.Char(u"Mensaje de baja de vinculo laboral",
+    message_baja_vl_summary = fields.Char(u"Mensaje de baja de vínculo laboral",
                                           related="company_id.message_baja_vl_summary",
                                           readonly=False,
                                           related_sudo=True)
