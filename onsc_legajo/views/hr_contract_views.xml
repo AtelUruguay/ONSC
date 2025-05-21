@@ -131,6 +131,7 @@
                             <field name="resolution_date"/>
                             <field name="resolution_type"/>
                             <field name="contract_expiration_date"/>
+                            <field name="renewal_start_date"/>
                             <field name="additional_information"/>
                             <field name="code_day"/>
                             <field name="description_day"/>

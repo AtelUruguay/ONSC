@@ -109,6 +109,8 @@ class ONSCLegajoStagingWS7(models.Model):
                                               compute='_compute_should_disable_form_edit')
 
     log = fields.Text(string='Log')
+    contract_expiration_date = fields.Date(string='Fecha Vencimiento Contrato')
+    code_day = fields.Char(string="Código de la Jornada")
 
     def init(self):
         self._cr.execute("""CREATE INDEX IF NOT EXISTS onsc_legajo_staging_ws7_recordset_unique
@@ -368,7 +370,7 @@ class ONSCLegajoStagingWS7(models.Model):
             movement_description = self.env.user.company_id.ws7_new_retroactive_reason_description
         elif record.mov == 'ASCENSO':
             movement_description = self.env.user.company_id.ws7_new_ascenso_reason_description
-        elif record.mov in ['TRANSFORMA','TRANSFORMA_REDUE']:
+        elif record.mov in ['TRANSFORMA', 'TRANSFORMA_REDUE']:
             movement_description = self.env.user.company_id.ws7_new_transforma_reason_description
         elif record.mov == 'REESTRUCTURA':
             movement_description = self.env.user.company_id.ws7_new_reestructura_reason_description
@@ -428,7 +430,8 @@ class ONSCLegajoStagingWS7(models.Model):
 
             # SI ES UN MOVIMIENTO PARA EL MISMO INCISO Y UE SE DESACTIVA TAMBIEN EL B
             if same_ue:
-                incoming_contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
+                incoming_contract.with_context(no_check_write=True,
+                                               no_check_date_range=True).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today(),
@@ -486,13 +489,13 @@ class ONSCLegajoStagingWS7(models.Model):
             elif new_contract.operating_unit_id != contract.operating_unit_id:
                 # DESACTIVA EL CONTRATO
                 contract.with_context(
-                    no_check_write=True,is_copy_job=False,no_check_date_range=True
+                    no_check_write=True, is_copy_job=False, no_check_date_range=True
                 ).deactivate_legajo_contract(
                     contract_date_end,
                     legajo_state='baja',
                     eff_date=fields.Date.today(),
                     archive_contract=archive_contract
-                    )
+                )
             else:
                 # DESACTIVA EL CONTRATO
                 contract.with_context(no_check_write=True, no_check_date_range=True).deactivate_legajo_contract(
@@ -678,8 +681,9 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         self._check_valid_eff_date(contract, fields.Date.today())
         contract.write({
-            'contract_expiration_date': record.fecha_vig,
+            'renewal_start_date': record.fecha_vig,
             'eff_date': fields.Date.today(),
+            'contract_expiration_date': record.contract_expiration_date
         })
         records.write({'state': 'processed'})
 
@@ -784,13 +788,14 @@ class ONSCLegajoStagingWS7(models.Model):
         return Contract.search(args, limit=1)
 
     def _get_contract_copy(self,
-            contract,
-            record,
-            legajo_state='active',
-            link_tocontract=False,
-            state_square_id=False,
-            movement_description=False,
-            contract_date_start=False):
+                           contract,
+                           record,
+                           legajo_state='active',
+                           link_tocontract=False,
+                           state_square_id=False,
+                           movement_description=False,
+                           contract_date_start=False):
+        RetributiveDay = self.env['onsc.legajo.jornada.retributiva'].suspend_security()
         inciso = record.inciso_id
         operating_unit = record.operating_unit_id
         descriptor1 = record.descriptor1_id
@@ -834,14 +839,28 @@ class ONSCLegajoStagingWS7(models.Model):
                 vals['cs_contract_id'] = contract.id
         if movement_description:
             vals['reason_description'] = movement_description
+
+        if record.code_day and movement_description in ['TRANSFORMA', self.env.user.company_id.ws7_new_transforma_reason_description]:
+            vals['code_day'] = str(record.code_day)
+            retributive_day = RetributiveDay.search([
+                ('codigoJornada', '=', str(record.code_day)),
+                ('office_id.proyecto', '=', str(record.proyecto)),
+                ('office_id.programa', '=', str(record.programa)),
+                ('office_id.inciso', '=', inciso.id),
+                ('office_id.unidadEjecutora', '=', operating_unit.id)
+            ], limit=1)
+
+            if retributive_day:
+                vals['description_day'] = retributive_day.descripcionJornada
+
         new_contract = self.env['hr.contract'].suspend_security().create(vals)
         return new_contract
 
     def _copy_jobs(
-        self,
-        source_contract,
-        target_contract,
-        operation='ws7',
+            self,
+            source_contract,
+            target_contract,
+            operation='ws7',
     ):
         """
         :param source_contract: Recordset de contrato

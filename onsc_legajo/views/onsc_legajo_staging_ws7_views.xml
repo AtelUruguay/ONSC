@@ -177,10 +177,13 @@
                                        class="oe_inline"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             </div>
+                            <field name="code_day" readonly="1"/>
                             <field name="program_project_id" readonly="1"
                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="budget_item_id" readonly="1"
                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="contract_expiration_date" readonly="1"/>
+
                         </group>
                     </group>
                     <notebook>
