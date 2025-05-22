@@ -233,6 +233,7 @@ class HrContract(models.Model):
                                              history=True)
     public_admin_entry_date = fields.Date(string=u'Fecha de ingreso a la administración pública', related='legajo_id.public_admin_entry_date', store=True)
     first_operating_unit_entry_date = fields.Date(string=u'Fecha de ingreso UE')
+    renewal_start_date = fields.Date(string='Fecha de inicio de renovación', history=True)
 
     def name_get(self):
         res = []

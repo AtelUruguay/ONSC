@@ -143,7 +143,7 @@ class ONSCLegajoAltaVL(models.Model):
         self._message_log(body=_('Envia a SGH'))
         Summary = self.env['onsc.legajo.summary'].suspend_security()
         if Summary._has_summary(self.cv_emissor_country_id, self.cv_document_type_id,
-                                self.partner_id.cv_nro_doc) and self.env.user.company_id.message_block_summary:
+                                self.partner_id.cv_nro_doc) and self.env.user.company_id.message_block_alta_vl_summary:
             raise ValidationError(
                 _("Tenga en cuenta que la persona %s tuvo un sumario con sanción “Destitución”. Se recomienda que antes de confirmar verifique que sea correcto realizar este movimiento."% self.full_name))
 
