@@ -101,6 +101,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                     'is_error_synchronization': True,
                     'state': 'error_sgh',
                     'error_message_synchronization': long_description,
+                    'is_communicaton_error': True
                 })
 
     def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
@@ -146,6 +147,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                 'is_error_synchronization': True,
                 'state': 'error_sgh',
                 'error_message_synchronization': long_description,
+                'is_communicaton_error': True
             })
             super(ONSCLegajoAbstractSyncWS9, self)._process_response_witherror(
                 response,

@@ -19,6 +19,7 @@ STATES = [
     ('rechazado_cgn', 'Rechazado CGN'),
     ('gafi_ok', 'GAFI OK'),
     ('gafi_error', 'GAFI Error'),
+    ('communication_error', 'Error de comunicación'),
 ]
 
 
@@ -214,6 +215,7 @@ class ONSCLegajoAltaVL(models.Model):
         compute='_compute_summary_message',
         store=False,
         copy=False)
+    gheId = fields.Char(string='Identificador de envió GHE')
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):

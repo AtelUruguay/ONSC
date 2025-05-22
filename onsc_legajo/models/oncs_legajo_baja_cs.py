@@ -213,6 +213,7 @@ class ONSCLegajoBajaCS(models.Model):
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     show_contract = fields.Boolean('Show Contract', compute='_compute_contract_id_domain')
     state = fields.Selection(STATES, string='Estado', default='borrador', tracking=True, copy=False)
+    gheId = fields.Char(string='Identificador de envió GHE')
 
     @api.depends('contract_id', 'contract_origen_id')
     def _compute_inciso_ue_origen_id(self):

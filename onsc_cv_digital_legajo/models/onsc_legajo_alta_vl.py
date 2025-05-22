@@ -425,6 +425,7 @@ class ONSCLegajoAltaVL(models.Model):
             inciso = alta.inciso_id
             unidad_ejecutora = alta.operating_unit_id
             clave = (inciso, unidad_ejecutora)
+            self._set_gheId(alta)
             if clave in altas_vl_grouped:
                 altas_vl_grouped[clave] += alta
             else:
@@ -432,6 +433,11 @@ class ONSCLegajoAltaVL(models.Model):
         for clave, altas_vl in altas_vl_grouped.items():
             AltaVLWS4.with_context(
                 log_info=False).syncronize_multi(altas_vl)
+
+    def _set_gheId(self,alta):
+
+        if alta.state != 'communication_error':
+            alta.write({'gheId':  self.env["ir.sequence"].next_by_code("onsc.legajo.ghe.id")})
 
     # flake8: noqa: C901
     def check_required_fields_ws4(self):

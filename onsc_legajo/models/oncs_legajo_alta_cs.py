@@ -286,6 +286,7 @@ class ONSCLegajoAltaCS(models.Model):
     secPlaza = fields.Char(string="Sec Plaza")
     is_error_synchronization = fields.Boolean(string="Error en la sincronización (interno)", copy=False)
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
+    gheId = fields.Char(string='Identificador de envió GHE')
 
     def _search_filter_destination(self, operator, value):
         employee_inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
@@ -797,6 +798,8 @@ class ONSCLegajoAltaCS(models.Model):
     def action_send_sgh(self):
         self.check_send_sgh()
         self._message_log(body=_('Envia a SGH'))
+        if not self.is_communicaton_error:
+            self.write({'gheId': self.env["ir.sequence"].next_by_code("onsc.legajo.ghe.id")})
         self.env['onsc.legajo.abstract.alta.cs.ws10'].with_context(
             log_info=True, altas_cs=self).suspend_security().syncronize(self)
 

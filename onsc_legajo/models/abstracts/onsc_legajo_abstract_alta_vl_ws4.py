@@ -259,7 +259,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 altas_vl.write({
                     'is_error_synchronization': True,
                     'state': 'error_sgh',
-                    'error_message_synchronization': long_description
+                    'error_message_synchronization': long_description,
+                    'is_communicaton_error': True
                 })
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):

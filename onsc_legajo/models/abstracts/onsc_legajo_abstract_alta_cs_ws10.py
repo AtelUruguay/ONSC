@@ -140,5 +140,6 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
         altas_cs.write({
             'is_error_synchronization': True,
             'state': 'error_sgh',
-            'error_message_synchronization': "Error devuelto por SGH: %s" % _error
+            'error_message_synchronization': "Error devuelto por SGH: %s" % _error,
+            'is_communicaton_error': long_description and False or True
         })

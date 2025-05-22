@@ -109,6 +109,7 @@ class ONSCLegajoBajaVL(models.Model):
         store=True
     )
     summary_message = fields.Char(string="Mensaje de Sumarios", compute='_compute_summary_message')
+    gheId = fields.Char(string='Identificador de envió GHE')
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -234,6 +235,8 @@ class ONSCLegajoBajaVL(models.Model):
 
         if self._has_summary() and self.env.user.company_id.message_block_summary:
             raise ValidationError(self.env.user.company_id.message_baja_vl_summary)
+        if not self.is_communicaton_error:
+            self.write({'gheId':  self.env["ir.sequence"].next_by_code("onsc.legajo.ghe.id")})
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
     def action_aprobado_cgn(self):
