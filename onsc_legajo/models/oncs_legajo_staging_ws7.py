@@ -840,7 +840,7 @@ class ONSCLegajoStagingWS7(models.Model):
         if movement_description:
             vals['reason_description'] = movement_description
 
-        if record.code_day and movement_description in ['TRANSFORMA', self.env.user.company_id.ws7_new_transforma_reason_description]:
+        if record.code_day and movement_description in ['Transformación', self.env.user.company_id.ws7_new_transforma_reason_description]:
             vals['code_day'] = str(record.code_day)
             retributive_day = RetributiveDay.search([
                 ('codigoJornada', '=', str(record.code_day)),
