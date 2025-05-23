@@ -103,6 +103,11 @@ class ONSCCVSettings(models.TransientModel):
         related_sudo=True
     )
 
+    message_alta_vl_summary = fields.Char(u"Mensaje de alta de vínculo laboral",
+                                          related="company_id.message_alta_vl_summary",
+                                          readonly=False,
+                                          related_sudo=True)
+
     def execute(self):
         return {
             'type': 'ir.actions.client',

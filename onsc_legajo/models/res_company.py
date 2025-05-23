@@ -37,9 +37,10 @@ class ResCompany(models.Model):
     summary_latency_inseconds = fields.Integer(
         string='Latencia(segundos)')
     message_block_alta_vl_summary = fields.Boolean(u"Mensaje de sumario bloqueante alta vínculo laboral")
+    message_alta_vl_summary = fields.Char(u"Mensaje de baja de vinculo laboral")
 
     def write(self, vals):
-        if all('ws7' or 'mass_upload_record_limit' or 'message_block_summary' or 'message_block_alta_vl_summary' or 'message_baja_vl_summary' in key for
+        if all('ws7' or 'mass_upload_record_limit' or 'message_block_summary' or 'message_block_alta_vl_summary' or 'message_baja_vl_summary' or 'message_alta_vl_summary' in key for
                key in vals.keys()):
             return super(ResCompany, self.suspend_security()).write(vals)
         return super(ResCompany, self).write(vals)
