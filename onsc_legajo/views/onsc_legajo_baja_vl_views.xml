@@ -38,10 +38,10 @@
                         <button name="action_call_ws9" class="btn btn-primary"
                                 type="object" string="Enviar SGH"
                                 groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
-                                states="borrador,error_sgh"
+                                states="borrador,error_sgh,communication_error"
                                 attrs="{'invisible': ['|',('is_ready_send_sgh', '=', False)]}"/>
                         <field name="state" widget="statusbar"
-                               statusbar_visible="borrador,error_sgh,pendiente_auditoria_cgn,aprobado_cgn,rechazado_cgn,gafi_ok,gafi_error"/>
+                               statusbar_visible="borrador,error_sgh,communication_error,pendiente_auditoria_cgn,aprobado_cgn,rechazado_cgn,gafi_ok,gafi_error"/>
                     </header>
                     <sheet>
                         <div name="oe_tittle" class="oe_title"></div>

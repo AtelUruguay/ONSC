@@ -11,15 +11,6 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
-STATES = [
-    ('borrador', 'Borrador'),
-    ('error_sgh', 'Error SGH'),
-    ('pendiente_auditoria_cgn', 'Pendiente Auditoría CGN'),
-    ('aprobado_cgn', 'Aprobado CGN'),
-    ('rechazado_cgn', 'Rechazado CGN'),
-    ('gafi_ok', 'GAFI OK'),
-    ('gafi_error', 'GAFI Error'),
-]
 # campos requeridos para la sincronización
 
 REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_id', 'resolution_description', 'resolution_date',
@@ -168,18 +159,18 @@ class ONSCLegajoBajaVL(models.Model):
             if record.state not in ['borrador', 'error_sgh']:
                 record.is_read_only_description = True
             elif (
-                not record.causes_discharge_id.is_require_extended
-                and (
-                    record.causes_discharge_id.reason_description
-                    or record.causes_discharge_id.resolution_description
-                    or record.causes_discharge_id.norm_id
-                )
+                    not record.causes_discharge_id.is_require_extended
+                    and (
+                            record.causes_discharge_id.reason_description
+                            or record.causes_discharge_id.resolution_description
+                            or record.causes_discharge_id.norm_id
+                    )
             ):
                 record.is_read_only_description = True
             elif (
-                record.causes_discharge_extended_id.reason_description
-                or record.causes_discharge_extended_id.resolution_description
-                or record.causes_discharge_extended_id.norm_id
+                    record.causes_discharge_extended_id.reason_description
+                    or record.causes_discharge_extended_id.resolution_description
+                    or record.causes_discharge_extended_id.norm_id
             ):
                 record.is_read_only_description = True
             else:
@@ -235,8 +226,8 @@ class ONSCLegajoBajaVL(models.Model):
 
         if self._has_summary() and self.env.user.company_id.message_block_summary:
             raise ValidationError(self.env.user.company_id.message_baja_vl_summary)
-        if not self.is_communicaton_error:
-            self.write({'gheId':  self.env["ir.sequence"].next_by_code("onsc.legajo.ghe.id")})
+        if self.state != 'communication_error':
+            self.write({'gheId': self.env["ir.sequence"].next_by_code("onsc.legajo.ghe.id")})
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
     def action_aprobado_cgn(self):

@@ -14,12 +14,13 @@ _logger = logging.getLogger(__name__)
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
+    ('communication_error', 'Error de comunicación'),
     ('pendiente_auditoria_cgn', 'Pendiente Auditoría CGN'),
     ('aprobado_cgn', 'Aprobado CGN'),
     ('rechazado_cgn', 'Rechazado CGN'),
     ('gafi_ok', 'GAFI OK'),
     ('gafi_error', 'GAFI Error'),
-    ('communication_error', 'Error de comunicación'),
+
 ]
 
 

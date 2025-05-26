@@ -146,7 +146,8 @@ class ONSCLegajoAltaCS(models.Model):
     program_origin = fields.Char(string='Programa (Origen)', related='program_project_origin_id.programaDescripcion')
     project_origin = fields.Char(string='Proyecto (Origen)', related='program_project_origin_id.proyectoDescripcion')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen (Origen)', related='contract_id.regime_id')
-    is_regime_manager = fields.Boolean(string="¿Régimen tiene la marca 'Responsable UO'?", compute='_compute_is_regime_manager', store=True)
+    is_regime_manager = fields.Boolean(string="¿Régimen tiene la marca 'Responsable UO'?",
+                                       compute='_compute_is_regime_manager', store=True)
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
@@ -179,8 +180,8 @@ class ONSCLegajoAltaCS(models.Model):
                                         readonly=False, states={'confirmed': [('readonly', True)],
                                                                 'cancelled': [('readonly', True)]})
     date_end_commission = fields.Date(string='Fecha hasta de la Comisión', copy=False,
-                                        readonly=False, states={'confirmed': [('readonly', True)],
-                                                                'cancelled': [('readonly', True)]})
+                                      readonly=False, states={'confirmed': [('readonly', True)],
+                                                              'cancelled': [('readonly', True)]})
     department_id = fields.Many2one('hr.department', string='UO', copy=False,
                                     readonly=False, states={'confirmed': [('readonly', True)],
                                                             'cancelled': [('readonly', True)]})
@@ -236,7 +237,8 @@ class ONSCLegajoAltaCS(models.Model):
          ('returned', 'Devuelto a origen'),
          ('cancelled', 'Cancelado'),
          ('error_sgh', 'Error SGH'),
-         ('confirmed', 'Confirmado')],
+         ('confirmed', 'Confirmado'),
+         ('communication_error', 'Error de comunicación')],
         string='Estado',
         tracking=True,
         default='draft')
@@ -544,13 +546,17 @@ class ONSCLegajoAltaCS(models.Model):
             is_same_inciso = record.inciso_origin_id == record.inciso_destination_id
             is_user_any_inciso = is_editable_orig_inciso or is_editable_dest_inciso
 
-            if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
+            if record.state in ['draft', 'to_process', 'returned', 'error_sgh',
+                                'communication_error'] and is_administrar_altas_cs:
                 record.is_available_send_to_sgh = True
-            elif record.type_cs == 'ac2ac' and is_editable_dest and record.state in ['to_process', 'error_sgh']:
+            elif record.type_cs == 'ac2ac' and is_editable_dest and record.state in ['to_process', 'error_sgh',
+                                                                                     'communication_error']:
                 record.is_available_send_to_sgh = True
-            elif record.type_cs == 'out2ac' and is_editable_dest and record.state in ['draft', 'error_sgh']:
+            elif record.type_cs == 'out2ac' and is_editable_dest and record.state in ['draft', 'error_sgh',
+                                                                                      'communication_error']:
                 record.is_available_send_to_sgh = True
-            elif record.type_cs == 'ac2out' and is_editable_orig and record.state in ['draft', 'error_sgh']:
+            elif record.type_cs == 'ac2out' and is_editable_orig and record.state in ['draft', 'error_sgh',
+                                                                                      'communication_error']:
                 record.is_available_send_to_sgh = True
             elif is_same_inciso and is_user_any_inciso and record.state not in ['cancelled', 'confirmed']:
                 record.is_available_send_to_sgh = True
@@ -657,6 +663,7 @@ class ONSCLegajoAltaCS(models.Model):
                 raise ValidationError(_("El campo Descripción del Motivo no puede tener más de 50 caracteres."))
             if record.resolution_description and len(record.resolution_description) > 100:
                 raise ValidationError(_("El campo Descripción de la resolución no puede tener más de 100 caracteres."))
+
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
         contracts = self.env['hr.contract'].sudo().search([
@@ -798,7 +805,7 @@ class ONSCLegajoAltaCS(models.Model):
     def action_send_sgh(self):
         self.check_send_sgh()
         self._message_log(body=_('Envia a SGH'))
-        if not self.is_communicaton_error:
+        if self.state != 'communication_error':
             self.write({'gheId': self.env["ir.sequence"].next_by_code("onsc.legajo.ghe.id")})
         self.env['onsc.legajo.abstract.alta.cs.ws10'].with_context(
             log_info=True, altas_cs=self).suspend_security().syncronize(self)

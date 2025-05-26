@@ -62,7 +62,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                 baja_vl.write({
                     'id_baja': False,
                     'is_error_synchronization': True,
-                    'state': 'error_sgh',
+                    'state': 'communication_error',
                     'error_message_synchronization': long_description
                 })
             if response.pdaId:
@@ -99,9 +99,8 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                 baja_vl.write({
                     'id_baja': False,
                     'is_error_synchronization': True,
-                    'state': 'error_sgh',
-                    'error_message_synchronization': long_description,
-                    'is_communicaton_error': True
+                    'state': 'communication_error',
+                    'error_message_synchronization': long_description
                 })
 
     def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
@@ -109,7 +108,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
         baja_vl.write({
             'id_baja': False,
             'is_error_synchronization': True,
-            'state': 'error_sgh',
+            'state': 'communication_error',
             'error_message_synchronization': integration_error.description
         })
         super(ONSCLegajoAbstractSyncWS9, self)._process_servicecall_error(
@@ -145,7 +144,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
             baja_vl.write({
                 'id_baja': False,
                 'is_error_synchronization': True,
-                'state': 'error_sgh',
+                'state': 'communication_error',
                 'error_message_synchronization': long_description,
                 'is_communicaton_error': True
             })
