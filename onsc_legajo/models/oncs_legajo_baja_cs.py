@@ -15,13 +15,14 @@ REQUIRED_FIELDS = {'end_date', 'reason_description', 'norm_id', 'norm_article', 
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
+    ('communication_error', 'Error de comunicación'),
     ('pendiente_auditoria_cgn', 'Pendiente Auditoría CGN'),
     ('aprobado_cgn', 'Aprobado CGN'),
     ('rechazado_cgn', 'Rechazado CGN'),
     ('gafi_ok', 'GAFI OK'),
     ('gafi_error', 'GAFI Error'),
     ('confirmado', 'Confirmado'),
-    ('communication_error', 'Error de comunicación'),
+
 ]
 
 
