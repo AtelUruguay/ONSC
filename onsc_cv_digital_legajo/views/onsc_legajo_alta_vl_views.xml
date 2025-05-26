@@ -46,7 +46,7 @@
                     <button name="action_call_ws4" class="btn btn-primary"
                             type="object" string="Enviar a SGH"
                             groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
-                            states="borrador,error_sgh"/>
+                            states="borrador,error_sgh,communication_error"/>
                 </header>
                 <header position="after">
                     <div class="alert alert-info" role="alert"

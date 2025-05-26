@@ -147,6 +147,8 @@ class ONSCLegajoAltaVL(models.Model):
             raise ValidationError(
                 _("Tenga en cuenta que la persona %s tuvo un sumario con sanción “Destitución”. Se recomienda que antes de confirmar verifique que sea correcto realizar este movimiento."% self.full_name))
 
+        if self.state != 'communication_error':
+            self.write({'gheId': self.env["ir.sequence"].next_by_code("onsc.legajo.ghe.id")})
         return self.syncronize_ws4(log_info=True)
 
     def action_aprobado_cgn(self):
