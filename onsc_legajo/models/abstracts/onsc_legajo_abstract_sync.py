@@ -55,12 +55,6 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             )
         except Exception as e:
             self._process_servicecall_error(e, origin_name, integration_error)
-            # altas_vl = self._context.get('altas_vl', self.env['onsc.legajo.alta.vl'])
-            # altas_vl.write({
-            #     'is_error_synchronization': True,
-            #     'state': 'error_sgh',
-            #     'error_message_synchronization': "Error devuelto por SGH: " + tools.ustr(e)
-            # })
             return "Error devuelto por SGH: " + tools.ustr(e)
         if hasattr(response, 'servicioResultado'):
             if response.servicioResultado.codigo == 0:
