@@ -471,7 +471,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 partner = Partner.sudo().search([('cv_nro_doc', '=', document_number)], limit=1)
                 if partner and  Summary._has_summary(partner.cv_emissor_country_id, partner.cv_document_type_id,
                                         partner.cv_nro_doc):
-                    if "%s" in self.env.user.company_id.message_alta_vl_summary:
+                    if self.env.user.company_id.message_alta_vl_summary and "%s" in self.env.user.company_id.message_alta_vl_summary:
                         msg = self.env.user.company_id.message_alta_vl_summary % partner.cv_dnic_full_name
                     else:
                         msg = self.env.user.company_id.message_alta_vl_summary

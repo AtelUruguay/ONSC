@@ -350,7 +350,7 @@ class ONSCLegajoAltaVL(models.Model):
         Summary = self.env['onsc.legajo.summary'].suspend_security()
         for rec in self:
             if Summary._has_summary(rec.cv_emissor_country_id, rec.cv_document_type_id, rec.partner_id.cv_nro_doc):
-                if "%s" in self.env.user.company_id.message_alta_vl_summary:
+                if self.env.user.company_id.message_alta_vl_summary and "%s" in self.env.user.company_id.message_alta_vl_summary:
                     msg = self.env.user.company_id.message_alta_vl_summary % rec.full_name
                 else:
                     msg = self.env.user.company_id.message_alta_vl_summary
