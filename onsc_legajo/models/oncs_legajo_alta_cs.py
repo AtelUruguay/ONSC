@@ -237,8 +237,8 @@ class ONSCLegajoAltaCS(models.Model):
          ('returned', 'Devuelto a origen'),
          ('cancelled', 'Cancelado'),
          ('error_sgh', 'Error SGH'),
-         ('confirmed', 'Confirmado'),
-         ('communication_error', 'Error de comunicación')],
+         ('communication_error', 'Error de comunicación'),
+         ('confirmed', 'Confirmado')],
         string='Estado',
         tracking=True,
         default='draft')
@@ -288,7 +288,7 @@ class ONSCLegajoAltaCS(models.Model):
     secPlaza = fields.Char(string="Sec Plaza")
     is_error_synchronization = fields.Boolean(string="Error en la sincronización (interno)", copy=False)
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
-    gheId = fields.Char(string='Identificador de envió GHE')
+    gheId = fields.Char(string='Identificador de envío GHE')
 
     def _search_filter_destination(self, operator, value):
         employee_inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id

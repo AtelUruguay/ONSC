@@ -100,7 +100,7 @@ class ONSCLegajoBajaVL(models.Model):
         store=True
     )
     summary_message = fields.Char(string="Mensaje de Sumarios", compute='_compute_summary_message')
-    gheId = fields.Char(string='Identificador de envió GHE')
+    gheId = fields.Char(string='Identificador de envío GHE')
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):

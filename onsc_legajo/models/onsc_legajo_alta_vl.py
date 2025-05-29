@@ -216,7 +216,7 @@ class ONSCLegajoAltaVL(models.Model):
         compute='_compute_summary_message',
         store=False,
         copy=False)
-    gheId = fields.Char(string='Identificador de envió GHE')
+    gheId = fields.Char(string='Identificador de envío GHE')
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
