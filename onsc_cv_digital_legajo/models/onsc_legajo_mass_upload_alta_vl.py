@@ -465,6 +465,18 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 if self._validate_exist_altaVL(values, country_uy_id, office):
                     warning_error.append(
                         "NOTIFICACIÓN: Esta persona ya cuenta con un movimiento pendiente de auditoría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
+
+                Summary = self.env['onsc.legajo.summary'].suspend_security()
+                Partner = self.env['res.partner']
+                partner = Partner.sudo().search([('cv_nro_doc', '=', document_number)], limit=1)
+                if partner and  Summary._has_summary(partner.cv_emissor_country_id, partner.cv_document_type_id,
+                                        partner.cv_nro_doc):
+                    if self.env.user.company_id.message_alta_vl_summary and "%s" in self.env.user.company_id.message_alta_vl_summary:
+                        msg = self.env.user.company_id.message_alta_vl_summary % partner.cv_dnic_full_name
+                    else:
+                        msg = self.env.user.company_id.message_alta_vl_summary
+                    message_error.append(msg)
+
                 values, validate_error = MassLine.validate_fields(values)
                 message_error.extend(self.validate_cv_fields(values))
                 if validate_error:
@@ -531,11 +543,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     }
                     partner = Partner.suspend_security().create(data_partner)
                     partner.suspend_security().update_dnic_values()
-                Summary = self.env['onsc.legajo.summary'].suspend_security()
-                if Summary._has_summary(partner.cv_emissor_country_id, partner.cv_document_type_id,
-                                            partner.cv_nro_doc):
-                        line.write({'state': 'error', 'message_error':  "Tenga en cuenta que la persona %s tuvo un sumario con sanción “Destitución”. Se recomienda que antes de confirmar verifique que sea correcto realizar este movimiento" % partner.cv_dnic_full_name})
-                        continue
+
                 self._update_partner_info_if_needed(partner)
                 line.suspend_security().write({'first_name': partner.cv_first_name,
                                                'second_name': partner.cv_second_name,

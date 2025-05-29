@@ -119,6 +119,11 @@
                                             <label for="message_block_summary" string="Mensaje de sumario bloqueante alta vínculo laboral" class="col-md-5 o_light_label"/>
                                             <field name="message_block_summary"/>
                                         </div>
+                                        <div class="row">
+                                            <label for="message_alta_vl_summary" string="Mensaje de alta de vínculo laboral" class="col-md-5 o_light_label"/>
+                                            <field name="message_alta_vl_summary"/>
+                                        </div>
+
                                         <div style="font-size:15pt; margin-bottom:0pt;margin-top:0pt;flex-wrap: wrap;margin-right: -16px;margin-left: -16px;"  valign="center">
                                             <label for="message_block_alta_vl_summary" string="Mensaje de sumario bloqueante baja vínculo laboral" class="col-md-5 o_light_label"/>
                                             <field name="message_block_alta_vl_summary"/>

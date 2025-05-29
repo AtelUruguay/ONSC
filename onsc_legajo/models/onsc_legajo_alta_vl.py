@@ -353,7 +353,12 @@ class ONSCLegajoAltaVL(models.Model):
         Summary = self.env['onsc.legajo.summary'].suspend_security()
         for rec in self:
             if Summary._has_summary(rec.cv_emissor_country_id, rec.cv_document_type_id, rec.partner_id.cv_nro_doc):
-                rec.summary_message = "Tenga en cuenta que la persona %s tuvo un sumario con sanción “Destitución”. Se recomienda que antes de confirmar verifique que sea correcto realizar este movimiento" % rec.full_name
+                if self.env.user.company_id.message_alta_vl_summary and "%s" in self.env.user.company_id.message_alta_vl_summary:
+                    msg = self.env.user.company_id.message_alta_vl_summary % rec.full_name
+                else:
+                    msg = self.env.user.company_id.message_alta_vl_summary
+
+                rec.summary_message = msg
             else:
                 rec.summary_message = False
 
