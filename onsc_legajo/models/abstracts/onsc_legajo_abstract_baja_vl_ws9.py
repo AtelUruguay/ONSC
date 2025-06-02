@@ -34,7 +34,8 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
             'secPlaza': int(record.contract_id.sec_position),
             'estadoLaboralBaja': int(record.causes_discharge_id.code_cgn),
             'causalEgreso': record.causes_discharge_id.is_require_extended and record.causes_discharge_extended_id.name or None,
-            'usuarioCedulaOdoo': cv_nro_doc_without_digit
+            'usuarioCedulaOdoo': cv_nro_doc_without_digit,
+            'gheId': record.gheId,
         }
         _logger.info('******************WS9')
         _logger.info(data)

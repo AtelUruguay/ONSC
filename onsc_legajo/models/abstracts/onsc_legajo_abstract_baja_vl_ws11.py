@@ -28,7 +28,8 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
             'descripcionResolucion': record.resolution_description,
             'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y'), 'tipoResolucion': record.resolution_type,
             'CodigoExtincionComision': int(record.extinction_commission_id.code),
-            'usuarioCedulaOdoo': cv_nro_doc_without_digit
+            'usuarioCedulaOdoo': cv_nro_doc_without_digit,
+            'gheId': record.gheId
         }
         _logger.info('******************WS11')
         _logger.info(data)

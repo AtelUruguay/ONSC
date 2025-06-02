@@ -87,6 +87,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 'descripcionResolucion': record.resolution_description,
                 'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y'),
                 'tipoResolucion': record.resolution_type,
+                'gheId': record.gheId,
 
             })
 

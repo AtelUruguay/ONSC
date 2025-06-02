@@ -84,6 +84,7 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
             'destinoEstaEnADM': 'S' if record.inciso_destination_id.is_central_administration else 'N',
             'incisoDestino': record.inciso_destination_id.budget_code,
             'unidadEjecutoraDestino': record.operating_unit_destination_id.budget_code,
+            'gheId': record.gheId,
         })
         if record.program_project_destination_id:
             altaDetalle.update({
