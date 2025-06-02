@@ -59,7 +59,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
     def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
         baja_cs = self._context.get('baja_cs')
         baja_cs.write({
-            'is_error_synchronization': True, 'state': 'error_sgh',
+            'is_error_synchronization': True, 'state': 'communication_error',
             'error_message_synchronization': integration_error.description})
         super(ONSCLegajoAbstractSyncWS11, self)._process_servicecall_error(exception, origin_name, integration_error,
                                                                            long_description)
@@ -79,7 +79,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
         else:
             long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
             baja_cs.write({
-                'is_error_synchronization': True, 'state': 'error_sgh',
+                'is_error_synchronization': True, 'state': 'communication_error',
                 'error_message_synchronization': long_description, })
             super(ONSCLegajoAbstractSyncWS11, self)._process_response_witherror(response,
                                                                                 origin_name,

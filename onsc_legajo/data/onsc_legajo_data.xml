@@ -9,5 +9,13 @@
             <field name="number_increment">1</field>
             <field name="company_id" eval="False"/>
         </record>
+        <record id="sequence_onsc_legajo_ghe?id" model="ir.sequence">
+            <field name="name">Identificador de envió GHE</field>
+            <field name="code">onsc.legajo.ghe.id</field>
+            <field name="prefix"></field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
     </data>
 </odoo>

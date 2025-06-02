@@ -15,12 +15,14 @@ REQUIRED_FIELDS = {'end_date', 'reason_description', 'norm_id', 'norm_article', 
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
+    ('communication_error', 'Error de comunicación'),
     ('pendiente_auditoria_cgn', 'Pendiente Auditoría CGN'),
     ('aprobado_cgn', 'Aprobado CGN'),
     ('rechazado_cgn', 'Rechazado CGN'),
     ('gafi_ok', 'GAFI OK'),
     ('gafi_error', 'GAFI Error'),
     ('confirmado', 'Confirmado'),
+
 ]
 
 
@@ -213,6 +215,7 @@ class ONSCLegajoBajaCS(models.Model):
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     show_contract = fields.Boolean('Show Contract', compute='_compute_contract_id_domain')
     state = fields.Selection(STATES, string='Estado', default='borrador', tracking=True, copy=False)
+    gheId = fields.Char(string='Identificador de envío GHE')
 
     @api.depends('contract_id', 'contract_origen_id')
     def _compute_inciso_ue_origen_id(self):
@@ -276,6 +279,8 @@ class ONSCLegajoBajaCS(models.Model):
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
         self._message_log(body=_('Envia a SGH'))
+        if self.state != 'communication_error':
+            self.write({'gheId': self.env["ir.sequence"].next_by_code("onsc.legajo.ghe.id")})
         self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
 
     def action_update_contract(self):

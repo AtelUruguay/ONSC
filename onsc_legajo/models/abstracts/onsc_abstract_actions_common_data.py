@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
+    ('communication_error', 'Error de comunicación'),
     ('pendiente_auditoria_cgn', 'Pendiente Auditoría CGN'),
     ('aprobado_cgn', 'Aprobado CGN'),
     ('rechazado_cgn', 'Rechazado CGN'),
