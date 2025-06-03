@@ -296,12 +296,12 @@ class ONSCLegajoAltaCS(models.Model):
                 'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs,onsc_legajo.group_legajo_consulta_altas_cs'):
             return [('state', 'not in', ['cancelled', 'confirmed'])]
         return ['|',
-                '&', ('state', 'in', ['draft', 'to_process', 'error_sgh']),
+                '&', ('state', 'in', ['draft', 'to_process', 'error_sgh', 'communication_error']),
                 ('inciso_destination_id', '=', employee_inciso_id),
                 '|',
-                '&', ('state', 'in', ['draft', 'returned']),
+                '&', ('state', 'in', ['draft', 'returned', 'communication_error']),
                 ('inciso_origin_id', '=', employee_inciso_id),
-                '&', ('state', '=', 'error_sgh'),
+                '&', ('state', 'in', ['error_sgh', 'communication_error']),
                 ('type_cs', 'in', ['ac2out', 'out2ac'])
                 ]
 
