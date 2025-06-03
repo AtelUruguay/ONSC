@@ -12,7 +12,7 @@
                     <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
                             context="{'group_by': 'employee_id'}"/>
                     <filter string="Para Procesar" name="to_process"
-                            domain="[('state','in',['borrador','error_sgh', 'communication_error])]"/>
+                            domain="[('state','in',['borrador','error_sgh', 'communication_error'])]"/>
                 </search>
             </field>
         </record>
