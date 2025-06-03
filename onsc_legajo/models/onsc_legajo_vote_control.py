@@ -167,3 +167,11 @@ class ONSCLegajoVoteRegistry(models.Model):
                 lambda x: x.create_uid.id != self.env.user.id):
             raise ValidationError(_("No puede eliminar registros creados por otros Funcionarios"))
         return super(ONSCLegajoVoteRegistry, self).unlink()
+
+    def action_save(self):
+        self._send_notification()
+        return True
+    def _send_notification(self):
+        template = self.env.ref('onsc_legajo.email_template_vote_registry')
+        emailto = self.employee_id.partner_id.institutional_email or self.employee_id.partner_id.email
+        template.send_mail(self.id, force_send=True, email_values={'email_to': emailto})
