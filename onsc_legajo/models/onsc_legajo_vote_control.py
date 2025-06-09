@@ -171,6 +171,7 @@ class ONSCLegajoVoteRegistry(models.Model):
     def action_save(self):
         self._send_notification()
         return True
+
     def _send_notification(self):
         template = self.env.ref('onsc_legajo.email_template_vote_registry')
         emailto = self.employee_id.partner_id.institutional_email or self.employee_id.partner_id.email
