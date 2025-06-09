@@ -118,16 +118,13 @@ class ONSCLegajoVoteRegistry(models.Model):
             if record.date > fields.Date.today():
                 raise ValidationError(_("La Fecha del presentación debe ser menor o igual al día de hoy"))
 
-
-
-
     @api.onchange('date')
     def onchange_date(self):
         if self.date and self.date > fields.Date.today():
             self.date = False
             return warning_response(_(u"La Fecha de presentación debe ser menor o igual al día de hoy"))
 
-    @api.onchange('date','electoral_act_ids')
+    @api.onchange('date', 'electoral_act_ids')
     def onchange_date_electoral_act_ids(self):
         if self.date and self.electoral_act_ids:
             ElectoralAct = self.env['onsc.legajo.electoral.act'].suspend_security().with_context(active_test=False)
@@ -136,7 +133,8 @@ class ONSCLegajoVoteRegistry(models.Model):
                 ('date_until_consultation_control', '>=', self.date),
                 ('id', 'in', self.electoral_act_ids.ids)])
             if len(electoral_act_ids) < len(self.electoral_act_ids):
-                raise ValidationError(_("Acto electoral fuera de fecha de presentación"))
+                self.date = False
+                return warning_response(_(u"Acto electoral fuera de fecha de presentacíon"))
 
 
     @api.onchange('employee_id')
