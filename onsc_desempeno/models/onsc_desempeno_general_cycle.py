@@ -226,11 +226,14 @@ class ONSCDesempenoGeneralCycle(models.Model):
         ])
         scores_dict = {}
         for evaluation in evaluations:
-            key = '%s;;%s;;%s' % (
+            key = '%s;;%s;;%s;;%s;;%s' % (
                 evaluation.evaluator_id.id,
                 evaluation.evaluator_current_job_id.id,
-                evaluation.evaluation_stage_id.id,
+                evaluation.evaluator_current_job_id.inciso_id.id,
+                evaluation.evaluator_current_job_id.operating_unit_id.id,
+                evaluation.evaluation_stage_id.year,
             )
+
             if key not in scores_dict.keys():
                 scores_dict[key] = self._get_evaluation_key_default_dict(evaluation)
 
