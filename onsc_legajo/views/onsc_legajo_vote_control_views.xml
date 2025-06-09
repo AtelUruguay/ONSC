@@ -31,7 +31,7 @@
                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree','show_cv_nro_doc':True}"/>
                         <field name="legajo_id" invisible="1"/>
-                        <field name="date" readonly="1" force_save="1"/>
+                        <field name="date"/>
                         <field name="electoral_act_ids"
                                attrs="{'readonly': [('employee_id', '=', False)]}"
                                domain="electoral_act_ids_domain"
@@ -84,7 +84,7 @@
                                readonly="1" force_save="1"
                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                context="{'search_view_ref': 'onsc_legajo_hr_employee_basic_search','tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"/>
-                        <field name="date" readonly="1" force_save="1"/>
+                        <field name="date"/>
                         <field name="electoral_act_ids"
                                attrs="{'readonly': [('employee_id', '=', False)]}"
                                domain="default_electoral_act_ids_domain"
@@ -93,7 +93,7 @@
                         <field name="default_electoral_act_ids_domain" invisible="1"/>
                     </group>
                     <footer>
-                        <button string="Crear" type="object" class="oe_highlight" data-hotkey="a" special="save"/>
+                        <button string="Confirmar" type="object" class="oe_highlight" data-hotkey="a" name="action_save"/>
                         <button string="Cancelar" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
                     </footer>
                 </sheet>
