@@ -128,11 +128,11 @@ class ONSCLegajoVoteRegistry(models.Model):
     def onchange_date_electoral_act_ids(self):
         if self.date and self.electoral_act_ids:
             ElectoralAct = self.env['onsc.legajo.electoral.act'].suspend_security().with_context(active_test=False)
-            electoral_act_ids = ElectoralAct.search([
+            electoral_act_ids = ElectoralAct.search_count([
                 ('date_since_consultation_control', '<=', self.date),
                 ('date_until_consultation_control', '>=', self.date),
                 ('id', 'in', self.electoral_act_ids.ids)])
-            if len(electoral_act_ids) < len(self.electoral_act_ids):
+            if electoral_act_ids < len(self.electoral_act_ids):
                 self.date = False
                 return warning_response(_(u"Acto electoral fuera de fecha de presentacíon"))
 
